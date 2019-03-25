@@ -8,7 +8,6 @@ const {
   Roe
 } = require('roe')
 
-
 const {code} = require('env-to-code')
 const {AppEnv} = require('./env')
 
@@ -30,6 +29,7 @@ const createDefinePlugin = (envKeys, wp) => {
 
 const isPlainObject = object => Object.keys(object).length === 0
 
+
 class Server extends EE {
   constructor ({
     cwd,
@@ -47,7 +47,7 @@ class Server extends EE {
     this._clientEnvKeys = null
     this._nextConfig = null
     this._nextApp = null
-    this._eggApp = null
+    this._serverApp = null
     this._server = null
   }
 
@@ -92,12 +92,15 @@ class Server extends EE {
     this._nextConfig = {
       ...nextConfig,
       webpack: (nextWebpackConfig, options) => {
-        const config = webpackConfigFactory(
-          nextWebpackConfig,
-          options,
-          // Populate the webpack which roe-scripts uses,
-          webpackModule
-        )
+        const config = webpackConfigFactory
+          ? webpackConfigFactory(
+            nextWebpackConfig,
+            options,
+            // Populate the webpack which roe-scripts uses,
+            webpackModule
+          )
+          // Use default next webpack config
+          : nextWebpackConfig
 
         const definePlugin = createDefinePlugin(
           this._clientEnvKeys,
@@ -130,12 +133,12 @@ class Server extends EE {
     await app.prepare()
   }
 
-  _createEggApp () {
-    log('create egg app')
+  _createServerApp () {
+    log('create server app')
 
     const baseDir = this._cwd
     const {
-      egg: eggConfig
+      server: serverConfig
     } = this._rawConfig
 
     // TODO:
@@ -143,9 +146,9 @@ class Server extends EE {
     const {
       plugins,
       ...config
-    } = eggConfig || {}
+    } = serverConfig || {}
 
-    const app = this._eggApp = new Roe({
+    const app = this._serverApp = new Roe({
       // framework,
       baseDir,
       plugins,
@@ -167,29 +170,23 @@ class Server extends EE {
           return
         }
 
-        log('egg app got ready')
+        log('server app got ready')
         resolve()
       })
     })
   }
 
   _createServer () {
-    log('create egg app')
+    log('create server app')
 
-    this._server = require('http').createServer(this._eggApp.callback())
+    this._server = require('http').createServer(this._serverApp.callback())
 
     const server = this._server
     server.on('error', err => {
       this.emit('error', err)
     })
 
-    this._eggApp.emit('server', server)
-
-    server.listen(this._port, () => {
-      /* eslint-disable no-console */
-      console.log(`server started at http://127.0.0.1:${this._port}`)
-      /* eslint-enable no-console */
-    })
+    this._serverApp.emit('server', server)
   }
 
   get next () {
@@ -197,23 +194,41 @@ class Server extends EE {
   }
 
   get app () {
-    return this._eggApp
+    return this._serverApp
+  }
+
+  get server () {
+    return this._server
+  }
+
+  async ready () {
+    this._getAppPkg()
+    this._getRawConfig()
+    await this._initEnv()
+    this._createNextConfig()
+    await this._nextBuild()
+    await this._createNextApp()
+    await this._createServerApp()
+    this._createServer()
+  }
+
+  listen (port) {
+    this._server.listen(port || this._port, () => {
+      /* eslint-disable no-console */
+      console.log(`server started at http://127.0.0.1:${this._port}`)
+      /* eslint-enable no-console */
+    })
   }
 
   async start () {
     try {
-      this._getAppPkg()
-      this._getRawConfig()
-      await this._initEnv()
-      this._createNextConfig()
-      await this._nextBuild()
-      await this._createNextApp()
-      await this._createEggApp()
-      this._createServer()
+      await this.ready()
     } catch (err) {
       log('fails to start, reason: %s', err.stack)
       process.exit(1)
     }
+
+    this.listen()
   }
 }
 

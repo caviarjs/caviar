@@ -1,4 +1,4 @@
 module.exports = {
   extends: require.resolve('eslint-config-ostai'),
-  parser: 'babel-eslint'
+  parser: require.resolve('babel-eslint')
 }
