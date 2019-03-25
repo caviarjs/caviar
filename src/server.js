@@ -4,12 +4,13 @@ const log = require('util').debuglog('roe-scripts:lib')
 
 const next = require('next')
 const roeScriptsWebpack = require('webpack')
-
-const {code} = require('env-to-code')
-const {AppEnv} = require('./env')
 const {
   Roe
 } = require('roe')
+
+
+const {code} = require('env-to-code')
+const {AppEnv} = require('./env')
 
 const createDefinePlugin = (envKeys, wp) => {
   const {DefinePlugin} = wp
@@ -185,15 +186,17 @@ class Server extends EE {
     this._eggApp.emit('server', server)
 
     server.listen(this._port, () => {
+      /* eslint-disable no-console */
       console.log(`server started at http://127.0.0.1:${this._port}`)
+      /* eslint-enable no-console */
     })
   }
 
-  get nextApp () {
+  get next () {
     return this._nextApp
   }
 
-  get eggApp () {
+  get app () {
     return this._eggApp
   }
 

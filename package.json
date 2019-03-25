@@ -7,10 +7,12 @@
     "roe": "bin/roe.js"
   },
   "scripts": {
+    "build:node": "babel src --out-dir lib",
     "test": "nyc ava --timeout=10s",
     "test-no-report": "NODE_DEBUG=roe-scripts nyc ava --timeout=10s --verbose",
     "lint": "eslint .",
-    "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "prepublishOnly": "npm run build:node"
   },
   "files": [
     "src/"
@@ -26,7 +28,9 @@
     "node": ">= 6"
   },
   "ava": {
-    "babel": false
+    "require": [
+      "@babel/register"
+    ]
   },
   "author": "kaelzhang",
   "license": "MIT",
@@ -34,11 +38,28 @@
     "url": "https://github.com/kaelzhang/roe-scripts/issues"
   },
   "devDependencies": {
-    "ava": "^1.2.1",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-decorators": "^7.4.0",
+    "@babel/register": "^7.4.0",
+    "ava": "^1.4.0",
+    "babel-eslint": "^10.0.1",
     "codecov": "^3.2.0",
-    "nyc": "^13.3.0",
-    "eslint-config-ostai": "^1.1.0",
-    "eslint-plugin-import": "^2.13.0",
-    "eslint": "^5.14.0"
+    "eslint": "^5.15.3",
+    "eslint-config-ostai": "^3.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "nyc": "^13.3.0"
+  },
+  "dependencies": {
+    "after-ready": "^1.0.7",
+    "common-bin": "^2.8.1",
+    "cross-spawn": "^6.0.5",
+    "dotenv": "^7.0.0",
+    "env-to-code": "^1.0.4",
+    "err-object": "^4.1.0",
+    "mz": "^2.7.0",
+    "next": "^8.0.3",
+    "promise.extra": "^3.0.5",
+    "roe": "^1.1.0",
+    "webpack": "^4.29.6"
   }
 }

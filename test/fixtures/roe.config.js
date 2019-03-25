@@ -2,9 +2,9 @@
 // figure out what is `customConfig`
 
 module.exports = {
-  webpack (config, {dev}, webpack) {
+  // webpack (config, {dev}, webpack) {
 
-  },
+  // },
 
   next () {
 
