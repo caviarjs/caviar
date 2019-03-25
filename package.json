@@ -1,6 +1,6 @@
 {
   "name": "roe-scripts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Command line tools for roe",
   "main": "lib/index.js",
   "bin": {
@@ -15,7 +15,9 @@
     "prepublishOnly": "npm run build:node"
   },
   "files": [
-    "src/"
+    "bin/",
+    "cli/",
+    "lib/"
   ],
   "repository": {
     "type": "git",
