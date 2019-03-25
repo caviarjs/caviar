@@ -133,7 +133,8 @@ class Server extends EE {
     const app = this._nextApp = next({
       // TODO
       dev: this._dev,
-      conf: this._nextConfig
+      conf: this._nextConfig,
+      dir: this._cwd
     })
 
     await app.prepare()
