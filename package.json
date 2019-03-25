@@ -1,8 +1,11 @@
 {
   "name": "roe-scripts",
   "version": "1.0.0",
-  "description": "roe-scripts",
-  "main": "src/index.js",
+  "description": "Command line tools for roe",
+  "main": "lib/index.js",
+  "bin": {
+    "roe": "bin/roe.js"
+  },
   "scripts": {
     "test": "nyc ava --timeout=10s",
     "test-no-report": "NODE_DEBUG=roe-scripts nyc ava --timeout=10s --verbose",
