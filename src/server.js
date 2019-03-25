@@ -220,9 +220,11 @@ class Server extends EE {
   }
 
   listen (port) {
-    this._server.listen(port || this._port, () => {
+    port = port || this._port
+
+    this._server.listen(port, () => {
       /* eslint-disable no-console */
-      console.log(`server started at http://127.0.0.1:${this._port}`)
+      console.log(`server started at http://127.0.0.1:${port}`)
       /* eslint-enable no-console */
     })
   }
