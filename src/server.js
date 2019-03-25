@@ -70,9 +70,15 @@ class Server extends EE {
       env
     } = this._rawConfig
 
+    if (env && typeof env !== 'function') {
+      throw error('INVALID_ENV_CONVERTER', env)
+    }
+
     // Populate new env variable to process.env
     const appEnv = new AppEnv({
-      env: [env],
+      env: env
+        ? [env]
+        : [],
       cwd: this._cwd
     })
 
