@@ -1,6 +1,6 @@
 {
   "name": "roe-scripts",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Command line tools for roe",
   "main": "lib/index.js",
   "bin": {

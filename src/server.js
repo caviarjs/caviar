@@ -229,6 +229,10 @@ class Server extends EE {
     })
   }
 
+  close () {
+    this._server.close()
+  }
+
   async start () {
     try {
       await this.ready()
