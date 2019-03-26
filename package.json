@@ -1,6 +1,6 @@
 {
   "name": "roe-scripts",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Command line tools for roe",
   "main": "lib/index.js",
   "bin": {
@@ -17,14 +17,18 @@
   "files": [
     "bin/",
     "cli/",
-    "lib/"
+    "lib/",
+    "spawner/"
   ],
   "repository": {
     "type": "git",
     "url": "git://github.com/kaelzhang/roe-scripts.git"
   },
   "keywords": [
-    "roe-scripts"
+    "roe-scripts",
+    "roe cli",
+    "next",
+    "webpack"
   ],
   "engines": {
     "node": ">= 6"
