@@ -10,6 +10,7 @@ const {
 
 const {code} = require('env-to-code')
 const {AppEnv} = require('./env')
+const {error} = require('./error')
 
 const createDefinePlugin = (envKeys, wp) => {
   const {DefinePlugin} = wp

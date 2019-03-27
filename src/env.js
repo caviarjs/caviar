@@ -15,7 +15,7 @@ const {
   waterfall
 } = require('promise.extra')
 
-const error = require('./error')
+const {error} = require('./error')
 
 const readFile = async file => {
   try {
