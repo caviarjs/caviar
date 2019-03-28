@@ -1,7 +1,9 @@
 const path = require('path')
+const {parse} = require('url')
 const EE = require('events')
 const log = require('util').debuglog('roe-scripts:lib')
 
+const e2k = require('express-to-koa')
 const next = require('next')
 const roeScriptsWebpack = require('webpack')
 const {
@@ -30,6 +32,36 @@ const createDefinePlugin = (envKeys, wp) => {
 
 const isPlainObject = object => Object.keys(object).length === 0
 
+const createNextMiddleware = nextApp => {
+  const handler = nextApp.getRequestHandler()
+  const middleware = (req, res) => {
+    const {
+      [e2k.CONTEXT]: ctx
+    } = req
+
+    const {
+      params = {},
+      url
+    } = ctx
+
+    const {
+      pathname,
+      query
+    } = parse(url)
+
+    const parsedUrl = {
+      pathname,
+      query: {
+        ...query,
+        params
+      }
+    }
+
+    handler(req, res, parsedUrl)
+  }
+
+  return e2k(middleware)
+}
 
 class Server extends EE {
   constructor ({
@@ -197,6 +229,20 @@ class Server extends EE {
     this._serverApp.emit('server', server)
   }
 
+  _applyNextHandler () {
+    if (!this._dev) {
+      return
+    }
+
+    log('apply next handler')
+
+    const middleware = createNextMiddleware(this._nextApp)
+
+    // Before this, all routers has been registered,
+    // so it is safe to register a middleware which contains no koa `next()`
+    this._serverApp.use(middleware)
+  }
+
   get next () {
     return this._nextApp
   }
@@ -218,6 +264,7 @@ class Server extends EE {
     await this._createNextApp()
     await this._createServerApp()
     this._createServer()
+    this._applyNextHandler()
   }
 
   listen (port) {
