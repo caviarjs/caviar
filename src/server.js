@@ -130,8 +130,9 @@ class Server extends EE {
       webpackModule = roeScriptsWebpack
     } = this._rawConfig
 
+
     if (!isString(nextConfig.distDir)) {
-      throw error('INVALID_NEXT_DIST', nextConfig.distDir)
+      nextConfig.distDir = '.next'
     }
 
     this._nextConfig = {
