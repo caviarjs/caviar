@@ -4,6 +4,7 @@ const EE = require('events')
 const log = require('util').debuglog('roe-scripts:lib')
 
 const e2k = require('express-to-koa')
+const {serve} = require('egg-serve-static')
 const next = require('next')
 const roeScriptsWebpack = require('webpack')
 const {
@@ -53,7 +54,7 @@ const createNextMiddleware = nextApp => {
       pathname,
       query: {
         ...query,
-        params
+        ...params
       }
     }
 
@@ -181,8 +182,6 @@ class Server extends EE {
       server: serverConfig
     } = this._rawConfig
 
-    // TODO:
-    // Migrate to roe
     const {
       plugins,
       ...config
@@ -230,17 +229,28 @@ class Server extends EE {
   }
 
   _applyNextHandler () {
-    if (!this._dev) {
+    if (this._dev) {
+      this._applyDevNextHandler()
       return
     }
 
-    log('apply next handler')
+    this._applyProdNextHandler()
+  }
+
+  _applyDevNextHandler () {
+    log('apply dev next handler')
 
     const middleware = createNextMiddleware(this._nextApp)
 
     // Before this, all routers has been registered,
     // so it is safe to register a middleware which contains no koa `next()`
     this._serverApp.use(middleware)
+  }
+
+  _applyProdNextHandler () {
+    serve(this._serverApp, '/static', path.join(this._cwd, 'static'), {
+      maxAge: this._rawConfig.staticFileMaxAge || 0
+    })
   }
 
   get next () {
