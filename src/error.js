@@ -10,4 +10,6 @@ E('NOT_IMPLEMENT', 'method "%s" must be implemented')
 
 E('INVALID_ENV_CONVERTER', 'config.env must be a function, but got %s')
 
+E('INVALID_NEXT_DIST', 'config.next.distDir must be a string, but got %s')
+
 module.exports = error

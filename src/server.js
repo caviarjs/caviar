@@ -3,6 +3,7 @@ const {parse} = require('url')
 const EE = require('events')
 const log = require('util').debuglog('roe-scripts:lib')
 
+const {isString} = require('core-util-is')
 const e2k = require('express-to-koa')
 const {serve} = require('egg-serve-static')
 const next = require('next')
@@ -129,6 +130,10 @@ class Server extends EE {
       webpackModule = roeScriptsWebpack
     } = this._rawConfig
 
+    if (!isString(nextConfig.distDir)) {
+      throw error('INVALID_NEXT_DIST', nextConfig.distDir)
+    }
+
     this._nextConfig = {
       ...nextConfig,
       webpack: (nextWebpackConfig, options) => {
@@ -248,9 +253,24 @@ class Server extends EE {
   }
 
   _applyProdNextHandler () {
-    serve(this._serverApp, '/static', path.join(this._cwd, 'static'), {
-      maxAge: this._rawConfig.staticFileMaxAge || 0
-    })
+    const app = this._serverApp
+    const {
+      staticFileMaxAge: maxAge = 0,
+      next: {
+        distDir
+      }
+    } = this._rawConfig
+
+    const options = {
+      maxAge
+    }
+
+    serve(app, '/static', this.resolve('static'), options)
+    serve(app, '/_next/static', this.resolve(distDir, 'static'), options)
+  }
+
+  resolve (...args) {
+    return path.join(this._cwd, ...args)
   }
 
   get next () {

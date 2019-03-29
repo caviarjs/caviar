@@ -59,6 +59,7 @@
   "dependencies": {
     "after-ready": "^1.0.7",
     "common-bin": "^2.8.1",
+    "core-util-is": "^1.0.2",
     "cross-spawn": "^6.0.5",
     "dotenv": "^7.0.0",
     "egg-serve-static": "^2.1.1",
