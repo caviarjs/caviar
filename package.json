@@ -2,12 +2,12 @@
   "name": "roe-scripts",
   "version": "1.0.1",
   "description": "Command line tools for roe",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "bin": {
     "roe": "bin/roe.js"
   },
   "scripts": {
-    "build:node": "babel src --out-dir lib",
+    "build:node": "babel stage --out-dir src",
     "test": "nyc ava --timeout=10s",
     "test-no-report": "NODE_DEBUG=roe-scripts nyc ava --timeout=10s --verbose",
     "lint": "eslint .",
@@ -17,7 +17,7 @@
   "files": [
     "bin/",
     "cli/",
-    "lib/",
+    "src/",
     "spawner/"
   ],
   "repository": {
