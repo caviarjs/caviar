@@ -4,7 +4,7 @@ const Command = require('common-bin')
 
 const {
   SandboxEnv
-} = require('../../lib/env')
+} = require('../../src/env')
 
 module.exports = class StartCommand extends Command {
   constructor (raw) {
