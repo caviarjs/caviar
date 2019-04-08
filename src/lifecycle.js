@@ -22,6 +22,14 @@ const wrap = (source, keys) => {
   return target
 }
 
+const createSandboxHooks = () => new Hooks({
+  sandboxEnvironment: new SyncHook(['sandbox']),
+})
+
+const createNonSandboxHooks = () => new Hooks({
+  environment: new AsyncParallelHook(['context'])
+})
+
 class Lifecycle extends EventEmitter {
   constructor ({
     plugins,
@@ -33,10 +41,9 @@ class Lifecycle extends EventEmitter {
     this._sandbox = sandbox
     this._configFile = configFile
     this._applyTarget = {
-      hooks: new Hooks({
-        sandboxEnvironment: new SyncHook(['sandbox']),
-        environment: new AsyncParallelHook(['context'])
-      })
+      hooks: sandbox
+        ? createSandboxHooks()
+        : createNonSandboxHooks()
     }
 
     this.environmentContext = wrap(this, [
