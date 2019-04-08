@@ -13,7 +13,7 @@ const {
 } = require('roe')
 
 const {code} = require('env-to-code')
-const {AppEnv} = require('../stage/env')
+const {AppEnv} = require('./env')
 const {error} = require('./error')
 const {getRawConfig} = require('./utils')
 const {Lifecycle} = require('./lifecycle')
@@ -160,6 +160,8 @@ class Server extends EE {
     }
 
     this._nextConfig = {
+      // TODO:
+      // loader system to inject default next config
       ...nextConfig(),
       webpack: (nextWebpackConfig, options) => {
         const config = webpackConfigFactory
@@ -215,7 +217,11 @@ class Server extends EE {
     const {
       plugins,
       ...config
-    } = serverConfig || {}
+    } = serverConfig
+      // TODO:
+      // loader system to inject default server config
+      ? serverConfig({})
+      : {}
 
     const app = this._serverApp = new Roe({
       // framework,

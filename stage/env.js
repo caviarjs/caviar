@@ -203,7 +203,7 @@ class SandboxEnv extends BaseEnv {
     }
 
     // Apply sandbox env plugins
-    lifecycle.hooks.sandboxEnviroment.call(sandbox)
+    lifecycle.hooks.sandboxEnvironment.call(sandbox)
 
     log('spawn: %s %j', command, args)
 
