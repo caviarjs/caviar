@@ -35,7 +35,7 @@ class Lifecycle extends EventEmitter {
     this._applyTarget = {
       hooks: new Hooks({
         sandboxEnvironment: new SyncHook(['sandbox']),
-        enviroment: new AsyncParallelHook(['context'])
+        environment: new AsyncParallelHook(['context'])
       })
     }
 
