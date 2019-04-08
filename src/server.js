@@ -13,8 +13,10 @@ const {
 } = require('roe')
 
 const {code} = require('env-to-code')
-const {AppEnv} = require('./env')
+const {AppEnv} = require('../stage/env')
 const {error} = require('./error')
+const {getRawConfig} = require('./utils')
+const {Lifecycle} = require('./lifecycle')
 
 const createDefinePlugin = (envKeys, wp) => {
   const {DefinePlugin} = wp
@@ -79,24 +81,41 @@ class Server extends EE {
 
     this._appPkg = null
     this._rawConfig = null
+    this._configFile = undefined
     this._clientEnvKeys = null
     this._nextConfig = null
     this._nextApp = null
     this._serverApp = null
     this._server = null
+    this._lifecycle = null
   }
 
   _getAppPkg () {
     this._appPkg = require(path.join(this._cwd, 'package.json'))
   }
 
-  // Raw configurations for
-  // - next
-  // - webpack
-  // - env
-  // - plugins (TODO)
   _getRawConfig () {
-    this._rawConfig = require(path.join(this._cwd, 'roe.config'))
+    ({
+      config: this._rawConfig,
+      configFile: this._configFile
+    } = getRawConfig(this._cwd))
+  }
+
+  _initLifecycle () {
+    const {
+      plugins = []
+    } = this._rawConfig
+
+    this._lifecycle = new Lifecycle({
+      plugins,
+      sandbox: false,
+      configFile: this._configFile
+    })
+    .on('config-reload', config => {
+      this._rawConfig = config
+    })
+
+    this._lifecycle.applyPlugins()
   }
 
   // Initialize env
@@ -115,9 +134,14 @@ class Server extends EE {
         ? [env]
         : [],
       cwd: this._cwd
-    })
+    }, this._rawConfig)
 
     this._clientEnvKeys = await appEnv.clientEnvKeys()
+
+    const lifecycle = this._lifecycle
+    await lifecycle.hooks.environment.promise(
+      lifecycle.environmentContext
+    )
   }
 
   // Create real configurations for each component
@@ -136,7 +160,7 @@ class Server extends EE {
     }
 
     this._nextConfig = {
-      ...nextConfig,
+      ...nextConfig(),
       webpack: (nextWebpackConfig, options) => {
         const config = webpackConfigFactory
           ? webpackConfigFactory(
@@ -289,6 +313,7 @@ class Server extends EE {
   async ready () {
     this._getAppPkg()
     this._getRawConfig()
+    this._initLifecycle()
     await this._initEnv()
     this._createNextConfig()
     await this._nextBuild()

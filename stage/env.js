@@ -15,7 +15,17 @@ const {
   waterfall
 } = require('promise.extra')
 
-const {error} = require('./error')
+const {error} = require('../src/error')
+const {Lifecycle} = require('../src/lifecycle')
+
+const exists = async file => {
+  try {
+    await fs.access(file, fs.constants.R_OK)
+    return true
+  } catch (_) {
+    return false
+  }
+}
 
 const readFile = async file => {
   try {
@@ -27,6 +37,11 @@ const readFile = async file => {
 }
 
 const readAndParse = async file => {
+  const existed = await exists(file)
+  if (!existed) {
+    return
+  }
+
   const content = await readFile(file)
   return parse(content)
 }
@@ -40,8 +55,9 @@ const GENERIC_ENV_FILENAME = '.env'
 // Used for spawner
 @setup
 class BaseEnv {
-  constructor (cwd) {
+  constructor (cwd, rawConfig) {
     this._cwd = cwd
+    this._rawConfig = rawConfig
     this._clientEnv = null
     this._genericEnv = null
   }
@@ -63,8 +79,14 @@ class BaseEnv {
   // Initialize `this._env` for sandbox
   async __init () {
     try {
-      this._clientEnv = await this._loadClientEnv()
-      this._genericEnv = await this._loadGenericEnv()
+      this._clientEnv = this._rawConfig.clientEnvs
+        || await this._loadClientEnv()
+        || {}
+
+      this._genericEnv = this._rawConfig.envs
+        || await this._loadGenericEnv()
+        || {}
+
       await this._init()
     } catch (err) {
       this[SET_ERROR](err)
@@ -81,16 +103,32 @@ const ESSENTIAL_ENV_KEYS = [
   // For userland debug module
   'DEBUG',
   // For global installed npm packages
-  'NODE_PATH'
+  'NODE_PATH',
+  // For `child_process.spawn`ers
+  'PATH'
 ]
 
+// Private env keys used by roe,
+// which should not be changed by env plugins
+const PRIVATE_ENV_KEYS = [
+  'ROE_CWD',
+  'ROE_DEV'
+]
+
+const createInheritEnv = host => key => {
+  if (PRIVATE_ENV_KEYS.includes(key)) {
+    throw error('PRESERVED_ENV_KEY', key)
+  }
+
+  const variable = process.env[key]
+  if (variable) {
+    host[key] = variable
+  }
+}
+
 const ensureEnv = host => {
-  ESSENTIAL_ENV_KEYS.forEach(key => {
-    const variable = process.env[key]
-    if (variable) {
-      host[key] = variable
-    }
-  })
+  const inheritEnv = createInheritEnv(host)
+  ESSENTIAL_ENV_KEYS.forEach(inheritEnv)
 }
 
 // Sanitize and inject new environment variables into
@@ -99,8 +137,8 @@ class SandboxEnv extends BaseEnv {
   constructor ({
     cwd,
     dev
-  }) {
-    super(cwd)
+  }, rawConfig) {
+    super(cwd, rawConfig)
 
     this._dev = dev
     this._env = {}
@@ -138,10 +176,8 @@ class SandboxEnv extends BaseEnv {
       options.stdio = 'inherit'
     }
 
-    const {PATH} = process.env
     options.env = {
       ...this._env,
-      PATH,
       ROE_CWD: this._cwd
     }
 
@@ -149,7 +185,25 @@ class SandboxEnv extends BaseEnv {
       options.env.ROE_DEV = true
     }
 
+    const {
+      plugins = []
+    } = this._rawConfig
+
     ensureEnv(options.env)
+
+    const lifecycle = new Lifecycle({
+      plugins,
+      sandbox: true
+    })
+
+    lifecycle.applyPlugins()
+
+    const sandbox = {
+      inheritEnv: createInheritEnv(options.env)
+    }
+
+    // Apply sandbox env plugins
+    lifecycle.hooks.sandboxEnviroment.call(sandbox)
 
     log('spawn: %s %j', command, args)
 
@@ -170,8 +224,8 @@ class AppEnv extends BaseEnv {
   constructor ({
     cwd,
     env = []
-  }) {
-    super(cwd)
+  }, rawConfig) {
+    super(cwd, rawConfig)
     this._envConverters = env
     this._env = process.env
 

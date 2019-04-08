@@ -5,6 +5,7 @@ const Command = require('common-bin')
 const {
   SandboxEnv
 } = require('../../src/env')
+const {getRawConfig} = require('../../src/utils')
 
 module.exports = class StartCommand extends Command {
   constructor (raw) {
@@ -40,10 +41,15 @@ module.exports = class StartCommand extends Command {
       cwd
     } = argv
 
+    const {
+      config
+    } = getRawConfig(cwd)
+
     const sandboxEnv = new SandboxEnv({
       cwd,
       dev
-    })
+    }, config)
+
     const spawner = path.join(__dirname, '..', '..', 'spawner', 'start.js')
     const command = 'node'
 
