@@ -30,10 +30,13 @@ const createNonSandboxHooks = () => new Hooks({
   // Intercept into the last phase of environment setting
   environment: new AsyncParallelHook(['context']),
   // Intercept into the last phase of webpack config generating
-  webpack: {
+  webpackConfig: {
     hook: new SyncHook(['webpackConfig', 'options']),
     plan: 2
-  }
+  },
+
+  roeConfig: new SyncHook(['roeConfig']),
+  nextConfig: new SyncHook(['nextConfig'])
 })
 
 class Lifecycle extends EventEmitter {
