@@ -180,6 +180,10 @@ class Server extends EE {
         )
         config.plugins.push(definePlugin)
 
+        this._lifecycle.hooks.webpack.call(config, {
+          isServer: options.isServer
+        })
+
         return config
       }
     }
