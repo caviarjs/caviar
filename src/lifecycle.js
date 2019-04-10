@@ -10,18 +10,6 @@ const {
 
 const {readConfig} = require('./utils')
 
-const wrap = (source, keys) => {
-  const target = Object.create(null)
-
-  keys.forEach(key => {
-    target[key] = () => {
-      source[key]()
-    }
-  })
-
-  return target
-}
-
 const createSandboxHooks = () => new Hooks({
   sandboxEnvironment: new SyncHook(['sandbox']),
 })
@@ -35,7 +23,7 @@ const createNonSandboxHooks = () => new Hooks({
     plan: 2
   },
 
-  roeConfig: new SyncHook(['roeConfig']),
+  serverConfig: new SyncHook(['roeConfig']),
   nextConfig: new SyncHook(['nextConfig'])
 })
 
@@ -49,17 +37,13 @@ class Lifecycle extends EventEmitter {
     this._plugins = plugins
     this._sandbox = sandbox
     this._configFile = configFile
+
+    // Prevent plugins from accessing Lifecycle methods
     this._applyTarget = {
       hooks: sandbox
         ? createSandboxHooks()
         : createNonSandboxHooks()
     }
-
-    this.environmentContext = wrap(this, [
-      'applyPlugins',
-      'clearPlugins',
-      'reloadConfig'
-    ])
   }
 
   get hooks () {

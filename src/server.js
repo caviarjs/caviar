@@ -139,9 +139,19 @@ class Server extends EE {
     this._clientEnvKeys = await appEnv.clientEnvKeys()
 
     const lifecycle = this._lifecycle
-    await lifecycle.hooks.environment.promise(
-      lifecycle.environmentContext
-    )
+    const {environment} = lifecycle.hooks
+
+    // No taps added to environment hook
+    if (!environment.isUsed()) {
+      return
+    }
+
+    lifecycle.clearPlugins()
+
+    await environment.promise()
+
+    lifecycle.reloadConfig()
+    lifecycle.applyPlugins()
   }
 
   // Create real configurations for each component
@@ -187,6 +197,8 @@ class Server extends EE {
         return config
       }
     }
+
+    this._lifecycle.hooks.nextConfig.call(this._nextConfig)
   }
 
   async _nextBuild () {
@@ -215,17 +227,21 @@ class Server extends EE {
 
     const baseDir = this._cwd
     const {
-      server: serverConfig
+      server: serverConfigFactory
     } = this._rawConfig
+
+    const serverConfig = serverConfigFactory
+      // TODO:
+      // loader system to inject default server config
+      ? serverConfigFactory({})
+      : {}
+
+    this._lifecycle.hooks.serverConfig.call(serverConfig)
 
     const {
       plugins,
       ...config
     } = serverConfig
-      // TODO:
-      // loader system to inject default server config
-      ? serverConfig({})
-      : {}
 
     const app = this._serverApp = new Roe({
       // framework,
