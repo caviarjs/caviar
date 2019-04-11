@@ -90,6 +90,11 @@ class Server extends EE {
     this._lifecycle = null
   }
 
+  // Users can specify their own App constructor
+  get App () {
+    return Roe
+  }
+
   _getAppPkg () {
     this._appPkg = require(path.join(this._cwd, 'package.json'))
   }
@@ -243,7 +248,7 @@ class Server extends EE {
       ...config
     } = serverConfig
 
-    const app = this._serverApp = new Roe({
+    const app = this._serverApp = new this.App({
       // framework,
       baseDir,
       plugins,

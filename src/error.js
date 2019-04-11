@@ -15,6 +15,8 @@ E('INVALID_ENV_CONVERTER', 'config.env must be a function, but got %s')
 E('CONFIG_NOT_FOUND', 'module "roe.config" not found in directory "%s"')
 E('CONFIG_ERRORED', 'fails to load config file "%s", reason: "%s"')
 
+E('INVALID_SERVER_PATH', 'options.serverPath must be a string, bug got %s')
+
 module.exports = {
   error
 }

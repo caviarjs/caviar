@@ -2,10 +2,7 @@ const path = require('path')
 const log = require('util').debuglog('roe-scripts:start')
 const Command = require('common-bin')
 
-const {
-  SandboxEnv
-} = require('../../src/env')
-const {getRawConfig} = require('../../src/utils')
+const Sandbox = require('../../src/sandbox')
 
 module.exports = class StartCommand extends Command {
   constructor (raw) {
@@ -41,29 +38,12 @@ module.exports = class StartCommand extends Command {
       cwd
     } = argv
 
-    const {
-      config
-    } = getRawConfig(cwd)
-
-    const sandboxEnv = new SandboxEnv({
-      cwd,
-      dev
-    }, config)
-
-    const spawner = path.join(__dirname, '..', '..', 'spawner', 'start.js')
-    const command = 'node'
-
-    const options = {
-      cwd,
+    await new Sandbox({
+      serverPath: require.resolve('../../src/server'),
       port,
-      dev
-    }
-
-    const node = await sandboxEnv.spawn(
-      command, [
-        spawner,
-        JSON.stringify(options)
-      ]
-    )
+      dev,
+      cwd
+    })
+    .start()
   }
 }
