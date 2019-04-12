@@ -13,4 +13,11 @@ const {
 log('spawner env: %s', JSON.stringify(process.env, null, 2))
 
 const Server = require(serverClassPath)
-new Server(options).start()
+
+new Server(options).ready()
+.then(server => {
+  server.listen()
+})
+.catch(err => {
+  log('fails to start, reason: %s', err.stack)
+})

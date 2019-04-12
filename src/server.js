@@ -365,6 +365,7 @@ class Server extends EE {
     this._applyNextHandler()
 
     this._ready = true
+    return this
   }
 
   listen (port) {
