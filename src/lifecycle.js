@@ -8,7 +8,7 @@ const {
   CLEAN
 } = require('progress-hooks')
 
-const {readConfig} = require('./utils')
+// const {readConfig} = require('./utils')
 
 const createSandboxHooks = () => new Hooks({
   sandboxEnvironment: new SyncHook(['sandbox']),

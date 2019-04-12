@@ -1,4 +1,4 @@
-const Server = require('./server')
+const {Server} = require('./server')
 const Sandbox = require('./sandbox')
 const ConfigLoader = require('./config-loader')
 

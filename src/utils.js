@@ -1,8 +1,38 @@
 const path = require('path')
+const fs = require('fs')
+const log = require('util').debuglog('caviar:lib')
+const {parse} = require('dotenv')
 
-const {
-  error
-} = require('./error')
+const {error} = require('./error')
+
+const exists = file => {
+  try {
+    fs.access(file, fs.constants.R_OK)
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+const readFile = file => {
+  try {
+    const content = fs.readFileSync(file)
+    return content.toString()
+  } catch (err) {
+    // do nothing
+  }
+}
+
+const readAndParseEnv = (cwd, filename) => {
+  const file = path.join(cwd, filename)
+  const existed = exists(file)
+  if (!existed) {
+    return
+  }
+
+  const content = readFile(file)
+  return parse(content)
+}
 
 const readConfig = configFile => {
   try {
@@ -12,27 +42,39 @@ const readConfig = configFile => {
   }
 }
 
+const CLIENT_ENV_FILENAME = 'client.env'
+const GENERIC_ENV_FILENAME = '.env'
+
 // Raw configurations for
 // - next
 // - webpack
 // - env
 // - plugins
-const getRawConfig = cwd => {
+const getRawConfig = (cwd, configFileName) => {
   let configFile
 
   try {
-    configFile = require.resolve(path.join(cwd, 'caviar.config'))
+    configFile = require.resolve(path.join(cwd, configFileName))
   } catch (err) {
-    throw error('CONFIG_NOT_FOUND', cwd)
+    log('config file "%s" not found', configFile)
+    return
   }
 
+  const config = readConfig(configFile)
+
+  config.envs = config.envs
+    || readAndParseEnv(cwd, GENERIC_ENV_FILENAME)
+
+  config.clientEnvs = config.clientEnvs
+    || readAndParseEnv(cwd, CLIENT_ENV_FILENAME)
+
   return {
-    config: readConfig(configFile),
+    config,
     configFile
   }
 }
 
 module.exports = {
-  getRawConfig,
-  readConfig
+  hasOwnProperty,
+  getRawConfig
 }

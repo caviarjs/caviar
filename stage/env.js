@@ -1,10 +1,6 @@
 const path = require('path')
 const log = require('util').debuglog('caviar:lib')
 const {
-  parse
-} = require('dotenv')
-const fs = require('mz/fs')
-const {
   setup,
   awaitReady,
   SET_READY,
@@ -17,37 +13,6 @@ const {
 
 const {error} = require('../src/error')
 const {Lifecycle} = require('../src/lifecycle')
-
-const exists = async file => {
-  try {
-    await fs.access(file, fs.constants.R_OK)
-    return true
-  } catch (_) {
-    return false
-  }
-}
-
-const readFile = async file => {
-  try {
-    const content = await fs.readFile(file)
-    return content.toString()
-  } catch (err) {
-    // do nothing
-  }
-}
-
-const readAndParse = async file => {
-  const existed = await exists(file)
-  if (!existed) {
-    return
-  }
-
-  const content = await readFile(file)
-  return parse(content)
-}
-
-const CLIENT_ENV_FILENAME = 'client.env'
-const GENERIC_ENV_FILENAME = '.env'
 
 // Ref
 // https://github.com/tc39/proposal-decorators/blob/7fa580b40f2c19c561511ea2c978e307ae689a1b/METAPROGRAMMING.md

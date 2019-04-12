@@ -12,12 +12,20 @@ E('NOT_IMPLEMENT', 'method "%s" must be implemented')
 
 E('INVALID_ENV_CONVERTER', 'config.env must be a function, but got %s')
 
-E('CONFIG_NOT_FOUND', 'module "roe.config" not found in directory "%s"')
+// E('CONFIG_NOT_FOUND', 'module "roe.config" not found in directory "%s"')
 E('CONFIG_ERRORED', 'fails to load config file "%s", reason: "%s"')
 
 E('INVALID_SERVER_PATH', 'options.serverPath must be a string, bug got %s')
 
 E('SERVER_NOT_READY', 'server.listen() called before the server is ready')
+
+E('PATH_GETTER_REQUIRED', 'getter "path" is required on Server.prototype')
+
+E('SERVER_PATH_NOT_EXISTS', 'server path "%s" not exists')
+
+E('INVALID_SERVER_PATH', 'server.path must be a string, but got %s')
+
+E('INVALID_CONFIG_NAME', 'server.configFileName must be a string, but got %s')
 
 module.exports = {
   error

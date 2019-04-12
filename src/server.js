@@ -1,7 +1,7 @@
 const path = require('path')
 const {parse} = require('url')
 const EE = require('events')
-const log = require('util').debuglog('caviar:lib')
+const log = require('util').debuglog('caviar')
 
 const {isString} = require('core-util-is')
 const e2k = require('express-to-koa')
@@ -14,7 +14,7 @@ const {code} = require('env-to-code')
 const ConfigLoader = require('./config-loader')
 const {AppEnv} = require('./env')
 const {error} = require('./error')
-const {getRawConfig} = require('./utils')
+// const {getRawConfig} = require('./utils')
 const {Lifecycle} = require('./lifecycle')
 
 const createDefinePlugin = (envKeys, wp) => {
@@ -66,6 +66,8 @@ const createNextMiddleware = nextApp => {
   return e2k(middleware)
 }
 
+const CONFIG_FILE_NAME = 'caviar.config'
+
 class Server extends EE {
   constructor ({
     cwd,
@@ -78,16 +80,20 @@ class Server extends EE {
     this._port = port
     this._dev = dev
 
+    this._ready = false
+
+    // this._rawConfig = null
+    // this._configFile = undefined
+
     this._appPkg = null
-    this._rawConfig = null
-    this._configFile = undefined
+    this._lifecycle = null
+    this._configLoader = null
+
     this._clientEnvKeys = null
     this._nextConfig = null
     this._nextApp = null
     this._serverApp = null
     this._server = null
-    this._lifecycle = null
-    this._ready = false
   }
 
   // Getters to override
@@ -104,17 +110,28 @@ class Server extends EE {
   get path () {
     return __dirname
   }
+
+  get configFileName () {
+    return CONFIG_FILE_NAME
+  }
   /////////////////////////////////////////////////////////////////////
 
   _getAppPkg () {
     this._appPkg = require(path.join(this._cwd, 'package.json'))
   }
 
-  _getRawConfig () {
-    ({
-      config: this._rawConfig,
-      configFile: this._configFile
-    } = getRawConfig(this._cwd))
+  // _getRawConfig () {
+  //   ({
+  //     config: this._rawConfig,
+  //     configFile: this._configFile
+  //   } = getRawConfig(this._cwd))
+  // }
+
+  _initConfigLoader () {
+    this._configLoader = new this.ConfigLoader({
+      server: this,
+      cwd: this._cwd
+    })
   }
 
   _initLifecycle () {
@@ -159,6 +176,8 @@ class Server extends EE {
 
     // No taps added to environment hook
     if (!environment.isUsed()) {
+      // We also need to call the hook to enable the next hook
+      await environment.promise()
       return
     }
 
@@ -354,7 +373,8 @@ class Server extends EE {
 
   async ready () {
     this._getAppPkg()
-    this._getRawConfig()
+    // this._getRawConfig()
+    this._initConfigLoader()
     this._initLifecycle()
     await this._initEnv()
     this._createNextConfig()
@@ -387,4 +407,6 @@ class Server extends EE {
   }
 }
 
-module.exports = Server
+module.exports = {
+  Server
+}
