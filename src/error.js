@@ -17,6 +17,8 @@ E('CONFIG_ERRORED', 'fails to load config file "%s", reason: "%s"')
 
 E('INVALID_SERVER_PATH', 'options.serverPath must be a string, bug got %s')
 
+E('SERVER_NOT_READY', 'server.listen() called before the server is ready')
+
 module.exports = {
   error
 }

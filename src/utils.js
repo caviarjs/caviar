@@ -21,7 +21,7 @@ const getRawConfig = cwd => {
   let configFile
 
   try {
-    configFile = require.resolve(path.join(cwd, 'roe.config'))
+    configFile = require.resolve(path.join(cwd, 'caviar.config'))
   } catch (err) {
     throw error('CONFIG_NOT_FOUND', cwd)
   }

@@ -87,6 +87,7 @@ class Server extends EE {
     this._serverApp = null
     this._server = null
     this._lifecycle = null
+    this._ready = false
   }
 
   // Getters to override
@@ -362,9 +363,15 @@ class Server extends EE {
     await this._createServerApp()
     this._createServer()
     this._applyNextHandler()
+
+    this._ready = true
   }
 
   listen (port) {
+    if (!this._ready) {
+      throw error('SERVER_NOT_READY')
+    }
+
     port = port || this._port
 
     this._server.listen(port, () => {
@@ -376,17 +383,6 @@ class Server extends EE {
 
   close () {
     this._server.close()
-  }
-
-  async start () {
-    try {
-      await this.ready()
-    } catch (err) {
-      log('fails to start, reason: %s', err.stack)
-      process.exit(1)
-    }
-
-    this.listen()
   }
 }
 

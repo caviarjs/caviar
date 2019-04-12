@@ -41,11 +41,10 @@ project/
 |-- ...
 ```
 
-****
+## Thinking in `caviar`
 
-> The sections below is mainly for Developers
 
-## Extend `caviar` for your own business
+## Usage
 
 ```js
 const {
@@ -54,13 +53,56 @@ const {
 } = require('caviar')
 ```
 
-### class Sandbox
+### new Sandbox(options)
 
-### class Server
+- **options** `Object`
+  - **cwd** `path` the current working directory
+  - **port?** `number` server port
+  - **dev?** `boolean=false` whether is for development purpose
+  - **serverClassPath?** `path` the file path of the `Server` class. Defaults to the `Server` class path of the `caviar` project.
+
+Creates a new sandbox. Sandbox is design to filter the environment variable.
+
+#### await sandbox.start()
+
+Start the sandbox, and it will create a new `Server` by passing `{cwd, port, dev}` as options.
+
+### new Server(options)
+
+- **options** `Object`
+  - **cwd**
+  - **port?** `Number` `options.port` will override `config.port` of `caviar.config.js`
+  - **dev?**
+
+Create a new `Server`
+
+```js
+const server = new Server({
+  cwd,
+  dev: true
+})
+
+await server.ready()
+server.listen(8888)
+```
+
+#### await server.ready()
+
+Initialize the server
+
+#### server.listen(port?)
+
+- **port?** `number` server port. If `port` is specified, it will override `options.port`.
+
+This method must **NOT** be called after the server is ready (`await server.ready()`)
+
+****
+
+> The sections below is for development purpose
+
+## Extend `caviar` for your own business
 
 ## How to write caviar plugins
-
-
 
 ## License
 
