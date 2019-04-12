@@ -15,19 +15,44 @@
 
 # caviar
 
-<!-- description -->
+The web framework which integrates React, Next and Koa
 
-## Install
+## Getting Started
 
 ```sh
-$ npm i caviar
+mkdir hello && cd hello
+yo generator-caviar
+npm run dev
 ```
 
-## Usage
+Yeah, we have our first application
+
+### File Structure
+
+```
+project/
+|-- app
+|-- pages
+|-- caviar.config
+|   |-- .env
+|   |-- client.env
+|   |-- index.js
+|-- package.json
+|-- ...
+```
+
+## For Developers
 
 ```js
-import roe_scripts from 'caviar'
+const {
+  Server,
+  Sandbox
+} = require('caviar')
 ```
+
+### Server
+
+### Sandbox
 
 ## License
 
