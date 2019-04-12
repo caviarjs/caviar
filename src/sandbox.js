@@ -11,6 +11,10 @@ const {getRawConfig} = require('./utils')
 
 module.exports = class Sandbox {
   constructor (options = {}) {
+    if (!('serverPath' in options)) {
+      options.serverPath = path.join(__dirname, 'server.js')
+    }
+
     if (!isString(options.serverPath)) {
       throw error('INVALID_SERVER_PATH', options.serverPath)
     }

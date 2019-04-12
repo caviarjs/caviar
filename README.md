@@ -15,7 +15,7 @@
 
 # caviar
 
-The web framework which integrates React, Next and Koa
+An extendable web framework which integrates React, Next and Koa.
 
 ## Getting Started
 
@@ -41,18 +41,26 @@ project/
 |-- ...
 ```
 
-## For Developers
+****
+
+> The sections below is mainly for Developers
+
+## Extend `caviar` for your own business
 
 ```js
 const {
-  Server,
   Sandbox
+  Server,
 } = require('caviar')
 ```
 
-### Server
+### class Sandbox
 
-### Sandbox
+### class Server
+
+## How to write caviar plugins
+
+
 
 ## License
 
