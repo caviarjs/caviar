@@ -15,7 +15,7 @@
 
 # caviar
 
-An extendable web framework which integrates React, Next and Koa.
+A pluggable and extendable web framework which integrates React, Next and Koa to create your own web application out of the box with even zero configuration.
 
 ## Getting Started
 
@@ -48,8 +48,8 @@ project/
 
 ```js
 const {
-  Sandbox
-  Server,
+  Sandbox,
+  Server
 } = require('caviar')
 ```
 
@@ -102,8 +102,12 @@ This method must **NOT** be called after the server is ready (`await server.read
 
 ## Extend `caviar` for your own business
 
+
+
 ## How to write caviar plugins
+
+
 
 ## License
 
-MIT
+[MIT](LICENSE)
