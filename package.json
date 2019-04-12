@@ -1,15 +1,12 @@
 {
-  "name": "roe-scripts",
+  "name": "caviar",
   "version": "1.3.0",
-  "description": "Command line tools for roe",
+  "description": "The web framework which integrates React, Next and Koa",
   "main": "src/index.js",
-  "bin": {
-    "roe": "bin/roe.js"
-  },
   "scripts": {
     "build:node": "babel stage --out-dir src",
     "test": "nyc ava --timeout=10s",
-    "test-no-report": "NODE_DEBUG=roe-scripts nyc ava --timeout=10s --verbose",
+    "test-no-report": "NODE_DEBUG=caviar nyc ava --timeout=10s --verbose",
     "lint": "eslint .",
     "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "prepublishOnly": "npm run build:node"
@@ -22,10 +19,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/kaelzhang/roe-scripts.git"
+    "url": "git://github.com/kaelzhang/caviar.git"
   },
   "keywords": [
-    "roe-scripts",
+    "caviar",
     "roe cli",
     "next",
     "webpack"
@@ -41,7 +38,7 @@
   "author": "kaelzhang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kaelzhang/roe-scripts/issues"
+    "url": "https://github.com/kaelzhang/caviar/issues"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.3",

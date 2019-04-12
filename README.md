@@ -1,32 +1,32 @@
-[![Build Status](https://travis-ci.org/kaelzhang/roe-scripts.svg?branch=master)](https://travis-ci.org/kaelzhang/roe-scripts)
-[![Coverage](https://codecov.io/gh/kaelzhang/roe-scripts/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/roe-scripts)
+[![Build Status](https://travis-ci.org/kaelzhang/caviar.svg?branch=master)](https://travis-ci.org/kaelzhang/caviar)
+[![Coverage](https://codecov.io/gh/kaelzhang/caviar/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/caviar)
 <!-- optional appveyor tst
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/kaelzhang/roe-scripts?branch=master&svg=true)](https://ci.appveyor.com/project/kaelzhang/roe-scripts)
+[![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/kaelzhang/caviar?branch=master&svg=true)](https://ci.appveyor.com/project/kaelzhang/caviar)
 -->
 <!-- optional npm version
-[![NPM version](https://badge.fury.io/js/roe-scripts.svg)](http://badge.fury.io/js/roe-scripts)
+[![NPM version](https://badge.fury.io/js/caviar.svg)](http://badge.fury.io/js/caviar)
 -->
 <!-- optional npm downloads
-[![npm module downloads per month](http://img.shields.io/npm/dm/roe-scripts.svg)](https://www.npmjs.org/package/roe-scripts)
+[![npm module downloads per month](http://img.shields.io/npm/dm/caviar.svg)](https://www.npmjs.org/package/caviar)
 -->
 <!-- optional dependency status
-[![Dependency Status](https://david-dm.org/kaelzhang/roe-scripts.svg)](https://david-dm.org/kaelzhang/roe-scripts)
+[![Dependency Status](https://david-dm.org/kaelzhang/caviar.svg)](https://david-dm.org/kaelzhang/caviar)
 -->
 
-# roe-scripts
+# caviar
 
 <!-- description -->
 
 ## Install
 
 ```sh
-$ npm i roe-scripts
+$ npm i caviar
 ```
 
 ## Usage
 
 ```js
-import roe_scripts from 'roe-scripts'
+import roe_scripts from 'caviar'
 ```
 
 ## License

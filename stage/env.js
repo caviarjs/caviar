@@ -1,5 +1,5 @@
 const path = require('path')
-const log = require('util').debuglog('roe-scripts:lib')
+const log = require('util').debuglog('caviar:lib')
 const {
   parse
 } = require('dotenv')

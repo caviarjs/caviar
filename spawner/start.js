@@ -1,10 +1,10 @@
 // This JavaScript file should be spawned with
 // `node /path/to/spawner/start.js ${optionsJSON}`
-const log = require('util').debuglog('roe-scripts:spawner')
+const log = require('util').debuglog('caviar:spawner')
 
 const {
   // Pass `serverPath` as an option,
-  // so that user can extends `require('roe-scripts').Server`,
+  // so that user can extends `require('caviar').Server`,
   // and use spawner to start ther own server
   serverPath,
   ...options

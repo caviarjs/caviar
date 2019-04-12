@@ -1,5 +1,5 @@
 const path = require('path')
-const log = require('util').debuglog('roe-scripts:start')
+const log = require('util').debuglog('caviar:start')
 const Command = require('common-bin')
 
 const Sandbox = require('../../src/sandbox')

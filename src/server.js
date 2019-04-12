@@ -1,18 +1,17 @@
 const path = require('path')
 const {parse} = require('url')
 const EE = require('events')
-const log = require('util').debuglog('roe-scripts:lib')
+const log = require('util').debuglog('caviar:lib')
 
 const {isString} = require('core-util-is')
 const e2k = require('express-to-koa')
 const {serve} = require('egg-serve-static')
 const next = require('next')
 const roeScriptsWebpack = require('webpack')
-const {
-  Roe
-} = require('roe')
-
+const {Roe} = require('roe')
 const {code} = require('env-to-code')
+
+const ConfigLoader = require('./config-loader')
 const {AppEnv} = require('./env')
 const {error} = require('./error')
 const {getRawConfig} = require('./utils')
@@ -90,10 +89,21 @@ class Server extends EE {
     this._lifecycle = null
   }
 
-  // Users can specify their own App constructor
+  // Getters to override
+  // Users can override the getter to specify their own App constructor
+  /////////////////////////////////////////////////////////////////////
   get App () {
     return Roe
   }
+
+  get ConfigLoader () {
+    return ConfigLoader
+  }
+
+  get path () {
+    return __dirname
+  }
+  /////////////////////////////////////////////////////////////////////
 
   _getAppPkg () {
     this._appPkg = require(path.join(this._cwd, 'package.json'))
@@ -183,7 +193,7 @@ class Server extends EE {
           ? webpackConfigFactory(
             nextWebpackConfig,
             options,
-            // Populate the webpack which roe-scripts uses,
+            // Populate the webpack which caviar uses,
             webpackModule
           )
           // Use default next webpack config

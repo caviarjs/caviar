@@ -1,5 +1,5 @@
 const test = require('ava')
-// const log = require('util').debuglog('roe-scripts')
+// const log = require('util').debuglog('caviar')
 // const roe_scripts = require('../src')
 
 test('description', t => {
