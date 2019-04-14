@@ -111,3 +111,7 @@ This method must **NOT** be called after the server is ready (`await server.read
 ## License
 
 [MIT](LICENSE)
+
+****
+
+<p align="right">Thanks <a href="https://github.com/reallinfo">@reallinfo</a> for the great logo<p>
