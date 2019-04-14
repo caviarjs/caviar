@@ -27,6 +27,12 @@ E('INVALID_SERVER_PATH', 'server.path must be a string, but got %s')
 
 E('INVALID_CONFIG_NAME', 'server.configFileName must be a string, but got %s')
 
+E('INVALID_CONFIG_NEXT', 'caviar.config.next must be a function, but got %s')
+
+E('NEXT_CONFIG_NOT_FOUND', 'next configuration not found, or please check the return value')
+
+E('INVALID_CONFIG_SERVER', 'caviar.config.server in "%s" must be a function, but got %s')
+
 module.exports = {
   error
 }
