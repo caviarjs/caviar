@@ -1,3 +1,5 @@
+<p align="left"><img src="logo/horizontal.png" alt="caviar" height="120px"></p>
+
 [![Build Status](https://travis-ci.org/kaelzhang/caviar.svg?branch=master)](https://travis-ci.org/kaelzhang/caviar)
 [![Coverage](https://codecov.io/gh/kaelzhang/caviar/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/caviar)
 <!-- optional appveyor tst
