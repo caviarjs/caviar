@@ -1,4 +1,4 @@
-<p align="left"><img src="logo/horizontal.png" alt="caviar" height="120px"></p>
+# ![caviar](logo/readme.png)
 
 [![Build Status](https://travis-ci.org/kaelzhang/caviar.svg?branch=master)](https://travis-ci.org/kaelzhang/caviar)
 [![Coverage](https://codecov.io/gh/kaelzhang/caviar/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/caviar)
@@ -14,8 +14,6 @@
 <!-- optional dependency status
 [![Dependency Status](https://david-dm.org/kaelzhang/caviar.svg)](https://david-dm.org/kaelzhang/caviar)
 -->
-
-# caviar
 
 A pluggable and extendable web framework which integrates React, Next and Koa to create your own web application out of the box with even zero configuration.
 
