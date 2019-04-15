@@ -10,7 +10,7 @@ const createFinder = realpath => ({path: p}) => realpath === p
 
 const checkResult = (result, field, configFile) => {
   if (!isObject(result)) {
-    throw error('INVALID_CONFIG_FUNC_RESULT', field, configFile)
+    throw error('INVALID_RETURN_VALUE', field, configFile)
   }
 
   return result
@@ -107,6 +107,8 @@ const reduceEnvConfigs = createConfigChainReducer({
   runner: (factory, prev) => factory(prev)
 })
 
+const CONFIG_FILE_NAME = 'caviar.config'
+
 module.exports = class ConfigLoader {
   constructor ({
     server,
@@ -117,6 +119,17 @@ module.exports = class ConfigLoader {
     this._paths = null
     this._chain = []
   }
+
+  // Fields for implementors to override
+  ///////////////////////////////////////////////////////////
+  get path () {
+    return __dirname
+  }
+
+  get configFileName () {
+    return CONFIG_FILE_NAME
+  }
+  ///////////////////////////////////////////////////////////
 
   load () {
     this.getPaths().forEach(({
@@ -181,19 +194,14 @@ module.exports = class ConfigLoader {
   }
   //////////////////////////////////////////////////////
 
-  get Server () {
-    return require('./server')
-  }
-
   getPaths () {
     if (this._paths) {
       return this._paths
     }
 
-    const {Server} = this
     const paths = []
 
-    let proto = this._server
+    let proto = this
 
     // Loop back for the prototype chain
     while (proto) {
@@ -225,7 +233,7 @@ module.exports = class ConfigLoader {
       }
 
       if (!isString(configFileName)) {
-        throw error('INVALID_CONFIG_NAME', configFileName)
+        throw error('INVALID_CONFIG_FILE_NAME', configFileName)
       }
 
       if (paths.length === 0) {
@@ -245,7 +253,7 @@ module.exports = class ConfigLoader {
       }
 
       // stop the loop if we reached Server
-      if (proto === Server.prototype) {
+      if (proto === ConfigLoader.prototype) {
         break
       }
     }

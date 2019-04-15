@@ -1,6 +1,6 @@
 const path = require('path')
 const fs = require('fs')
-const log = require('util').debuglog('caviar:lib')
+const log = require('util').debuglog('caviar')
 const {parse} = require('dotenv')
 
 const {error} = require('./error')

@@ -11,10 +11,7 @@ const roeScriptsWebpack = require('webpack')
 const {Roe} = require('roe')
 const {code} = require('env-to-code')
 
-const ConfigLoader = require('./config-loader')
-const {AppEnv} = require('./env')
 const {error} = require('./error')
-// const {getRawConfig} = require('./utils')
 const {Lifecycle} = require('./lifecycle')
 
 const createDefinePlugin = (envKeys, wp) => {
@@ -66,8 +63,6 @@ const createNextMiddleware = nextApp => {
   return e2k(middleware)
 }
 
-const CONFIG_FILE_NAME = 'caviar.config'
-
 class Server extends EE {
   constructor ({
     cwd,
@@ -101,18 +96,6 @@ class Server extends EE {
   /////////////////////////////////////////////////////////////////////
   get App () {
     return Roe
-  }
-
-  get ConfigLoader () {
-    return ConfigLoader
-  }
-
-  get path () {
-    return __dirname
-  }
-
-  get configFileName () {
-    return CONFIG_FILE_NAME
   }
   /////////////////////////////////////////////////////////////////////
 

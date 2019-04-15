@@ -1,6 +1,5 @@
 # babel dist
 /lib
-/src/env.js
 
 # Numerous always-ignore extensions
 *.bak
