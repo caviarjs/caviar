@@ -47,10 +47,11 @@ const ERROR_CASES = [
   ['error-no-path', 'PATH_GETTER_REQUIRED'],
   ['error-number-path', 'INVALID_SERVER_PATH'],
   ['error-path-not-exists', 'SERVER_PATH_NOT_EXISTS'],
-  ['error-config-name', 'INVALID_CONFIG_FILE_NAME']
+  ['error-config-name', 'INVALID_CONFIG_FILE_NAME'],
+  ['error-return-value', 'INVALID_RETURN_VALUE', cl => cl.server({})]
 ]
 
-ERROR_CASES.forEach(([dir, suffix]) => {
+ERROR_CASES.forEach(([dir, suffix, runner]) => {
   test(`error: ${dir}`, t => {
     const ConfigLoader = require(fixture(dir, 'config-loader.js'))
 
@@ -60,7 +61,14 @@ ERROR_CASES.forEach(([dir, suffix]) => {
 
     const code = `CONFIG_LOADER_${suffix}`
 
-    t.throws(() => cl.getPaths(), {
+    t.throws(() => {
+      cl.getPaths()
+
+      if (runner) {
+        cl.load()
+        runner(cl)
+      }
+    }, {
       code
     })
   })

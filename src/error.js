@@ -22,9 +22,9 @@ class Prefixer {
   }
 }
 
-const prefix = (...args) => new Prefixer(...args)
+const PREFIX = (...args) => new Prefixer(...args)
 
-prefix('SANDBOX', 'sandbox', TypeError)
+PREFIX('SANDBOX', 'sandbox', TypeError)
 .E('SANDBOX_INVALID_OPTIONS',
   'options must be an object, but got `%s`')
 
@@ -38,9 +38,9 @@ prefix('SANDBOX', 'sandbox', TypeError)
   'options.cwd must be a string, but got `%s`')
 
 .E('PRESERVED_ENV_KEY',
-  'env key "%s" is preserved by caviar')
+  'env key "%s" is preserved by caviar', RangeError)
 
-prefix('CONFIG_LOADER', 'config-loader')
+PREFIX('CONFIG_LOADER', 'config-loader')
 .E('PATH_GETTER_REQUIRED',
   'getter "path" is required on ConfigLoader.prototype')
 
@@ -61,14 +61,15 @@ prefix('CONFIG_LOADER', 'config-loader')
 
 .E('NEXT_CONFIG_NOT_FOUND', 'no caviar.config.next is found')
 
-.E('ENV_CONFLICTS', 'env key "%s" conflicts in envs and client envs')
+.E('ENV_CONFLICTS',
+  'env key "%s" conflicts in envs and client envs', RangeError)
 
 .E('UNEXPECTED_NEXT_WEBPACK',
   '"webpack" is not allowed in caviar.config.next, use caviar.config.webpack instead')
 
 .E('CONFIG_ERRORED', 'fails to load config file "%s", reason: "%s"')
 
-prefix('SERVER', 'server')
+PREFIX('SERVER', 'server')
 .E('NOT_READY', 'server.listen() called before the server is ready')
 
 const createError = pre =>
