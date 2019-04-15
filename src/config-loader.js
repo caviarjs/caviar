@@ -1,5 +1,5 @@
 const fs = require('fs')
-const {isString, isFunction} = require('core-util-is')
+const {isString, isFunction, isObject} = require('core-util-is')
 const hasOwnProperty = require('has-own-prop')
 const {extend, withPlugins} = require('next-compose-plugins')
 
@@ -8,39 +8,104 @@ const {getRawConfig} = require('./utils')
 
 const createFinder = realpath => ({path: p}) => realpath === p
 
+const checkResult = (result, field, configFile) => {
+  if (!isObject(result)) {
+    throw error('INVALID_CONFIG_FUNC_RESULT', field, configFile)
+  }
+
+  return result
+}
+
 const createNextWithPlugins = config =>
   (...args) => config
     ? extend(config).withPlugins(...args)
     : withPlugins(...args)
+const reduceNextConfigs = chain => chain.reduce((prev, {
+  config: {
+    next
+  },
+  configFile
+}) => {
+  if (!next) {
+    return prev
+  }
 
-// Usage
-// ```js
-// module.exports = (config, appInfo) => config
-// ```
-const reduceServerConfigs = chain => appInfo => {
+  const key = 'next'
+
+  if (!isFunction(next)) {
+    throw error('INVALID_CONFIG_FIELD', key, configFile, next)
+  }
+
+  const result = createNextWithPlugins(prev)
+
+  // Usage
+  // ```js
+  // module.exports = withPlugins => withPlugins([...plugins], newConfig)
+  // ```
+  // withPlugins <- createNextWithPlugins(prev)
+  return next(checkResult(result, key, configFile))
+})
+
+const createConfigChainReducer = ({
+  key,
+  initConfig,
+  runner
+}) => chain => (...args) => {
   const {length} = chain
-  const run = (serverConfig, i) => {
+  const run = (prevConfig, i) => {
     if (i === length) {
-      return serverConfig
+      return prevConfig
     }
 
     const {
       config,
       configFile
     } = chain[i]
-    if (!('server' in config)) {
-      return run(serverConfig, i + 1)
+
+    if (!(key in config)) {
+      return run(prevConfig, i + 1)
     }
 
-    if (!isFunction(config.server)) {
-      throw error('INVALID_CONFIG_SERVER', configFile, config.server)
+    const factory = config[key]
+
+    if (!isFunction(factory)) {
+      throw error(`INVALID_CONFIG_FIELD`, key, configFile, factory)
     }
 
-    return run(config.server(serverConfig, appInfo), i + 1)
+    const result = runner(factory, prevConfig, ...args)
+
+    return run(checkResult(result, key, configFile), i + 1)
   }
 
-  return run({}, 0)
+  return run(initConfig(...args), 0)
 }
+
+// Usage
+// ```js
+// module.exports = (config, appInfo) => config
+// ```
+const reduceServerConfigs = createConfigChainReducer({
+  key: 'server',
+  initConfig () {
+    return {}
+  },
+  runner: (factory, prev, appInfo) => factory(prev, appInfo)
+})
+
+const reduceWebpackConfigs = createConfigChainReducer({
+  key: 'webpack',
+  initConfig: nextWebpackConfig => nextWebpackConfig,
+  runner: (factory, prev, _, options, webpack) =>
+    factory(prev, options, webpack)
+})
+
+const reduceEnvConfigs = createConfigChainReducer({
+  key: 'env',
+  initConfig (env) {
+    return env
+  },
+  runner: (factory, prev) => factory(prev)
+})
 
 module.exports = class ConfigLoader {
   constructor ({
@@ -66,6 +131,11 @@ module.exports = class ConfigLoader {
   }
 
   reload () {
+    this._chain.forEach(({configFileName}) => {
+      // delete the require caches, so that the files will be required again
+      delete require.cache[configFileName]
+    })
+
     this._chain.length = 0
     this.load()
   }
@@ -73,30 +143,16 @@ module.exports = class ConfigLoader {
   // We deferred the process of merging configurations
   //////////////////////////////////////////////////////
   get plugins () {
-    return this._chain.reduce((plugins, {config}) => {
-      return config.plugins
+    return this._chain.reduce(
+      (plugins, {config}) => config.plugins
         ? plugins.concat(config.plugins)
-        : plugins
-    }, [])
+        : plugins,
+      []
+    )
   }
 
   get next () {
-    const nextConfig = this._chain.reduce((prev, {next}) => {
-      if (!next) {
-        return prev
-      }
-
-      if (!isFunction(next)) {
-        throw error('INVALID_CONFIG_NEXT', next)
-      }
-
-      // Usage
-      // ```js
-      // module.exports = withPlugins => withPlugins([...plugins], newConfig)
-      // ```
-      // withPlugins <- createNextWithPlugins(prev)
-      return next(createNextWithPlugins(prev))
-    })
+    const nextConfig = reduceNextConfigs(this._chain)
 
     if (!nextConfig) {
       throw error('NEXT_CONFIG_NOT_FOUND')
@@ -109,17 +165,19 @@ module.exports = class ConfigLoader {
   }
 
 
+  // Returns `Function(appInfo): Object`
   get server () {
     return reduceServerConfigs(this._chain)
   }
 
-  // Returns `Function`
+  // Returns `Function(nextWebpackConfig, options, webpack): Object`
   get webpack () {
-
+    return reduceWebpackConfigs(this._chain)
   }
 
+  // Returns `Function(env): Object`
   get env () {
-
+    return reduceEnvConfigs(this._chain)
   }
   //////////////////////////////////////////////////////
 

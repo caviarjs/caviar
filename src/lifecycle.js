@@ -31,12 +31,12 @@ class Lifecycle extends EventEmitter {
   constructor ({
     plugins,
     sandbox = false,
-    configFile
+    configLoader
   }) {
     super()
     this._plugins = plugins
     this._sandbox = sandbox
-    this._configFile = configFile
+    this._configLoader = configLoader
 
     // Prevent plugins from accessing Lifecycle methods
     this._applyTarget = {

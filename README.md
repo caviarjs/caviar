@@ -102,7 +102,7 @@ This method must **NOT** be called after the server is ready (`await server.read
 
 ## Extend `caviar` for your own business
 
-
+### Config chain
 
 ## How to write caviar plugins
 

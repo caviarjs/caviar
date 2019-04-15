@@ -3,9 +3,9 @@
 const log = require('util').debuglog('caviar:spawner')
 
 const {
-  // Pass `serverPath` as an option,
+  // Pass `serverClassPath` as an option,
   // so that user can extends `require('caviar').Server`,
-  // and use spawner to start ther own server
+  // and use spawner to start the own server
   serverClassPath,
   ...options
 } = JSON.parse(process.argv[2])
