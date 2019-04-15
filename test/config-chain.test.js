@@ -1,7 +1,6 @@
 const path = require('path')
 const test = require('ava')
 // const log = require('util').debuglog('caviar')
-const ConfigLoader = require('../src/config-loader')
 
 const fixture = (...args) =>
   path.join(__dirname, 'fixtures', 'config-loader', ...args)
@@ -9,11 +8,10 @@ const fixture = (...args) =>
 test('base: getPaths()', t => {
   const FAKE_BASE = 'fake-base'
 
-  const Server = require(fixture(FAKE_BASE, 'server.js'))
+  const ConfigLoader = require(fixture(FAKE_BASE, 'config-loader.js'))
 
   const cl = new ConfigLoader({
-    cwd: fixture('app'),
-    server: new Server()
+    cwd: fixture('app')
   })
 
   t.deepEqual(cl.getPaths(), [
@@ -38,7 +36,7 @@ test('base: getPaths()', t => {
   t.deepEqual(cl.env({}), {})
 
   t.throws(() => cl.next, {
-    code: 'NEXT_CONFIG_NOT_FOUND'
+    code: 'CONFIG_LOADER_NEXT_CONFIG_NOT_FOUND'
   })
 })
 
@@ -49,14 +47,15 @@ const ERROR_CASES = [
   ['error-config-name', 'INVALID_CONFIG_FILE_NAME']
 ]
 
-ERROR_CASES.forEach(([dir, code]) => {
+ERROR_CASES.forEach(([dir, suffix]) => {
   test(`error: ${dir}`, t => {
-    const Server = require(fixture(dir, 'server.js'))
+    const ConfigLoader = require(fixture(dir, 'config-loader.js'))
 
     const cl = new ConfigLoader({
-      cwd: fixture('app'),
-      server: new Server()
+      cwd: fixture('app')
     })
+
+    const code = `CONFIG_LOADER_${suffix}`
 
     t.throws(() => cl.getPaths(), {
       code

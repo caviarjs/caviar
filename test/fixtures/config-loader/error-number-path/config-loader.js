@@ -1,4 +1,4 @@
-module.exports = class Server {
+module.exports = class extends require('../../../../src/config-loader') {
   get path () {
     return 1
   }

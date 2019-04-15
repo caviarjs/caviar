@@ -3,8 +3,10 @@ const {isString, isFunction, isObject} = require('core-util-is')
 const hasOwnProperty = require('has-own-prop')
 const {extend, withPlugins} = require('next-compose-plugins')
 
-const {error} = require('./error')
+const {createError} = require('./error')
 const {getRawConfig} = require('./utils')
+
+const error = createError('CONFIG_LOADER')
 
 const createFinder = realpath => ({path: p}) => realpath === p
 
@@ -111,10 +113,8 @@ const CONFIG_FILE_NAME = 'caviar.config'
 
 module.exports = class ConfigLoader {
   constructor ({
-    server,
     cwd
   }) {
-    this._server = server
     this._cwd = cwd
     this._paths = null
     this._chain = []
@@ -207,10 +207,16 @@ module.exports = class ConfigLoader {
     while (proto) {
       proto = Object.getPrototypeOf(proto)
 
-      // Actually, it encountered an abnormal situation,
-      // that `this._server` is not an instance of `Server`'s subclass.
-      // However, we accept this situation
-      if (proto === Object.prototype) {
+      if (
+        // Actually, it encountered an abnormal situation,
+        // that `this` is not an instance of `ConfigLoader`'s subclass.
+        // However, we accept this situation
+        proto === Object.prototype
+
+        // There is no caviar.config.js in caviar,
+        // So just stop
+        || proto === ConfigLoader.prototype
+      ) {
         break
       }
 
@@ -250,11 +256,6 @@ module.exports = class ConfigLoader {
           serverPath: realpath,
           configFileName
         })
-      }
-
-      // stop the loop if we reached Server
-      if (proto === ConfigLoader.prototype) {
-        break
       }
     }
 
