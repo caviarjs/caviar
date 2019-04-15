@@ -33,8 +33,6 @@ E('INVALID_CONFIG_FIELD',
 E('INVALID_CONFIG_FUNC_RESULT',
   'caviar.config.%s in "%s" must returns an object')
 
-// E('INVALID_CONFIG_SERVER', 'caviar.config.server in "%s" must be a function, but got %s')
-
 const NEXT_CONFIG_NOT_FOUND = 'no caviar.config.next is found'
 E('NEXT_CONFIG_NOT_FOUND', NEXT_CONFIG_NOT_FOUND)
 

@@ -7,7 +7,7 @@ const {error} = require('./error')
 
 const exists = file => {
   try {
-    fs.access(file, fs.constants.R_OK)
+    fs.accessSync(file, fs.constants.R_OK)
     return true
   } catch (_) {
     return false
