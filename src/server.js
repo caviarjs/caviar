@@ -10,8 +10,10 @@ const next = require('next')
 const {Roe} = require('roe')
 const {code} = require('env-to-code')
 
-const {error} = require('./error')
 const {Lifecycle} = require('./lifecycle')
+const {createError} = require('./error')
+
+const error = createError('SERVER')
 
 const createDefinePlugin = (envKeys, wp) => {
   const {DefinePlugin} = wp
@@ -28,8 +30,6 @@ const createDefinePlugin = (envKeys, wp) => {
 
   return new DefinePlugin(config)
 }
-
-const isPlainObject = object => Object.keys(object).length === 0
 
 const createNextMiddleware = nextApp => {
   const handler = nextApp.getRequestHandler()
@@ -226,32 +226,20 @@ class Server extends EE {
       server: serverConfigFactory
     } = this._configLoader
 
-    const serverConfig = serverConfigFactory
-      // TODO:
-      // loader system to inject default server config
-      ? serverConfigFactory({})
-      : {}
-
-    this._lifecycle.hooks.serverConfig.call(serverConfig)
-
-    const {
-      plugins,
-      ...config
-    } = serverConfig
-
     const app = this._serverApp = new this.App({
       // framework,
       baseDir,
-      plugins,
       https: false,
       title: this._appPkg.name,
       type: 'application',
       extends: {
         next: this._nextApp
       },
-      config: isPlainObject(config)
-        ? null
-        : config
+      config: appInfo => {
+        const serverConfig = serverConfigFactory(appInfo)
+        this._lifecycle.hooks.serverConfig.call(serverConfig)
+        return serverConfig
+      }
     })
 
     return new Promise((resolve, reject) => {
@@ -301,12 +289,10 @@ class Server extends EE {
 
   _applyProdNextHandler () {
     const app = this._serverApp
+    const maxAge = this._configLoader.prop('staticFileMaxAge', 0)
     const {
-      staticFileMaxAge: maxAge = 0,
-      next: {
-        distDir
-      }
-    } = this._rawConfig
+      distDir
+    } = this._nextConfig
 
     const options = {
       maxAge
@@ -350,10 +336,10 @@ class Server extends EE {
 
   listen (port) {
     if (!this._ready) {
-      throw error('SERVER_NOT_READY')
+      throw error('NOT_READY')
     }
 
-    port = port || this._port
+    port = port || this._port || this._configLoader.prop('port')
 
     this._server.listen(port, () => {
       /* eslint-disable no-console */

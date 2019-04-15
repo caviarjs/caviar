@@ -8,6 +8,7 @@ const {createError} = require('./error')
 const {getRawConfig} = require('./utils')
 
 const error = createError('CONFIG_LOADER')
+const UNDEFINED = undefined
 
 const createFinder = realpath => ({path: p}) => realpath === p
 
@@ -85,7 +86,7 @@ const reduceNextConfigs = chain => chain.reduce((prev, {
   // ```
   // withPlugins <- createNextWithPlugins(prev)
   return next(checkResult(result, key, configFile))
-}, undefined)
+}, UNDEFINED)
 
 const createConfigChainReducer = ({
   key,
@@ -140,13 +141,6 @@ const reduceWebpackConfigs = createConfigChainReducer({
     factory(prev, options, webpack)
 })
 
-const reduceWebpackModule = chain => chain.reduceRight((prev, {
-  config: {
-    webpackModule
-  }
-// We can specify a version of webpack in the config
-}) => prev || webpackModule, undefined) || caviarWebpackModule
-
 const CONFIG_FILE_NAME = 'caviar.config'
 
 class ConfigLoader {
@@ -168,79 +162,6 @@ class ConfigLoader {
     return CONFIG_FILE_NAME
   }
   ///////////////////////////////////////////////////////////
-
-  load () {
-    this.getPaths().forEach(({
-      serverPath,
-      configFileName
-    }) => {
-      const rawConfig = getRawConfig(serverPath, configFileName)
-      if (rawConfig) {
-        this._chain.push(rawConfig)
-      }
-    })
-  }
-
-  reload () {
-    this._chain.forEach(({configFileName}) => {
-      // delete the require caches, so that the files will be required again
-      delete require.cache[configFileName]
-    })
-
-    this._chain.length = 0
-    this.load()
-  }
-
-  // We deferred the process of merging configurations
-  //////////////////////////////////////////////////////
-
-  // Returns `Array`
-  get plugins () {
-    return this._chain.reduce(
-      (plugins, {config}) => config.plugins
-        ? plugins.concat(config.plugins)
-        : plugins,
-      []
-    )
-  }
-
-  // Returns `Object` the next config
-  get next () {
-    const nextConfig = reduceNextConfigs(this._chain)
-
-    if (!nextConfig) {
-      throw error('NEXT_CONFIG_NOT_FOUND')
-    }
-
-    if (nextConfig.webpack) {
-      throw error('UNEXPECTED_NEXT_WEBPACK')
-    }
-
-    return nextConfig
-  }
-
-  // Returns `Function(appInfo): Object`
-  get server () {
-    return reduceServerConfigs(this._chain)
-  }
-
-  // Returns `Function(nextWebpackConfig, options, webpack): Object`
-  get webpack () {
-    return reduceWebpackConfigs(this._chain)
-  }
-
-  // Returns `Webpack`
-  get webpackModule () {
-    return reduceWebpackModule(this._chain)
-  }
-
-  // Returns `Object`
-  // - envs `Object` user customized envs
-  // - clientEnvKeys `Set` user client env keys
-  get env () {
-    return reduceEnvsConfigs(this._chain)
-  }
-  //////////////////////////////////////////////////////
 
   getPaths () {
     if (this._paths) {
@@ -310,6 +231,89 @@ class ConfigLoader {
     // Caviar.Server::path, ...[SubServer::path]
     return this._paths = paths
   }
+
+  load () {
+    this.getPaths().forEach(({
+      serverPath,
+      configFileName
+    }) => {
+      const rawConfig = getRawConfig(serverPath, configFileName)
+      if (rawConfig) {
+        this._chain.push(rawConfig)
+      }
+    })
+  }
+
+  reload () {
+    this._chain.forEach(({configFileName}) => {
+      // delete the require caches, so that the files will be required again
+      delete require.cache[configFileName]
+    })
+
+    this._chain.length = 0
+    this.load()
+  }
+
+  // Returns a latest defined property
+  prop (key, defaultValue) {
+    return this._chain.reduceRight(
+      (prev, current) => prev || current.configFile[key],
+      UNDEFINED
+    )
+    || defaultValue
+  }
+
+  // We deferred the process of merging configurations
+  //////////////////////////////////////////////////////
+
+  // Returns `Array`
+  get plugins () {
+    return this._chain.reduce(
+      (plugins, {config}) => config.plugins
+        ? plugins.concat(config.plugins)
+        : plugins,
+      []
+    )
+  }
+
+  // Returns `Object` the next config
+  get next () {
+    const nextConfig = reduceNextConfigs(this._chain)
+
+    if (!nextConfig) {
+      throw error('NEXT_CONFIG_NOT_FOUND')
+    }
+
+    if (nextConfig.webpack) {
+      throw error('UNEXPECTED_NEXT_WEBPACK')
+    }
+
+    return nextConfig
+  }
+
+  // Returns `Function(appInfo): Object`
+  get server () {
+    return reduceServerConfigs(this._chain)
+  }
+
+  // Returns `Function(nextWebpackConfig, options, webpack): Object`
+  get webpack () {
+    // We can specify a version of webpack in the config
+    return reduceWebpackConfigs(this._chain)
+  }
+
+  // Returns `Webpack`
+  get webpackModule () {
+    return this.prop('webpackModule', caviarWebpackModule)
+  }
+
+  // Returns `Object`
+  // - envs `Object` user customized envs
+  // - clientEnvKeys `Set` user client env keys
+  get env () {
+    return reduceEnvsConfigs(this._chain)
+  }
+  //////////////////////////////////////////////////////
 }
 
 module.exports = ConfigLoader

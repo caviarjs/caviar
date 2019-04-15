@@ -38,7 +38,7 @@ const readConfig = configFile => {
   try {
     return require(configFile)
   } catch (err) {
-    throw error('CONFIG_ERRORED', configFile, err.stack)
+    throw error('CONFIG_LOADER_CONFIG_ERRORED', configFile, err.stack)
   }
 }
 

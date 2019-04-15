@@ -66,24 +66,14 @@ prefix('CONFIG_LOADER', 'config-loader')
 .E('UNEXPECTED_NEXT_WEBPACK',
   '"webpack" is not allowed in caviar.config.next, use caviar.config.webpack instead')
 
-// Server
+.E('CONFIG_ERRORED', 'fails to load config file "%s", reason: "%s"')
 
-E('DUPLICATE_ENV_KEY', 'env "%s" defined in both server.env and client.env')
-
-
-E('NOT_IMPLEMENT', 'method "%s" must be implemented')
-
-// E('INVALID_ENV_CONVERTER', 'config.env must be a function, but got %s')
-
-// E('CONFIG_NOT_FOUND', 'module "roe.config" not found in directory "%s"')
-E('CONFIG_ERRORED', 'fails to load config file "%s", reason: "%s"')
-
-E('SERVER_NOT_READY', 'server.listen() called before the server is ready')
+prefix('SERVER', 'server')
+.E('NOT_READY', 'server.listen() called before the server is ready')
 
 const createError = pre =>
   (code, ...args) => error(`${pre}_${code}`, ...args)
 
 module.exports = {
-  error,
   createError
 }
