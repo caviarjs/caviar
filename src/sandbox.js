@@ -1,8 +1,12 @@
 const path = require('path')
+const log = require('util').debuglog('caviar')
 const {isString, isObject} = require('core-util-is')
+const spawn = require('cross-spawn')
 
-const {error} = require('./error')
-const {getRawConfig} = require('./utils')
+const {createError} = require('./error')
+const {Lifecycle} = require('./lifecycle')
+
+const error = createError('SANDBOX')
 
 const ESSENTIAL_ENV_KEYS = [
   // For util.debug
@@ -40,30 +44,51 @@ const ensureEnv = host => {
 
 // Sanitize and inject new environment variables into
 // the child process
-class SandboxEnv {
-  constructor ({
-    cwd,
-    dev
-  }, rawConfig) {
+module.exports = class Sandbox {
+  constructor (options) {
+    if (!isObject(options)) {
+      throw error('INVALID_OPTIONS', options)
+    }
 
-    this._dev = dev
-    this._env = {}
-    this.__init()
-  }
+    const {
+      serverClassPath = path.join(__dirname, 'server.js'),
+      configLoaderClassPath = path.join(__dirname, 'config-loader.js'),
+      cwd,
+      dev,
+      port
+    } = options
 
-  _init () {
-    Object.assign(this._env, this._clientEnv)
-    this._checkAndMerge(this._genericEnv)
-  }
+    if (!isString(serverClassPath)) {
+      throw error('INVALID_SERVER_PATH', serverClassPath)
+    }
 
-  _checkAndMerge (env) {
-    Object.keys(env).forEach(key => {
-      if (key in this._env) {
-        throw error('DUPLICATE_ENV_KEY', key)
-      }
+    if (!isString(configLoaderClassPath)) {
+      throw error('INVALID_LOADER_PATH', configLoaderClassPath)
+    }
 
-      this._env[key] = env[key]
+    if (!isString(cwd)) {
+      throw error('INVALID_CWD', cwd)
+    }
+
+    this._options = {
+      serverClassPath,
+      configLoaderClassPath,
+      cwd,
+      dev,
+      port
+    }
+
+    this._configLoader = new this.ConfigLoader({
+      cwd
     })
+  }
+
+  get spawner () {
+    return path.join(__dirname, '..', 'spawner', 'start.js')
+  }
+
+  get ConfigLoader () {
+    return require(this._options.configLoaderClassPath)
   }
 
   // ## Usage
@@ -90,15 +115,11 @@ class SandboxEnv {
       options.env.CAVIAR_DEV = true
     }
 
-    const {
-      plugins = []
-    } = this._rawConfig
-
     ensureEnv(options.env)
 
     const lifecycle = new Lifecycle({
-      plugins,
-      sandbox: true
+      sandbox: true,
+      configLoader: this._configLoader
     })
 
     lifecycle.applyPlugins()
@@ -121,65 +142,14 @@ class SandboxEnv {
     // handle exit signal
     return child
   }
-}
-
-module.exports = class Sandbox {
-  constructor (options) {
-    if (!isObject(options)) {
-      throw error('SANDBOX_INVALID_OPTIONS', options)
-    }
-
-    const {
-      serverClassPath = path.join(__dirname, 'server.js'),
-      configLoaderClassPath = path.join(__dirname, 'config-loader.js'),
-      cwd,
-      dev,
-      port
-    } = options
-
-    if (!isString(serverClassPath)) {
-      throw error('SANDBOX_INVALID_SERVER_PATH', serverClassPath)
-    }
-
-    if (!isString(configLoaderClassPath)) {
-      throw error('SANDBOX_INVALID_LOADER_PATH', configLoaderClassPath)
-    }
-
-    if (!isString(cwd)) {
-      throw error('SANDBOX_INVALID_CWD', cwd)
-    }
-
-    this._options = {
-      serverClassPath,
-      configLoaderClassPath,
-      cwd,
-      dev,
-      port
-    }
-  }
 
   async start () {
-    const {
-      cwd,
-      dev
-    } = this._options
-
-    const {
-      config
-    } = getRawConfig(cwd)
-
-    const sandboxEnv = new SandboxEnv({
-      cwd,
-      dev
-    }, config)
-
-    const spawner = path.join(__dirname, '..', 'spawner', 'start.js')
     const command = 'node'
 
     // TODO: child process events
-    await sandboxEnv.spawn(
+    await this.spawn(
       command, [
-        spawner,
+        this.spawner,
         JSON.stringify(this._options)
       ]
     )

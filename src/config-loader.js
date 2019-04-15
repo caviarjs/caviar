@@ -111,7 +111,7 @@ const reduceEnvConfigs = createConfigChainReducer({
 
 const CONFIG_FILE_NAME = 'caviar.config'
 
-module.exports = class ConfigLoader {
+class ConfigLoader {
   constructor ({
     cwd
   }) {
@@ -263,3 +263,5 @@ module.exports = class ConfigLoader {
     return this._paths = paths
   }
 }
+
+module.exports = ConfigLoader

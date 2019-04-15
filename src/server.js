@@ -67,7 +67,8 @@ class Server extends EE {
   constructor ({
     cwd,
     port,
-    dev
+    dev,
+    configLoaderClassPath
   }) {
     super()
 
@@ -82,6 +83,8 @@ class Server extends EE {
 
     this._appPkg = null
     this._lifecycle = null
+
+    this._configLoaderClassPath = configLoaderClassPath
     this._configLoader = null
 
     this._clientEnvKeys = null
@@ -96,6 +99,10 @@ class Server extends EE {
   /////////////////////////////////////////////////////////////////////
   get App () {
     return Roe
+  }
+
+  get ConfigLoader () {
+    return require(this._configLoaderClassPath)
   }
   /////////////////////////////////////////////////////////////////////
 
