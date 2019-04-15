@@ -44,7 +44,7 @@ const reduceNextConfigs = chain => chain.reduce((prev, {
   // ```
   // withPlugins <- createNextWithPlugins(prev)
   return next(checkResult(result, key, configFile))
-})
+}, undefined)
 
 const createConfigChainReducer = ({
   key,
@@ -151,6 +151,7 @@ module.exports = class ConfigLoader {
     )
   }
 
+  // Returns `Object` the next config
   get next () {
     const nextConfig = reduceNextConfigs(this._chain)
 
@@ -163,7 +164,6 @@ module.exports = class ConfigLoader {
 
     return nextConfig
   }
-
 
   // Returns `Function(appInfo): Object`
   get server () {
@@ -181,12 +181,16 @@ module.exports = class ConfigLoader {
   }
   //////////////////////////////////////////////////////
 
+  get Server () {
+    return require('./server')
+  }
+
   getPaths () {
     if (this._paths) {
       return this._paths
     }
 
-    const {Server} = require('./server')
+    const {Server} = this
     const paths = []
 
     let proto = this._server
@@ -194,6 +198,13 @@ module.exports = class ConfigLoader {
     // Loop back for the prototype chain
     while (proto) {
       proto = Object.getPrototypeOf(proto)
+
+      // Actually, it encountered an abnormal situation,
+      // that `this._server` is not an instance of `Server`'s subclass.
+      // However, we accept this situation
+      if (proto === Object.prototype) {
+        break
+      }
 
       if (!hasOwnProperty(proto, 'path')) {
         throw error('PATH_GETTER_REQUIRED')
@@ -233,9 +244,7 @@ module.exports = class ConfigLoader {
         })
       }
 
-      // stop the loop if
-      // - object extends Object
-      // - object extends
+      // stop the loop if we reached Server
       if (proto === Server.prototype) {
         break
       }

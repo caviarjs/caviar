@@ -132,6 +132,8 @@ class Server extends EE {
       server: this,
       cwd: this._cwd
     })
+
+    this._configLoader.load()
   }
 
   _initLifecycle () {
@@ -142,10 +144,7 @@ class Server extends EE {
     this._lifecycle = new Lifecycle({
       plugins,
       sandbox: false,
-      configFile: this._configFile
-    })
-    .on('config-reload', config => {
-      this._rawConfig = config
+      configLoader: this._configLoader
     })
 
     this._lifecycle.applyPlugins()
@@ -153,21 +152,21 @@ class Server extends EE {
 
   // Initialize env
   async _initEnv () {
-    const {
-      env
-    } = this._rawConfig
+    // const {
+    //   env
+    // } = this._rawConfig
 
-    if (env && typeof env !== 'function') {
-      throw error('INVALID_ENV_CONVERTER', env)
-    }
+    // if (env && typeof env !== 'function') {
+    //   throw error('INVALID_ENV_CONVERTER', env)
+    // }
 
     // Populate new env variable to process.env
-    const appEnv = new AppEnv({
-      env: env
-        ? [env]
-        : [],
-      cwd: this._cwd
-    }, this._rawConfig)
+    // const appEnv = new AppEnv({
+    //   env: env
+    //     ? [env]
+    //     : [],
+    //   cwd: this._cwd
+    // }, this._rawConfig)
 
     this._clientEnvKeys = await appEnv.clientEnvKeys()
 

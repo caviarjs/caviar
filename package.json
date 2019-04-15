@@ -33,6 +33,9 @@
   "ava": {
     "require": [
       "@babel/register"
+    ],
+    "files": [
+      "test/*.test.js"
     ]
   },
   "author": "kaelzhang",

@@ -1,4 +1,3 @@
-const EventEmitter = require('events')
 const {
   SyncHook,
   AsyncParallelHook
@@ -27,13 +26,12 @@ const createNonSandboxHooks = () => new Hooks({
   nextConfig: new SyncHook(['nextConfig'])
 })
 
-class Lifecycle extends EventEmitter {
+class Lifecycle {
   constructor ({
     plugins,
     sandbox = false,
     configLoader
   }) {
-    super()
     this._plugins = plugins
     this._sandbox = sandbox
     this._configLoader = configLoader
@@ -52,7 +50,7 @@ class Lifecycle extends EventEmitter {
 
   // - sandbox `boolean` whether the current process is sandbox
   applyPlugins () {
-    this._plugins.forEach(plugin => {
+    this._configLoader.plugins.forEach(plugin => {
       // We only apply sandbox-specific plugins in sandbox
       if (this._sandbox === !plugin.sandbox) {
         return
@@ -67,20 +65,7 @@ class Lifecycle extends EventEmitter {
   }
 
   reloadConfig () {
-    const file = this._configFile
-
-    if (!file) {
-      return
-    }
-
-    delete require.cache[file]
-    const config = readConfig(file)
-    const {
-      plugins = []
-    } = config
-
-    this._plugins = plugins
-    this.emit('config-reload', config)
+    this._configLoader.reload()
   }
 }
 
