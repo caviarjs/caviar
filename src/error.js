@@ -37,6 +37,9 @@ prefix('SANDBOX', 'sandbox', TypeError)
 .E('SANDBOX_INVALID_CWD',
   'options.cwd must be a string, but got `%s`')
 
+.E('PRESERVED_ENV_KEY',
+  'env key "%s" is preserved by caviar')
+
 prefix('CONFIG_LOADER', 'config-loader')
 .E('PATH_GETTER_REQUIRED',
   'getter "path" is required on ConfigLoader.prototype')
@@ -58,11 +61,15 @@ prefix('CONFIG_LOADER', 'config-loader')
 
 .E('NEXT_CONFIG_NOT_FOUND', 'no caviar.config.next is found')
 
+.E('ENV_CONFLICTS', 'env key "%s" conflicts in envs and client envs')
+
+.E('UNEXPECTED_NEXT_WEBPACK',
+  '"webpack" is not allowed in caviar.config.next, use caviar.config.webpack instead')
+
 // Server
 
 E('DUPLICATE_ENV_KEY', 'env "%s" defined in both server.env and client.env')
-E('PRESERVED_ENV_KEY',
-  'env "%s" is preserved by roe, and should not be overridden')
+
 
 E('NOT_IMPLEMENT', 'method "%s" must be implemented')
 

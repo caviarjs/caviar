@@ -33,7 +33,10 @@ test('base: getPaths()', t => {
   }), {})
 
   t.deepEqual(cl.webpack({}), {})
-  t.deepEqual(cl.env({}), {})
+  t.deepEqual(cl.env, {
+    envs: {},
+    clientEnvKeys: new Set()
+  })
 
   t.throws(() => cl.next, {
     code: 'CONFIG_LOADER_NEXT_CONFIG_NOT_FOUND'

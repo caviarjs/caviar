@@ -49,7 +49,8 @@ project/
 ```js
 const {
   Sandbox,
-  Server
+  Server,
+  ConfigLoader
 } = require('caviar')
 ```
 
@@ -61,7 +62,7 @@ const {
   - **dev?** `boolean=false` whether is for development purpose
   - **serverClassPath?** `path` the file path of the `Server` class. Defaults to the `Server` class path of the `caviar` project.
 
-Creates a new sandbox. Sandbox is design to filter the environment variable.
+Creates a new sandbox. Sandbox is design to filter the environment variables.
 
 #### await sandbox.start()
 

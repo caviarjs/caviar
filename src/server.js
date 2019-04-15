@@ -7,7 +7,6 @@ const {isString} = require('core-util-is')
 const e2k = require('express-to-koa')
 const {serve} = require('egg-serve-static')
 const next = require('next')
-const roeScriptsWebpack = require('webpack')
 const {Roe} = require('roe')
 const {code} = require('env-to-code')
 
@@ -110,12 +109,6 @@ class Server extends EE {
     this._appPkg = require(path.join(this._cwd, 'package.json'))
   }
 
-  // _getRawConfig () {
-  //   ({
-  //     config: this._rawConfig,
-  //     configFile: this._configFile
-  //   } = getRawConfig(this._cwd))
-  // }
 
   _initConfigLoader () {
     this._configLoader = new this.ConfigLoader({
@@ -127,12 +120,7 @@ class Server extends EE {
   }
 
   _initLifecycle () {
-    const {
-      plugins = []
-    } = this._rawConfig
-
     this._lifecycle = new Lifecycle({
-      plugins,
       sandbox: false,
       configLoader: this._configLoader
     })
@@ -142,23 +130,13 @@ class Server extends EE {
 
   // Initialize env
   async _initEnv () {
-    // const {
-    //   env
-    // } = this._rawConfig
+    const {
+      envs,
+      clientEnvKeys
+    } = this._configLoader.env
 
-    // if (env && typeof env !== 'function') {
-    //   throw error('INVALID_ENV_CONVERTER', env)
-    // }
-
-    // Populate new env variable to process.env
-    // const appEnv = new AppEnv({
-    //   env: env
-    //     ? [env]
-    //     : [],
-    //   cwd: this._cwd
-    // }, this._rawConfig)
-
-    this._clientEnvKeys = await appEnv.clientEnvKeys()
+    Object.assign(process.env, envs)
+    this._clientEnvKeys = clientEnvKeys.keys()
 
     const lifecycle = this._lifecycle
     const {environment} = lifecycle.hooks
@@ -183,11 +161,8 @@ class Server extends EE {
     const {
       next: nextConfig,
       webpack: webpackConfigFactory,
-
-      // We can specify a version of webpack in the config
-      webpackModule = roeScriptsWebpack
-    } = this._rawConfig
-
+      webpackModule
+    } = this._configLoader
 
     if (!isString(nextConfig.distDir)) {
       nextConfig.distDir = '.next'
@@ -196,17 +171,14 @@ class Server extends EE {
     this._nextConfig = {
       // TODO:
       // loader system to inject default next config
-      ...nextConfig(),
+      ...nextConfig,
       webpack: (nextWebpackConfig, options) => {
-        const config = webpackConfigFactory
-          ? webpackConfigFactory(
-            nextWebpackConfig,
-            options,
-            // Populate the webpack which caviar uses,
-            webpackModule
-          )
-          // Use default next webpack config
-          : nextWebpackConfig
+        const config = webpackConfigFactory(
+          nextWebpackConfig,
+          options,
+          // Populate the webpack which caviar uses,
+          webpackModule
+        )
 
         const definePlugin = createDefinePlugin(
           this._clientEnvKeys,
@@ -252,7 +224,7 @@ class Server extends EE {
     const baseDir = this._cwd
     const {
       server: serverConfigFactory
-    } = this._rawConfig
+    } = this._configLoader
 
     const serverConfig = serverConfigFactory
       // TODO:
@@ -362,7 +334,6 @@ class Server extends EE {
 
   async ready () {
     this._getAppPkg()
-    // this._getRawConfig()
     this._initConfigLoader()
     this._initLifecycle()
     await this._initEnv()

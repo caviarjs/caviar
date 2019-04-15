@@ -2,6 +2,7 @@ const fs = require('fs')
 const {isString, isFunction, isObject} = require('core-util-is')
 const hasOwnProperty = require('has-own-prop')
 const {extend, withPlugins} = require('next-compose-plugins')
+const caviarWebpackModule = require('webpack')
 
 const {createError} = require('./error')
 const {getRawConfig} = require('./utils')
@@ -18,10 +19,48 @@ const checkResult = (result, field, configFile) => {
   return result
 }
 
+const reduceEnvsConfigs = chain => chain.reduce((prev, {
+  config: {
+    envs,
+    clientEnvs,
+    env
+  },
+  configFile
+}) => {
+  Object.assign(prev.envs, envs)
+
+  if (clientEnvs) {
+    Object.keys(clientEnvs).forEach(key => {
+      if (key in envs) {
+        throw error('ENV_CONFLICTS', key)
+      }
+
+      prev.envs[key] = clientEnvs[key]
+      prev.clientEnvKeys.add(key)
+    })
+  }
+
+  if (!env) {
+    return prev
+  }
+
+  if (!isFunction(env)) {
+    throw error('INVALID_CONFIG_FIELD', 'env', configFile, env)
+  }
+
+  prev.envs = checkResult(env(prev.envs), 'env', configFile)
+
+  return prev
+}, {
+  clientEnvKeys: new Set(),
+  envs: {}
+})
+
 const createNextWithPlugins = config =>
   (...args) => config
     ? extend(config).withPlugins(...args)
     : withPlugins(...args)
+
 const reduceNextConfigs = chain => chain.reduce((prev, {
   config: {
     next
@@ -101,13 +140,12 @@ const reduceWebpackConfigs = createConfigChainReducer({
     factory(prev, options, webpack)
 })
 
-const reduceEnvConfigs = createConfigChainReducer({
-  key: 'env',
-  initConfig (env) {
-    return env
-  },
-  runner: (factory, prev) => factory(prev)
-})
+const reduceWebpackModule = chain => chain.reduceRight((prev, {
+  config: {
+    webpackModule
+  }
+// We can specify a version of webpack in the config
+}) => prev || webpackModule, undefined) || caviarWebpackModule
 
 const CONFIG_FILE_NAME = 'caviar.config'
 
@@ -155,6 +193,8 @@ class ConfigLoader {
 
   // We deferred the process of merging configurations
   //////////////////////////////////////////////////////
+
+  // Returns `Array`
   get plugins () {
     return this._chain.reduce(
       (plugins, {config}) => config.plugins
@@ -172,8 +212,9 @@ class ConfigLoader {
       throw error('NEXT_CONFIG_NOT_FOUND')
     }
 
-    // Dont allow webpack in nextConfig
-    delete nextConfig.webpack
+    if (nextConfig.webpack) {
+      throw error('UNEXPECTED_NEXT_WEBPACK')
+    }
 
     return nextConfig
   }
@@ -188,9 +229,16 @@ class ConfigLoader {
     return reduceWebpackConfigs(this._chain)
   }
 
-  // Returns `Function(env): Object`
+  // Returns `Webpack`
+  get webpackModule () {
+    return reduceWebpackModule(this._chain)
+  }
+
+  // Returns `Object`
+  // - envs `Object` user customized envs
+  // - clientEnvKeys `Set` user client env keys
   get env () {
-    return reduceEnvConfigs(this._chain)
+    return reduceEnvsConfigs(this._chain)
   }
   //////////////////////////////////////////////////////
 
