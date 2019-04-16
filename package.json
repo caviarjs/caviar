@@ -56,7 +56,7 @@
     "dotenv": "^7.0.0",
     "egg-serve-static": "^2.1.1",
     "env-to-code": "^1.0.4",
-    "err-object": "^4.1.0",
+    "err-object": "^4.2.0",
     "express-to-koa": "^1.1.4",
     "has-own-prop": "^1.0.1",
     "mz": "^2.7.0",

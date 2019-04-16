@@ -7,7 +7,7 @@ const {extend, withPlugins} = require('next-compose-plugins')
 const caviarWebpackModule = require('webpack')
 
 const {createError} = require('./error')
-const {getRawConfig} = require('./utils')
+const {getRawConfig, inspect} = require('./utils')
 
 const error = createError('CONFIG_LOADER')
 const UNDEFINED = undefined
@@ -242,7 +242,7 @@ class ConfigLoader {
       configFileName: latestConfigFileName
     }, true)
 
-    log('config-loader: paths: %s', JSON.stringify(paths, null, 2))
+    log('config-loader: paths: %s', inspect(paths))
 
     // Caviar.Server::path, ...[SubServer::path]
     return this._paths = paths
@@ -259,7 +259,7 @@ class ConfigLoader {
       }
     })
 
-    log('config-loader: chain: %s', JSON.stringify(this._chain, null, 2))
+    log('config-loader: chain: %s', inspect(this._chain))
   }
 
   reload () {

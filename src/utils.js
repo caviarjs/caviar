@@ -1,5 +1,6 @@
 const path = require('path')
 const fs = require('fs')
+const util = require('util')
 const log = require('util').debuglog('caviar')
 const {parse} = require('dotenv')
 
@@ -74,7 +75,13 @@ const getRawConfig = (cwd, configFileName) => {
   }
 }
 
+const inspect = object => util.inspect(object, {
+  colors: true,
+  depth: 3
+})
+
 module.exports = {
   hasOwnProperty,
-  getRawConfig
+  getRawConfig,
+  inspect
 }

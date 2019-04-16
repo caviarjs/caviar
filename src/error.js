@@ -57,7 +57,7 @@ PREFIX('CONFIG_LOADER', 'config-loader')
   'caviar.config.%s in "%s" must be a function, but got `%s`', TypeError)
 
 .E('INVALID_RETURN_VALUE',
-  'caviar.config.%s in "%s" must returns an object', TypeError)
+  'caviar.config.%s in "%s" must return an object', TypeError)
 
 .E('NEXT_CONFIG_NOT_FOUND', 'no caviar.config.next is found')
 

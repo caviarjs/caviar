@@ -81,6 +81,8 @@ module.exports = class Sandbox {
     this._configLoader = new this.ConfigLoader({
       cwd
     })
+
+    this._configLoader.load()
   }
 
   get spawner () {
@@ -108,10 +110,10 @@ module.exports = class Sandbox {
 
     options.env = {
       ...this._env,
-      CAVIAR_CWD: this._cwd
+      CAVIAR_CWD: this._options.cwd
     }
 
-    if (this._dev) {
+    if (this._options.dev) {
       options.env.CAVIAR_DEV = true
     }
 
