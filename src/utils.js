@@ -80,8 +80,14 @@ const inspect = object => util.inspect(object, {
   depth: 3
 })
 
+const requireModule = name => {
+  const module = require(name)
+  return module.default || module
+}
+
 module.exports = {
   hasOwnProperty,
   getRawConfig,
-  inspect
+  inspect,
+  requireModule
 }

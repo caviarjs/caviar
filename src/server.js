@@ -6,12 +6,20 @@ const log = require('util').debuglog('caviar')
 const {isString} = require('core-util-is')
 const e2k = require('express-to-koa')
 const {serve} = require('egg-serve-static')
+
 const next = require('next')
+const {
+  PHASE_PRODUCTION_BUILD,
+  PHASE_PRODUCTION_SERVER,
+  PHASE_DEVELOPMENT_SERVER
+} = require('next/constants')
+
 const {Roe} = require('roe')
 const {code} = require('env-to-code')
 
 const {Lifecycle} = require('./lifecycle')
 const {createError} = require('./error')
+const {requireModule} = require('./utils')
 
 const error = createError('SERVER')
 
@@ -122,8 +130,7 @@ class Server extends EE {
   _initLifecycle () {
     this._lifecycle = new Lifecycle({
       sandbox: false,
-      configLoader: this._configLoader,
-      dev: this._dev
+      configLoader: this._configLoader
     })
 
     this._lifecycle.applyPlugins()
@@ -160,7 +167,7 @@ class Server extends EE {
   }
 
   // Create real configurations for each component
-  _createNextConfig () {
+  _createNextConfig (phase) {
     const {
       next: nextConfigFactory,
       webpack: webpackConfigFactory,
@@ -188,22 +195,27 @@ class Server extends EE {
       return config
     }
 
-    this._nextConfig = (phase, nextOptions) => {
-      const config = nextConfigFactory(phase, nextOptions)
-
-      if (config.webpack) {
-        throw error('UNEXPECTED_NEXT_WEBPACK')
-      }
-      config.webpack = webpack
-
-      if (!isString(config.distDir)) {
-        config.distDir = '.next'
-      }
-
-      this._lifecycle.hooks.nextConfig.call(config)
-
-      return config
+    const nextConfig = {
+      ...nextConfigFactory(
+        phase,
+        // Just pass an empty string, but in next it passes `{defaultConfig}`
+        {}
+      )
     }
+
+    if (nextConfig.webpack) {
+      throw error('UNEXPECTED_NEXT_WEBPACK')
+    }
+
+    nextConfig.webpack = webpack
+
+    if (!isString(nextConfig.distDir)) {
+      nextConfig.distDir = '.next'
+    }
+
+    this._lifecycle.hooks.nextConfig.call(nextConfig)
+
+    return nextConfig
   }
 
   async _nextBuild () {
@@ -211,7 +223,10 @@ class Server extends EE {
       return
     }
 
-    await require('next/dist/build').default(this._cwd, this._nextConfig)
+    await requireModule('next/dist/build')(
+      this._cwd,
+      this._createNextConfig(PHASE_PRODUCTION_BUILD)
+    )
   }
 
   async _createNextApp () {
@@ -220,7 +235,11 @@ class Server extends EE {
     const app = this._nextApp = next({
       // TODO
       dev: this._dev,
-      conf: this._nextConfig,
+      conf: this._createNextConfig(
+        this._dev
+          ? PHASE_DEVELOPMENT_SERVER
+          : PHASE_PRODUCTION_SERVER
+      ),
       dir: this._cwd
     })
 
@@ -332,7 +351,6 @@ class Server extends EE {
     this._initConfigLoader()
     this._initLifecycle()
     await this._initEnv()
-    this._createNextConfig()
     await this._nextBuild()
     await this._createNextApp()
     await this._createServerApp()
