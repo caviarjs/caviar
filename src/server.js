@@ -174,8 +174,14 @@ class Server extends EE {
       webpackModule
     } = this._configLoader
 
+    const nextConfig = nextConfigFactory(
+      phase,
+      // Just pass an empty string, but in next it passes `{defaultConfig}`
+      {}
+    )
+
     const webpack = (nextWebpackConfig, options) => {
-      const config = webpackConfigFactory(
+      let config = webpackConfigFactory(
         nextWebpackConfig,
         options,
         // Populate the webpack which caviar uses,
@@ -188,6 +194,10 @@ class Server extends EE {
       )
       config.plugins.push(definePlugin)
 
+      if (nextConfig.webpack) {
+        config = nextConfig.webpack(config, options)
+      }
+
       this._lifecycle.hooks.webpackConfig.call(config, {
         isServer: options.isServer
       })
@@ -195,27 +205,18 @@ class Server extends EE {
       return config
     }
 
-    const nextConfig = {
-      ...nextConfigFactory(
-        phase,
-        // Just pass an empty string, but in next it passes `{defaultConfig}`
-        {}
-      )
+    const enrichedNextConfig = {
+      ...nextConfig,
+      webpack
     }
 
-    if (nextConfig.webpack) {
-      throw error('UNEXPECTED_NEXT_WEBPACK')
+    if (!isString(enrichedNextConfig.distDir)) {
+      enrichedNextConfig.distDir = '.next'
     }
 
-    nextConfig.webpack = webpack
+    this._lifecycle.hooks.nextConfig.call(enrichedNextConfig)
 
-    if (!isString(nextConfig.distDir)) {
-      nextConfig.distDir = '.next'
-    }
-
-    this._lifecycle.hooks.nextConfig.call(nextConfig)
-
-    return nextConfig
+    return enrichedNextConfig
   }
 
   async _nextBuild () {
