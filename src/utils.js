@@ -24,8 +24,8 @@ const readFile = file => {
   }
 }
 
-const readAndParseEnv = (cwd, filename) => {
-  const file = path.join(cwd, filename)
+const readAndParseEnv = (...args) => {
+  const file = path.join(...args)
   const existed = exists(file)
   if (!existed) {
     return
@@ -64,10 +64,10 @@ const getRawConfig = (cwd, configFileName) => {
   const config = readConfig(configFile)
 
   config.envs = config.envs
-    || readAndParseEnv(cwd, GENERIC_ENV_FILENAME)
+    || readAndParseEnv(cwd, configFileName, GENERIC_ENV_FILENAME)
 
   config.clientEnvs = config.clientEnvs
-    || readAndParseEnv(cwd, CLIENT_ENV_FILENAME)
+    || readAndParseEnv(cwd, configFileName, CLIENT_ENV_FILENAME)
 
   return {
     config,
