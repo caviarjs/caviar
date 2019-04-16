@@ -78,14 +78,13 @@ const reduceNextConfigs = chain => chain.reduce((prev, {
     throw error('INVALID_CONFIG_FIELD', key, configFile, next)
   }
 
-  const result = createNextWithPlugins(prev)
-
   // Usage
   // ```js
   // module.exports = withPlugins => withPlugins([...plugins], newConfig)
   // ```
   // withPlugins <- createNextWithPlugins(prev)
-  return next(checkResult(result, key, configFile))
+  const result = next(createNextWithPlugins(prev))
+  return checkResult(result, key, configFile)
 }, UNDEFINED)
 
 const createConfigChainReducer = ({

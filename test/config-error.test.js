@@ -48,7 +48,9 @@ const ERROR_CASES = [
   ['error-number-path', 'INVALID_SERVER_PATH'],
   ['error-path-not-exists', 'SERVER_PATH_NOT_EXISTS'],
   ['error-config-name', 'INVALID_CONFIG_FILE_NAME'],
-  ['error-return-value', 'INVALID_RETURN_VALUE', cl => cl.server({})]
+  ['error-return-value', 'INVALID_RETURN_VALUE', cl => cl.server({})],
+  ['error-next-webpack', 'UNEXPECTED_NEXT_WEBPACK', cl => cl.next],
+  ['error-next-return-value', 'INVALID_RETURN_VALUE', cl => cl.next]
 ]
 
 ERROR_CASES.forEach(([dir, suffix, runner]) => {
