@@ -257,7 +257,7 @@ class ConfigLoader {
   // Returns a latest defined property
   prop (key, defaultValue) {
     return this._chain.reduceRight(
-      (prev, current) => prev || current.configFile[key],
+      (prev, current) => prev || current.config[key],
       UNDEFINED
     )
     || defaultValue
