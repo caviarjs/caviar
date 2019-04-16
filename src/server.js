@@ -353,6 +353,4 @@ class Server extends EE {
   }
 }
 
-module.exports = {
-  Server
-}
+module.exports = Server

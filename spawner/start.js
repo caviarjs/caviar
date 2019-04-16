@@ -19,5 +19,5 @@ new Server(options).ready()
   server.listen()
 })
 .catch(err => {
-  log('fails to start, reason: %s', err.stack)
+  console.error(`fails to start, reason:\n${err.stack}`)
 })

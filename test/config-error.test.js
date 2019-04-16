@@ -1,18 +1,11 @@
-const path = require('path')
 const test = require('ava')
 // const log = require('util').debuglog('caviar')
-
-const fixture = (...args) =>
-  path.join(__dirname, 'fixtures', 'config-loader', ...args)
+const {fixture, create} = require('./fixtures/config-loader/create')
 
 test('base: getPaths()', t => {
   const FAKE_BASE = 'fake-base'
 
-  const ConfigLoader = require(fixture(FAKE_BASE, 'config-loader.js'))
-
-  const cl = new ConfigLoader({
-    cwd: fixture('app')
-  })
+  const cl = create(FAKE_BASE)
 
   t.deepEqual(cl.getPaths(), [
     {

@@ -67,7 +67,7 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .E('UNEXPECTED_NEXT_WEBPACK',
   '"webpack" is not allowed in caviar.config.next, use caviar.config.webpack instead')
 
-.E('CONFIG_ERRORED', 'fails to load config file "%s", reason: "%s"')
+.E('CONFIG_ERRORED', 'fails to load config file "%s", reason:\n%s')
 
 PREFIX('SERVER', 'server')
 .E('NOT_READY', 'server.listen() called before the server is ready')
@@ -76,5 +76,6 @@ const createError = pre =>
   (code, ...args) => error(`${pre}_${code}`, ...args)
 
 module.exports = {
+  error,
   createError
 }

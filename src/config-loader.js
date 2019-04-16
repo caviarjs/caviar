@@ -1,4 +1,6 @@
 const fs = require('fs')
+const log = require('util').debuglog('caviar')
+
 const {isString, isFunction, isObject} = require('core-util-is')
 const hasOwnProperty = require('has-own-prop')
 const {extend, withPlugins} = require('next-compose-plugins')
@@ -9,8 +11,6 @@ const {getRawConfig} = require('./utils')
 
 const error = createError('CONFIG_LOADER')
 const UNDEFINED = undefined
-
-const createFinder = realpath => ({path: p}) => realpath === p
 
 const checkResult = (result, field, configFile) => {
   if (!isObject(result)) {
@@ -140,6 +140,22 @@ const reduceWebpackConfigs = createConfigChainReducer({
     factory(prev, options, webpack)
 })
 
+const createFinder = realpath => ({serverPath: p}) => realpath === p
+const addConfigPath = (paths, {
+  serverPath,
+  configFileName
+}, append) => {
+  if (paths.findIndex(createFinder(serverPath)) === - 1) {
+    const method = append
+      ? 'push'
+      : 'unshift'
+    paths[method]({
+      serverPath,
+      configFileName
+    })
+  }
+}
+
 const CONFIG_FILE_NAME = 'caviar.config'
 
 class ConfigLoader {
@@ -170,21 +186,16 @@ class ConfigLoader {
     const paths = []
 
     let proto = this
+    let latestConfigFileName
 
     // Loop back for the prototype chain
     while (proto) {
       proto = Object.getPrototypeOf(proto)
 
-      if (
-        // Actually, it encountered an abnormal situation,
-        // that `this` is not an instance of `ConfigLoader`'s subclass.
-        // However, we accept this situation
-        proto === Object.prototype
-
-        // There is no caviar.config.js in caviar,
-        // So just stop
-        || proto === ConfigLoader.prototype
-      ) {
+      // Actually, it encountered an abnormal situation,
+      // that `this` is not an instance of `ConfigLoader`'s subclass.
+      // However, we accept this situation
+      if (proto === Object.prototype) {
         break
       }
 
@@ -198,6 +209,19 @@ class ConfigLoader {
         configFileName
       } = proto
 
+      if (!isString(configFileName)) {
+        throw error('INVALID_CONFIG_FILE_NAME', configFileName)
+      }
+
+      // We save name of the latest config file
+      latestConfigFileName = configFileName
+
+      // There is no caviar.config.js in caviar,
+      // So just stop
+      if (proto === ConfigLoader.prototype) {
+        break
+      }
+
       if (!isString(serverPath)) {
         throw error('INVALID_SERVER_PATH', serverPath)
       }
@@ -206,26 +230,19 @@ class ConfigLoader {
         throw error('SERVER_PATH_NOT_EXISTS', serverPath)
       }
 
-      if (!isString(configFileName)) {
-        throw error('INVALID_CONFIG_FILE_NAME', configFileName)
-      }
-
-      if (paths.length === 0) {
-        paths.push({
-          serverPath: this._cwd,
-          configFileName
-        })
-      }
-
       const realpath = fs.realpathSync(serverPath)
-
-      if (paths.findIndex(createFinder(realpath)) === - 1) {
-        paths.unshift({
-          serverPath: realpath,
-          configFileName
-        })
-      }
+      addConfigPath(paths, {
+        serverPath: realpath,
+        configFileName
+      }, false)
     }
+
+    addConfigPath(paths, {
+      serverPath: this._cwd,
+      configFileName: latestConfigFileName
+    }, true)
+
+    log('config-loader: paths: %s', JSON.stringify(paths, null, 2))
 
     // Caviar.Server::path, ...[SubServer::path]
     return this._paths = paths
@@ -241,6 +258,8 @@ class ConfigLoader {
         this._chain.push(rawConfig)
       }
     })
+
+    log('config-loader: chain: %s', JSON.stringify(this._chain, null, 2))
   }
 
   reload () {
