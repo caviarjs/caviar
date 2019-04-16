@@ -59,18 +59,21 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .E('INVALID_RETURN_VALUE',
   'caviar.config.%s in "%s" must return an object', TypeError)
 
+.E('INVALID_NEXT_RETURN_VALUE',
+  'caviar.config.next in "%s" must return a function by using the first argument `withPlugins`', TypeError)
+
 .E('NEXT_CONFIG_NOT_FOUND', 'no caviar.config.next is found')
 
 .E('ENV_CONFLICTS',
   'env key "%s" conflicts in envs and client envs', RangeError)
 
-.E('UNEXPECTED_NEXT_WEBPACK',
-  '"webpack" is not allowed in caviar.config.next, use caviar.config.webpack instead')
-
 .E('CONFIG_ERRORED', 'fails to load config file "%s", reason:\n%s')
 
 PREFIX('SERVER', 'server')
 .E('NOT_READY', 'server.listen() called before the server is ready')
+
+.E('UNEXPECTED_NEXT_WEBPACK',
+  '"webpack" is not allowed in caviar.config.next, use caviar.config.webpack instead')
 
 const createError = pre =>
   (code, ...args) => error(`${pre}_${code}`, ...args)

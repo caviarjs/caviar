@@ -122,7 +122,8 @@ class Server extends EE {
   _initLifecycle () {
     this._lifecycle = new Lifecycle({
       sandbox: false,
-      configLoader: this._configLoader
+      configLoader: this._configLoader,
+      dev: this._dev
     })
 
     this._lifecycle.applyPlugins()
@@ -136,7 +137,9 @@ class Server extends EE {
     } = this._configLoader.env
 
     Object.assign(process.env, envs)
-    this._clientEnvKeys = clientEnvKeys.keys()
+
+    // clientEnvKeys is a Set
+    this._clientEnvKeys = [...clientEnvKeys.keys()]
 
     const lifecycle = this._lifecycle
     const {environment} = lifecycle.hooks
@@ -159,42 +162,48 @@ class Server extends EE {
   // Create real configurations for each component
   _createNextConfig () {
     const {
-      next: nextConfig,
+      next: nextConfigFactory,
       webpack: webpackConfigFactory,
       webpackModule
     } = this._configLoader
 
-    if (!isString(nextConfig.distDir)) {
-      nextConfig.distDir = '.next'
+    const webpack = (nextWebpackConfig, options) => {
+      const config = webpackConfigFactory(
+        nextWebpackConfig,
+        options,
+        // Populate the webpack which caviar uses,
+        webpackModule
+      )
+
+      const definePlugin = createDefinePlugin(
+        this._clientEnvKeys,
+        webpackModule
+      )
+      config.plugins.push(definePlugin)
+
+      this._lifecycle.hooks.webpackConfig.call(config, {
+        isServer: options.isServer
+      })
+
+      return config
     }
 
-    this._nextConfig = {
-      // TODO:
-      // loader system to inject default next config
-      ...nextConfig,
-      webpack: (nextWebpackConfig, options) => {
-        const config = webpackConfigFactory(
-          nextWebpackConfig,
-          options,
-          // Populate the webpack which caviar uses,
-          webpackModule
-        )
+    this._nextConfig = (phase, nextOptions) => {
+      const config = nextConfigFactory(phase, nextOptions)
 
-        const definePlugin = createDefinePlugin(
-          this._clientEnvKeys,
-          webpackModule
-        )
-        config.plugins.push(definePlugin)
-
-        this._lifecycle.hooks.webpackConfig.call(config, {
-          isServer: options.isServer
-        })
-
-        return config
+      if (config.webpack) {
+        throw error('UNEXPECTED_NEXT_WEBPACK')
       }
-    }
+      config.webpack = webpack
 
-    this._lifecycle.hooks.nextConfig.call(this._nextConfig)
+      if (!isString(config.distDir)) {
+        config.distDir = '.next'
+      }
+
+      this._lifecycle.hooks.nextConfig.call(config)
+
+      return config
+    }
   }
 
   async _nextBuild () {

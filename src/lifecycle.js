@@ -13,32 +13,43 @@ const createSandboxHooks = () => new Hooks({
   sandboxEnvironment: new SyncHook(['sandbox']),
 })
 
-const createNonSandboxHooks = () => new Hooks({
+const createNonSandboxHooks = dev => new Hooks({
   // Intercept into the last phase of environment setting
   environment: new AsyncParallelHook(['context']),
   // Intercept into the last phase of webpack config generating
   webpackConfig: {
     hook: new SyncHook(['webpackConfig', 'options']),
-    plan: 2
+    plan: dev
+      ? 2
+      // We will run next/build when it is not in dev mode
+      // TODO: it will call hook.webpackConfig 4 times, try to improve this
+      : 4
   },
 
   serverConfig: new SyncHook(['roeConfig']),
-  nextConfig: new SyncHook(['nextConfig'])
+  nextConfig: {
+    hook: new SyncHook(['nextConfig']),
+    plan: dev
+      ? 1
+      : 2
+  }
 })
 
 class Lifecycle {
   constructor ({
     sandbox = false,
-    configLoader
+    configLoader,
+    dev
   }) {
     this._sandbox = sandbox
     this._configLoader = configLoader
+    this._dev = dev
 
     // Prevent plugins from accessing Lifecycle methods
     this._applyTarget = {
       hooks: sandbox
         ? createSandboxHooks()
-        : createNonSandboxHooks()
+        : createNonSandboxHooks(this._dev)
     }
   }
 

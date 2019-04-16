@@ -84,7 +84,12 @@ const reduceNextConfigs = chain => chain.reduce((prev, {
   // ```
   // withPlugins <- createNextWithPlugins(prev)
   const result = next(createNextWithPlugins(prev))
-  return checkResult(result, key, configFile)
+
+  if (!isFunction(result)) {
+    throw error('INVALID_NEXT_RETURN_VALUE', configFile)
+  }
+
+  return result
 }, UNDEFINED)
 
 const createConfigChainReducer = ({
@@ -300,10 +305,6 @@ class ConfigLoader {
 
     if (!nextConfig) {
       throw error('NEXT_CONFIG_NOT_FOUND')
-    }
-
-    if (nextConfig.webpack) {
-      throw error('UNEXPECTED_NEXT_WEBPACK')
     }
 
     return nextConfig
