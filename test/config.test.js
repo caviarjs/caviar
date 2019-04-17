@@ -77,6 +77,15 @@ test('next sub', t => {
   })
 })
 
+test('next extend from an empty base', t => {
+  const cl = createAndLoad('next-extends-empty')
+  const nextConfig = cl.next('phase', {})
+
+  t.deepEqual(nextConfig, {
+    distDir: cl.path
+  })
+})
+
 test('fake plugins', t => {
   createAndTestReload('fake-plugins')
   .test(cl => {
@@ -87,4 +96,21 @@ test('fake plugins', t => {
     t.is(plugins.length, 1)
     t.is(plugins[0].name, 'fake-plugin')
   })
+})
+
+test('fake plugins extends empty', t => {
+  createAndTestReload('fake-plugins-extends-empty')
+  .test(cl => {
+    const {
+      plugins
+    } = cl
+
+    t.is(plugins.length, 1)
+    t.is(plugins[0].name, 'fake-plugin')
+  })
+})
+
+test('server', t => {
+  const cl = createAndLoad('server')
+  t.deepEqual(cl.server(), {a: 1})
 })
