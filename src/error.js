@@ -27,23 +27,28 @@ class Prefixer {
 
 const PREFIX = (...args) => new Prefixer(...args)
 
+const INVALID_OPTIONS = 'options must be an object, but got `%s`'
+const INVALID_CWD = 'options.cwd must be a string, but got `%s`'
+
 PREFIX('SANDBOX', 'sandbox', TypeError)
-.E('SANDBOX_INVALID_OPTIONS',
-  'options must be an object, but got `%s`')
+.E('INVALID_OPTIONS', INVALID_OPTIONS)
 
-.E('SANDBOX_INVALID_SERVER_PATH',
+.E('INVALID_SERVER_PATH',
   'options.serverClassPath must be a string, but got `%s`')
 
-.E('SANDBOX_INVALID_LOADER_PATH',
+.E('INVALID_LOADER_PATH',
   'options.serverClassPath must be a string, but got `%s`')
 
-.E('SANDBOX_INVALID_CWD',
-  'options.cwd must be a string, but got `%s`')
+.E('INVALID_CWD', INVALID_CWD)
 
 .E('PRESERVED_ENV_KEY',
   'env key "%s" is preserved by caviar', RangeError)
 
 PREFIX('CONFIG_LOADER', 'config-loader')
+.E('INVALID_OPTIONS', INVALID_OPTIONS, TypeError)
+
+.E('INVALID_CWD', INVALID_CWD, TypeError)
+
 .E('PATH_GETTER_REQUIRED',
   'getter "path" is required on ConfigLoader.prototype')
 
@@ -73,6 +78,10 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .E('CONFIG_ERRORED', 'fails to load config file "%s", reason:\n%s')
 
 PREFIX('SERVER', 'server')
+.E('INVALID_OPTIONS', INVALID_OPTIONS, TypeError)
+
+.E('INVALID_CWD', INVALID_CWD, TypeError)
+
 .E('NOT_READY', 'server.listen() called before the server is ready')
 
 .E('LOAD_CONFIG_LOADER_FAILS',

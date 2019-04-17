@@ -3,7 +3,7 @@ const {parse} = require('url')
 const EE = require('events')
 const log = require('util').debuglog('caviar')
 
-const {isString, isNumber} = require('core-util-is')
+const {isString, isNumber, isObject} = require('core-util-is')
 const e2k = require('express-to-koa')
 const {serve} = require('egg-serve-static')
 
@@ -71,13 +71,23 @@ const createNextMiddleware = nextApp => {
 }
 
 class Server extends EE {
-  constructor ({
-    cwd,
-    port,
-    dev,
-    configLoaderClassPath
-  }) {
+  constructor (options) {
     super()
+
+    if (!isObject(options)) {
+      throw error('INVALID_OPTIONS', options)
+    }
+
+    const {
+      cwd,
+      port,
+      dev,
+      configLoaderClassPath
+    } = options
+
+    if (!isString(cwd)) {
+      throw error('INVALID_CWD', cwd)
+    }
 
     this._cwd = cwd
     this._port = port

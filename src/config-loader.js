@@ -162,9 +162,19 @@ const addConfigPath = (paths, {
 const CONFIG_FILE_NAME = 'caviar.config'
 
 class ConfigLoader {
-  constructor ({
-    cwd
-  }) {
+  constructor (options) {
+    if (!isObject(options)) {
+      throw error('INVALID_OPTIONS', options)
+    }
+
+    const {
+      cwd
+    } = options
+
+    if (!isString(cwd)) {
+      throw error('INVALID_CWD', cwd)
+    }
+
     this._cwd = cwd
     this._paths = null
     this._chain = []

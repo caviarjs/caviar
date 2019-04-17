@@ -1,6 +1,9 @@
 const test = require('ava')
 // const log = require('util').debuglog('caviar')
 const {fixture, create} = require('./fixtures/config-loader/create')
+const {
+  ConfigLoader: CL
+} = require('../src')
 
 test('base: getPaths()', t => {
   const FAKE_BASE = 'fake-base'
@@ -49,6 +52,8 @@ const ERROR_CASES = [
   ['error-config-errored', 'CONFIG_ERRORED', () => {}]
 ]
 
+const CODE = suffix => `CONFIG_LOADER_${suffix}`
+
 ERROR_CASES.forEach(([dir, suffix, runner]) => {
   test(`error: ${dir}`, t => {
     const ConfigLoader = require(fixture(dir, 'config-loader.js'))
@@ -57,7 +62,7 @@ ERROR_CASES.forEach(([dir, suffix, runner]) => {
       cwd: fixture('app')
     })
 
-    const code = `CONFIG_LOADER_${suffix}`
+    const code = CODE(suffix)
 
     t.throws(() => {
       cl.getPaths()
@@ -69,5 +74,17 @@ ERROR_CASES.forEach(([dir, suffix, runner]) => {
     }, {
       code
     })
+  })
+})
+
+test('invalid options', t => {
+  t.throws(() => new CL(), {
+    code: CODE('INVALID_OPTIONS')
+  })
+})
+
+test('invalid cwd', t => {
+  t.throws(() => new CL({}), {
+    code: CODE('INVALID_CWD')
   })
 })
