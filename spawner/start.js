@@ -20,4 +20,5 @@ new Server(options).ready()
 })
 .catch(err => {
   console.error(`fails to start, reason:\n${err.stack}`)
+  process.exit(1)
 })

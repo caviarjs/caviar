@@ -291,14 +291,15 @@ class Server extends EE {
   _createServer () {
     log('create server app')
 
-    this._server = require('http').createServer(this._serverApp.callback())
+    const server = require('http').createServer(this._serverApp.callback())
 
-    const server = this._server
     server.on('error', err => {
       this.emit('error', err)
     })
 
     this._serverApp.emit('server', server)
+
+    return server
   }
 
   _applyNextHandler () {
@@ -351,7 +352,11 @@ class Server extends EE {
   }
 
   get server () {
-    return this._server
+    if (this._server) {
+      return this._server
+    }
+
+    return this._server = this._createServer()
   }
 
   async ready () {
@@ -361,8 +366,8 @@ class Server extends EE {
     await this._initEnv()
     await this._nextBuild()
     await this._createNextApp()
+
     await this._createServerApp()
-    this._createServer()
     this._applyNextHandler()
 
     this._ready = true
@@ -376,7 +381,7 @@ class Server extends EE {
 
     port = port || this._port || this._configLoader.prop('port')
 
-    this._server.listen(port, () => {
+    this.server.listen(port, () => {
       /* eslint-disable no-console */
       console.log(`server started at http://127.0.0.1:${port}`)
       /* eslint-enable no-console */
@@ -384,7 +389,7 @@ class Server extends EE {
   }
 
   close () {
-    this._server.close()
+    this.server.close()
   }
 }
 
