@@ -9,12 +9,12 @@ test('base: getPaths()', t => {
 
   t.deepEqual(cl.getPaths(), [
     {
-      serverPath: fixture(FAKE_BASE),
+      caviarPath: fixture(FAKE_BASE),
       configFileName: 'caviar.config'
     },
 
     {
-      serverPath: fixture('app'),
+      caviarPath: fixture('app'),
       configFileName: 'caviar.config'
     }
   ])
@@ -38,11 +38,15 @@ test('base: getPaths()', t => {
 
 const ERROR_CASES = [
   ['error-no-path', 'PATH_GETTER_REQUIRED'],
-  ['error-number-path', 'INVALID_SERVER_PATH'],
-  ['error-path-not-exists', 'SERVER_PATH_NOT_EXISTS'],
+  ['error-path-not-exists', 'PATH_NOT_EXISTS'],
+  ['error-number-path', 'INVALID_PATH'],
   ['error-config-name', 'INVALID_CONFIG_FILE_NAME'],
+  ['error-invalid-webpack', 'INVALID_CONFIG_FIELD', cl => cl.webpack({})],
   ['error-return-value', 'INVALID_RETURN_VALUE', cl => cl.server({})],
-  ['error-webpack-return-value', 'INVALID_RETURN_VALUE', cl => cl.webpack({})]
+  ['error-webpack-return-value', 'INVALID_RETURN_VALUE', cl => cl.webpack({})],
+  ['error-next-return-value', 'INVALID_NEXT_RETURN_VALUE', cl => cl.next({})],
+  ['error-env-conflicts', 'ENV_CONFLICTS', cl => cl.env],
+  ['error-config-errored', 'CONFIG_ERRORED', () => {}]
 ]
 
 ERROR_CASES.forEach(([dir, suffix, runner]) => {

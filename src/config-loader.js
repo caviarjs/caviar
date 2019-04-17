@@ -144,17 +144,17 @@ const reduceWebpackConfigs = createConfigChainReducer({
     factory(prev, options, webpack)
 })
 
-const createFinder = realpath => ({serverPath: p}) => realpath === p
+const createFinder = realpath => ({caviarPath: p}) => realpath === p
 const addConfigPath = (paths, {
-  serverPath,
+  caviarPath,
   configFileName
 }, append) => {
-  if (paths.findIndex(createFinder(serverPath)) === - 1) {
+  if (paths.findIndex(createFinder(caviarPath)) === - 1) {
     const method = append
       ? 'push'
       : 'unshift'
     paths[method]({
-      serverPath,
+      caviarPath,
       configFileName
     })
   }
@@ -208,7 +208,7 @@ class ConfigLoader {
       }
 
       const {
-        path: serverPath,
+        path: caviarPath,
         // We allow not to override this getter
         configFileName
       } = proto
@@ -226,23 +226,23 @@ class ConfigLoader {
         break
       }
 
-      if (!isString(serverPath)) {
-        throw error('INVALID_SERVER_PATH', serverPath)
+      if (!isString(caviarPath)) {
+        throw error('INVALID_PATH', caviarPath)
       }
 
-      if (!fs.existsSync(serverPath)) {
-        throw error('SERVER_PATH_NOT_EXISTS', serverPath)
+      if (!fs.existsSync(caviarPath)) {
+        throw error('PATH_NOT_EXISTS', caviarPath)
       }
 
-      const realpath = fs.realpathSync(serverPath)
+      const realpath = fs.realpathSync(caviarPath)
       addConfigPath(paths, {
-        serverPath: realpath,
+        caviarPath: realpath,
         configFileName
       }, false)
     }
 
     addConfigPath(paths, {
-      serverPath: this._cwd,
+      caviarPath: this._cwd,
       configFileName: latestConfigFileName
     }, true)
 
@@ -254,10 +254,10 @@ class ConfigLoader {
 
   load () {
     this.getPaths().forEach(({
-      serverPath,
+      caviarPath,
       configFileName
     }) => {
-      const rawConfig = getRawConfig(serverPath, configFileName)
+      const rawConfig = getRawConfig(caviarPath, configFileName)
       if (rawConfig) {
         this._chain.push(rawConfig)
       }

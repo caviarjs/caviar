@@ -21,7 +21,7 @@ test('no config: loader and app same dir', t => {
   const cl = create('fake-base', 'fake-base')
 
   t.deepEqual(cl.getPaths(), [{
-    serverPath: fixture('fake-base'),
+    caviarPath: fixture('fake-base'),
     configFileName: 'caviar.config'
   }], 'should not duplicate')
 })

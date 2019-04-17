@@ -1,8 +1,11 @@
 const {
-  Errors
+  Errors,
+  exitOnNotDefined
 } = require('err-object')
 
-const {E, error} = new Errors()
+const {E, error} = new Errors({
+  notDefined: exitOnNotDefined
+})
 
 class Prefixer {
   constructor (codePrefix, messagePrefix, ctor = Error) {

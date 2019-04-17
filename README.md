@@ -15,7 +15,7 @@
 [![Dependency Status](https://david-dm.org/kaelzhang/caviar.svg)](https://david-dm.org/kaelzhang/caviar)
 -->
 
-A pluggable and extendable web framework which integrates React, Next and Koa to create your own web application out of the box with even zero configuration.
+A pluggable and extendable web framework which integrates React, Next and Koa(Eggjs) to create your own web application out of the box with even zero configuration.
 
 ## Getting Started
 
@@ -43,8 +43,17 @@ project/
 
 ## Thinking in `caviar`
 
+****
 
-## Usage
+> The sections below is for development purpose
+
+## Extend `caviar` for your own business
+
+### Config chain
+
+## How to write caviar plugins
+
+## API Documentation
 
 ```js
 const {
@@ -61,6 +70,7 @@ const {
   - **port?** `number` server port
   - **dev?** `boolean=false` whether is for development purpose
   - **serverClassPath?** `path` the file path of the `Server` class. Defaults to the `Server` class path of the `caviar` project.
+  - **configLoaderClassPath?** `path` the file path of the `ConfigLoader` class
 
 Creates a new sandbox. Sandbox is design to filter the environment variables.
 
@@ -74,6 +84,7 @@ Start the sandbox, and it will create a new `Server` by passing `{cwd, port, dev
   - **cwd**
   - **port?** `Number` `options.port` will override `config.port` of `caviar.config.js`
   - **dev?**
+  - **configLoaderClassPath?**
 
 Create a new `Server`
 
@@ -96,18 +107,6 @@ Initialize the server
 - **port?** `number` server port. If `port` is specified, it will override `options.port`.
 
 This method must **NOT** be called after the server is ready (`await server.ready()`)
-
-****
-
-> The sections below is for development purpose
-
-## Extend `caviar` for your own business
-
-### Config chain
-
-## How to write caviar plugins
-
-
 
 ## License
 
