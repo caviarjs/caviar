@@ -1,7 +1,8 @@
 const test = require('ava')
 const {
   createRequest,
-  removeWebpackDllCache
+  removeWebpackDllCache,
+  testNextResources
 } = require('./fixtures/complex/create')
 
 const DEVS = [true, false]
@@ -27,5 +28,7 @@ DEVS.forEach(dev => {
 
     t.true(html.includes('<div>en</div>'))
     t.true(html.includes('<div>hello</div>'))
+
+    await testNextResources(t, html, request)
   })
 })

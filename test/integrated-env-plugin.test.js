@@ -2,7 +2,8 @@ const test = require('ava')
 
 const {
   createRequest,
-  removeWebpackDllCache
+  removeWebpackDllCache,
+  testNextResources
 } = require('./fixtures/complex/create')
 
 process.env.CAVIAR_APP_TYPE = 'FAKE_ENV_PLUGIN'
@@ -26,4 +27,6 @@ test(`simple with plugin`, async t => {
 
   t.true(html.includes('<div>en</div>'))
   t.true(html.includes('<div>dismiss</div>'))
+
+  await testNextResources(t, html, request)
 })

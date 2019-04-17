@@ -60,6 +60,22 @@ const createRequest = async options => {
 const removeWebpackDllCache = () =>
   remove(root('node_modules', '.cache'))
 
+const REGIX_MATCH_JS = /href="([^"]+)"/
+const testNextResources = async (t, text, request) => {
+  const matched = text.match(REGIX_MATCH_JS)
+
+  if (!matched) {
+    return
+  }
+
+  const js = matched[1]
+  const {
+    text: jsContent
+  } = await request.get(js)
+
+  t.true(jsContent.includes('webpackJson'), 'should contains webpack')
+}
+
 module.exports = {
   fixture,
   root,
@@ -67,5 +83,6 @@ module.exports = {
   create,
   createAndLoad,
   createRequest,
-  removeWebpackDllCache
+  removeWebpackDllCache,
+  testNextResources
 }
