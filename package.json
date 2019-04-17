@@ -50,6 +50,7 @@
     "eslint": "^5.16.0",
     "eslint-config-ostai": "^3.0.0",
     "eslint-plugin-import": "^2.17.2",
+    "fs-extra": "^7.0.1",
     "nyc": "^14.0.0",
     "react": "^16.8.6",
     "roe-define-router": "^1.0.0",
@@ -57,7 +58,6 @@
   },
   "dependencies": {
     "@babel/runtime-corejs2": "^7.4.3",
-    "after-ready": "^1.0.8",
     "core-util-is": "^1.0.2",
     "cross-spawn": "^6.0.5",
     "dotenv": "^7.0.0",

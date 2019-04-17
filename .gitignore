@@ -1,6 +1,9 @@
 # babel dist
 /lib
 
+# fixtures
+/test/fixtures/complex/simple-*
+
 # next
 /test/fixtures/**/.next
 
