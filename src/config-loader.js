@@ -196,13 +196,6 @@ class ConfigLoader {
     while (proto) {
       proto = Object.getPrototypeOf(proto)
 
-      // Actually, it encountered an abnormal situation,
-      // that `this` is not an instance of `ConfigLoader`'s subclass.
-      // However, we accept this situation
-      if (proto === Object.prototype) {
-        break
-      }
-
       if (!hasOwnProperty(proto, 'path')) {
         throw error('PATH_GETTER_REQUIRED')
       }

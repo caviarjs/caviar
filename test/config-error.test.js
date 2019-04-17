@@ -42,6 +42,8 @@ const ERROR_CASES = [
   ['error-number-path', 'INVALID_PATH'],
   ['error-config-name', 'INVALID_CONFIG_FILE_NAME'],
   ['error-invalid-webpack', 'INVALID_CONFIG_FIELD', cl => cl.webpack({})],
+  ['error-invalid-env', 'INVALID_CONFIG_FIELD', cl => cl.env],
+  ['error-invalid-next', 'INVALID_CONFIG_FIELD', cl => cl.next],
   ['error-return-value', 'INVALID_RETURN_VALUE', cl => cl.server({})],
   ['error-webpack-return-value', 'INVALID_RETURN_VALUE', cl => cl.webpack({})],
   ['error-next-return-value', 'INVALID_NEXT_RETURN_VALUE', cl => cl.next({})],

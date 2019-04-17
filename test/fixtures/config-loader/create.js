@@ -9,7 +9,27 @@ const create = (configPath, appPath = 'app') => {
   })
 }
 
+const createAndLoad = (...args) => {
+  const cl = create(...args)
+  cl.load()
+  return cl
+}
+
+const createAndTestReload = (...args) => {
+  const cl = createAndLoad(...args)
+
+  return {
+    test (fn) {
+      fn(cl)
+      cl.reload()
+      fn(cl)
+    }
+  }
+}
+
 module.exports = {
   fixture,
-  create
+  create,
+  createAndLoad,
+  createAndTestReload
 }

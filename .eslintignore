@@ -3,3 +3,4 @@
 src/env.js
 !test
 !stage
+test/fixtures/config-loader/error-config-errored/caviar.config.js

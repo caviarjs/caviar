@@ -5,11 +5,13 @@
   "main": "src/index.js",
   "scripts": {
     "build:node": "babel stage --out-dir src",
-    "test": "nyc ava --timeout=10s",
-    "test-no-report": "NODE_DEBUG=caviar nyc ava --timeout=10s --verbose",
+    "test": "nyc ava --timeout=10s --verbose",
+    "test:only": "NODE_DEBUG=caviar nyc ava --timeout=10s --verbose",
     "lint": "eslint .",
     "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "prepublishOnly": "npm run build:node"
+    "prepublishOnly": "npm run build:node",
+    "report:dev": "nyc report --reporter=html && open coverage/index.html",
+    "test:dev": "npm run test && npm run report:dev"
   },
   "files": [
     "bin/",
