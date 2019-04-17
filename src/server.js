@@ -235,14 +235,16 @@ class Server extends EE {
   async _createNextApp () {
     log('create next app')
 
+    const conf = this._nextConfig = this._createNextConfig(
+      this._dev
+        ? PHASE_DEVELOPMENT_SERVER
+        : PHASE_PRODUCTION_SERVER
+    )
+
     const app = this._nextApp = next({
       // TODO
       dev: this._dev,
-      conf: this._createNextConfig(
-        this._dev
-          ? PHASE_DEVELOPMENT_SERVER
-          : PHASE_PRODUCTION_SERVER
-      ),
+      conf,
       dir: this._cwd
     })
 
@@ -329,7 +331,10 @@ class Server extends EE {
       maxAge
     }
 
+    // TODO: no hard coding
     serve(app, '/static', this.resolve('static'), options)
+
+    // TODO: no hard coding
     serve(app, '/_next/static', this.resolve(distDir, 'static'), options)
   }
 

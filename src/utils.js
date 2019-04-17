@@ -85,6 +85,21 @@ const requireModule = name => {
   return module.default || module
 }
 
+const createAddBuiltinModule = webpackConfig => {
+  const {
+    resolve: {
+      alias
+    }
+  } = webpackConfig
+
+  return (name, resolved, exact) => {
+    const aliasName = exact
+      ? `${name}$`
+      : name
+    alias[aliasName] = resolved
+  }
+}
+
 const NODE_MODULES = path.join(__dirname, '..', 'node_modules')
 const DELIMITER = '/'
 
@@ -107,18 +122,14 @@ const getPackageRoot = name =>
   path.join(NODE_MODULES, ...name.split(DELIMITER))
 
 const addResolveAliases = webpackConfig => {
-  const {
-    resolve: {
-      alias
-    }
-  } = webpackConfig
+  const addBuiltinModule = createAddBuiltinModule(webpackConfig)
 
   BUILTIN_COLLECTION_PACKAGES.forEach(name => {
-    alias[name] = getPackageRoot(name)
+    addBuiltinModule(name, getPackageRoot(name))
   })
 
   BUILTIN_PACKAGES.forEach(name => {
-    alias[name] = require.resolve(name)
+    addBuiltinModule(name, require.resolve(name), true)
   })
 }
 
@@ -127,5 +138,6 @@ module.exports = {
   getRawConfig,
   inspect,
   requireModule,
+  createAddBuiltinModule,
   addResolveAliases
 }
