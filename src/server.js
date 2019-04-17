@@ -3,7 +3,9 @@ const {parse} = require('url')
 const EE = require('events')
 const log = require('util').debuglog('caviar')
 
-const {isString, isNumber, isObject} = require('core-util-is')
+const {
+  isString, isNumber, isObject, isFunction
+} = require('core-util-is')
 const e2k = require('express-to-koa')
 const {serve} = require('egg-serve-static')
 
@@ -96,9 +98,6 @@ class Server extends EE {
     this._dev = dev
 
     this._ready = false
-
-    // this._rawConfig = null
-    // this._configFile = undefined
 
     this._appPkg = null
     this._lifecycle = null
@@ -344,13 +343,13 @@ class Server extends EE {
     }
 
     // TODO: no hard coding
-    serve(app, '/static', this.resolve('static'), options)
+    serve(app, '/static', this._resolve('static'), options)
 
     // TODO: no hard coding
-    serve(app, '/_next/static', this.resolve(distDir, 'static'), options)
+    serve(app, '/_next/static', this._resolve(distDir, 'static'), options)
   }
 
-  resolve (...args) {
+  _resolve (...args) {
     return path.join(this._cwd, ...args)
   }
 
@@ -360,6 +359,10 @@ class Server extends EE {
     }
 
     return this._server = this._createServer()
+  }
+
+  get port () {
+    return this._port
   }
 
   async ready () {
@@ -385,6 +388,11 @@ class Server extends EE {
   }
 
   listen (port, callback) {
+    if (isFunction(port)) {
+      callback = port
+      port = undefined
+    }
+
     const realPort = port
       || this._port
       || this._configLoader && this._configLoader.prop('port')
@@ -392,6 +400,8 @@ class Server extends EE {
     if (!isNumber(realPort)) {
       throw error('INVALID_PORT', realPort)
     }
+
+    this._port = realPort
 
     return this.server.listen(realPort, callback)
   }

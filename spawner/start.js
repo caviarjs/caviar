@@ -17,7 +17,9 @@ const Server = requireModule(serverClassPath)
 
 new Server(options).ready()
 .then(server => {
-  server.listen()
+  server.listen(() => {
+    console.log(`server started at http://localhost:${server.port}`)
+  })
 })
 .catch(err => {
   console.error(`fails to start, reason:\n${err.stack}`)

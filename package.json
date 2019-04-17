@@ -47,6 +47,7 @@
     "eslint-config-ostai": "^3.0.0",
     "eslint-plugin-import": "^2.17.2",
     "fs-extra": "^7.0.1",
+    "get-port": "^5.0.0",
     "nyc": "^14.0.0",
     "react": "^16.8.6",
     "roe-define-router": "^1.0.0",
