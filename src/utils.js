@@ -3,6 +3,7 @@ const fs = require('fs')
 const util = require('util')
 const log = require('util').debuglog('caviar')
 const {parse} = require('dotenv')
+const {isString} = require('core-util-is')
 
 const {error} = require('./error')
 
@@ -85,6 +86,19 @@ const requireModule = name => {
   return module.default || module
 }
 
+const requireConfigLoader = (configLoaderClassPath, createError) => {
+  if (!isString(configLoaderClassPath)) {
+    throw createError('INVALID_CONFIG_LOADER_CLASS_PATH',
+      configLoaderClassPath)
+  }
+
+  try {
+    return requireModule(configLoaderClassPath)
+  } catch (err) {
+    throw createError('LOAD_CONFIG_LOADER_FAILS', err.stack)
+  }
+}
+
 const createAddBuiltinModule = webpackConfig => {
   const {
     resolve: {
@@ -138,6 +152,7 @@ module.exports = {
   getRawConfig,
   inspect,
   requireModule,
+  requireConfigLoader,
   createAddBuiltinModule,
   addResolveAliases
 }

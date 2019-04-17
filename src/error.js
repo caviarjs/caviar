@@ -29,15 +29,18 @@ const PREFIX = (...args) => new Prefixer(...args)
 
 const INVALID_OPTIONS = 'options must be an object, but got `%s`'
 const INVALID_CWD = 'options.cwd must be a string, but got `%s`'
+const INVALID_CONFIG_LOADER_CLASS_PATH = 'options.configLoaderClassPath must be a string, but got `%s`'
+const LOAD_CONFIG_LOADER_FAILS = 'fails to load class ConfigLoader, reason:\n%s'
 
 PREFIX('SANDBOX', 'sandbox', TypeError)
 .E('INVALID_OPTIONS', INVALID_OPTIONS)
 
-.E('INVALID_SERVER_PATH',
+.E('INVALID_SERVER_CLASS_PATH',
   'options.serverClassPath must be a string, but got `%s`')
 
-.E('INVALID_LOADER_PATH',
-  'options.serverClassPath must be a string, but got `%s`')
+.E('INVALID_CONFIG_LOADER_CLASS_PATH', INVALID_CONFIG_LOADER_CLASS_PATH)
+
+.E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
 
 .E('INVALID_CWD', INVALID_CWD)
 
@@ -84,12 +87,10 @@ PREFIX('SERVER', 'server')
 
 .E('NOT_READY', 'server.listen() called before the server is ready')
 
-.E('LOAD_CONFIG_LOADER_FAILS',
-  'fails to load class ConfigLoader, reason:\n%s')
+.E('INVALID_CONFIG_LOADER_CLASS_PATH',
+  INVALID_CONFIG_LOADER_CLASS_PATH, TypeError)
 
-.E('INVALID_CLASS_PATH',
-  'options.configLoaderClassPath must be a string, but got `%s`',
-  TypeError)
+.E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
 
 .E('INVALID_PORT', 'port must be a number, but got `%s`', TypeError)
 

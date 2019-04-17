@@ -12,7 +12,7 @@ test('class path not defined', t => {
   const s = new Server({
     cwd: __dirname
   })
-  throws(t, () => s._initConfigLoader(), 'INVALID_CLASS_PATH')
+  throws(t, () => s._initConfigLoader(), 'INVALID_CONFIG_LOADER_CLASS_PATH')
 })
 
 test('config loader not found', t => {

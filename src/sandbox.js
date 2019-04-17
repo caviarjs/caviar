@@ -5,6 +5,7 @@ const spawn = require('cross-spawn')
 
 const {createError} = require('./error')
 const {Lifecycle} = require('./lifecycle')
+const {requireConfigLoader} = require('./utils')
 
 const error = createError('SANDBOX')
 
@@ -59,11 +60,7 @@ module.exports = class Sandbox {
     } = options
 
     if (!isString(serverClassPath)) {
-      throw error('INVALID_SERVER_PATH', serverClassPath)
-    }
-
-    if (!isString(configLoaderClassPath)) {
-      throw error('INVALID_LOADER_PATH', configLoaderClassPath)
+      throw error('INVALID_SERVER_CLASS_PATH', serverClassPath)
     }
 
     if (!isString(cwd)) {
@@ -90,7 +87,8 @@ module.exports = class Sandbox {
   }
 
   get ConfigLoader () {
-    return require(this._options.configLoaderClassPath)
+    return requireConfigLoader(
+      this._options.configLoaderClassPath, error)
   }
 
   // ## Usage

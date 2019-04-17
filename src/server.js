@@ -19,7 +19,9 @@ const {code} = require('env-to-code')
 
 const {Lifecycle} = require('./lifecycle')
 const {createError} = require('./error')
-const {requireModule, addResolveAliases} = require('./utils')
+const {
+  requireModule, addResolveAliases, requireConfigLoader
+} = require('./utils')
 
 const error = createError('SERVER')
 
@@ -119,17 +121,7 @@ class Server extends EE {
   }
 
   get ConfigLoader () {
-    const configLoaderClassPath = this._configLoaderClassPath
-
-    if (!isString(configLoaderClassPath)) {
-      throw error('INVALID_CLASS_PATH', configLoaderClassPath)
-    }
-
-    try {
-      return requireModule(configLoaderClassPath)
-    } catch (err) {
-      throw error('LOAD_CONFIG_LOADER_FAILS', err.stack)
-    }
+    return requireConfigLoader(this._configLoaderClassPath, error)
   }
   /////////////////////////////////////////////////////////////////////
 
