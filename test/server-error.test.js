@@ -36,3 +36,11 @@ test('invalid port', t => {
   })
   throws(t, () => s.listen(), 'INVALID_PORT')
 })
+
+test('invalid options', t => {
+  throws(t, () => new Server(), 'INVALID_OPTIONS')
+})
+
+test('invalid cwd', t => {
+  throws(t, () => new Server({}), 'INVALID_CWD')
+})

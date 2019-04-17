@@ -354,14 +354,6 @@ class Server extends EE {
     return path.join(this._cwd, ...args)
   }
 
-  get next () {
-    return this._nextApp
-  }
-
-  get app () {
-    return this._serverApp
-  }
-
   get server () {
     if (this._server) {
       return this._server
@@ -389,7 +381,7 @@ class Server extends EE {
       throw error('NOT_READY')
     }
 
-    return this.app.callback()
+    return this._serverApp.callback()
   }
 
   listen (port, callback) {

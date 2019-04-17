@@ -14,7 +14,7 @@ const createSandboxClass = name => class extends S {
 
 test('basic', async t => {
   const Sandbox = createSandboxClass('spawner')
-  const child = await new Sandbox({
+  await new Sandbox({
     cwd: __dirname
   }).start()
 
