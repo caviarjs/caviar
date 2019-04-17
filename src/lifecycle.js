@@ -10,7 +10,7 @@ const {
 // const {readConfig} = require('./utils')
 
 const createSandboxHooks = () => new Hooks({
-  sandboxEnvironment: new SyncHook(['sandbox']),
+  sandboxEnvironment: new AsyncParallelHook(['sandbox']),
 })
 
 const createNonSandboxHooks = () => new Hooks({

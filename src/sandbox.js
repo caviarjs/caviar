@@ -27,19 +27,21 @@ const PRIVATE_ENV_KEYS = [
   'CAVIAR_DEV'
 ]
 
-const createInheritEnv = host => key => {
+const createAddEnv = host => (key, value) => {
+  if (value !== undefined) {
+    host[key] = value
+  }
+}
+
+const createInheritEnv = add => key => {
   if (PRIVATE_ENV_KEYS.includes(key)) {
     throw error('PRESERVED_ENV_KEY', key)
   }
 
-  const variable = process.env[key]
-  if (variable) {
-    host[key] = variable
-  }
+  add(key, process.env[key])
 }
 
-const ensureEnv = host => {
-  const inheritEnv = createInheritEnv(host)
+const ensureEnv = inheritEnv => {
   ESSENTIAL_ENV_KEYS.forEach(inheritEnv)
 }
 
@@ -71,7 +73,7 @@ module.exports = class Sandbox {
       serverClassPath,
       configLoaderClassPath,
       cwd,
-      dev,
+      dev: !!dev,
       port
     }
 
@@ -101,7 +103,7 @@ module.exports = class Sandbox {
   // const child = await env.spawn(command, args)
   // child.on('')
   // ```
-  spawn (command, args, options = {}) {
+  async spawn (command, args, options = {}) {
     if (!options.stdio) {
       options.stdio = 'inherit'
     }
@@ -115,7 +117,10 @@ module.exports = class Sandbox {
       options.env.CAVIAR_DEV = true
     }
 
-    ensureEnv(options.env)
+    const addEnv = createAddEnv(options.env)
+    const inheritEnv = createInheritEnv(addEnv)
+
+    ensureEnv(inheritEnv)
 
     const lifecycle = new Lifecycle({
       sandbox: true,
@@ -125,11 +130,12 @@ module.exports = class Sandbox {
     lifecycle.applyPlugins()
 
     const sandbox = {
-      inheritEnv: createInheritEnv(options.env)
+      inheritEnv,
+      addEnv
     }
 
     // Apply sandbox env plugins
-    lifecycle.hooks.sandboxEnvironment.call(sandbox)
+    await lifecycle.hooks.sandboxEnvironment.promise(sandbox)
 
     log('spawn: %s %j', command, args)
 
@@ -143,11 +149,11 @@ module.exports = class Sandbox {
     return child
   }
 
-  async start () {
+  start () {
     const command = 'node'
 
     // TODO: child process events
-    await this.spawn(
+    return this.spawn(
       command, [
         this.spawner,
         JSON.stringify(this._options)
