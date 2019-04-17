@@ -85,9 +85,47 @@ const requireModule = name => {
   return module.default || module
 }
 
+const NODE_MODULES = path.join(__dirname, '..', 'node_modules')
+const DELIMITER = '/'
+
+// By default, `next/babel`, ie the default babel preset of next,
+// requires these modules
+
+// A collection package is the package that we will require by
+// ```js
+// require('package-name/some-module')
+// ```
+const BUILTIN_COLLECTION_PACKAGES = [
+  '@babel/runtime-corejs2'
+]
+
+const BUILTIN_PACKAGES = [
+  'react-dom'
+]
+
+const getPackageRoot = name =>
+  path.join(NODE_MODULES, ...name.split(DELIMITER))
+
+const addResolveAliases = webpackConfig => {
+  const {
+    resolve: {
+      alias
+    }
+  } = webpackConfig
+
+  BUILTIN_COLLECTION_PACKAGES.forEach(name => {
+    alias[name] = getPackageRoot(name)
+  })
+
+  BUILTIN_PACKAGES.forEach(name => {
+    alias[name] = require.resolve(name)
+  })
+}
+
 module.exports = {
   hasOwnProperty,
   getRawConfig,
   inspect,
-  requireModule
+  requireModule,
+  addResolveAliases
 }

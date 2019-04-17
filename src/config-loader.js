@@ -119,7 +119,6 @@ const createConfigChainReducer = ({
     }
 
     const result = runner(factory, prevConfig, ...args)
-
     return run(checkResult(result, key, configFile), i + 1)
   }
 

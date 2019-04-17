@@ -19,7 +19,7 @@ const {code} = require('env-to-code')
 
 const {Lifecycle} = require('./lifecycle')
 const {createError} = require('./error')
-const {requireModule} = require('./utils')
+const {requireModule, addResolveAliases} = require('./utils')
 
 const error = createError('SERVER')
 
@@ -197,6 +197,8 @@ class Server extends EE {
       if (nextConfig.webpack) {
         config = nextConfig.webpack(config, options)
       }
+
+      addResolveAliases(config)
 
       this._lifecycle.hooks.webpackConfig.call(config, {
         isServer: options.isServer
