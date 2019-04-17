@@ -5,6 +5,20 @@ const config = module.exports = {
   plugins: []
 }
 
+if (process.env.CAVIAR_INCLUDE_SANDBOX_PLUGIN) {
+  config.plugins.push({
+    sandbox: true,
+    apply (lifecycle) {
+      lifecycle.hooks.sandboxEnvironment.tap(
+        'FakeSandboxEnvPlugin',
+        ({inheritEnv}) => {
+          inheritEnv('HELLO_WORLD2')
+        }
+      )
+    }
+  })
+}
+
 switch (process.env.CAVIAR_APP_TYPE) {
 case 'FAKE_ENV_PLUGIN':
   config.plugins.push({

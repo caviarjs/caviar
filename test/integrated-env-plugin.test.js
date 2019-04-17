@@ -2,13 +2,11 @@ const test = require('ava')
 
 const {
   createRequest,
-  removeWebpackDllCache,
   testNextResources
 } = require('./fixtures/complex/create')
 
+process.env.CAVIAR_INCLUDE_SANDBOX_PLUGIN = 1
 process.env.CAVIAR_APP_TYPE = 'FAKE_ENV_PLUGIN'
-
-test.before(removeWebpackDllCache)
 
 test(`simple with plugin`, async t => {
   const {request} = await createRequest({

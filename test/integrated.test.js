@@ -1,13 +1,10 @@
 const test = require('ava')
 const {
   createRequest,
-  removeWebpackDllCache,
   testNextResources
 } = require('./fixtures/complex/create')
 
 const DEVS = [true, false]
-
-test.before(removeWebpackDllCache)
 
 DEVS.forEach(dev => {
   test(`simple, dev: ${dev}`, async t => {

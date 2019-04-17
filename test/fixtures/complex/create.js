@@ -57,9 +57,6 @@ const createRequest = async options => {
   }
 }
 
-const removeWebpackDllCache = () =>
-  remove(root('node_modules', '.cache'))
-
 const REGIX_MATCH_JS = /href="([^"]+)"/
 const testNextResources = async (t, text, request) => {
   const matched = text.match(REGIX_MATCH_JS)
@@ -83,6 +80,5 @@ module.exports = {
   create,
   createAndLoad,
   createRequest,
-  removeWebpackDllCache,
   testNextResources
 }
