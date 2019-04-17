@@ -1,6 +1,9 @@
 /*
 !src
-src/env.js
 !test
-!stage
+
+# JavaScript files intend to have errors
 test/fixtures/config-loader/error-config-errored/caviar.config.js
+
+# Test fixtures in React
+test/fixtures/**/pages

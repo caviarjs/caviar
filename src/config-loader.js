@@ -33,7 +33,7 @@ const reduceEnvsConfigs = chain => chain.reduce((prev, {
 
   if (clientEnvs) {
     Object.keys(clientEnvs).forEach(key => {
-      if (key in envs) {
+      if (envs && (key in envs)) {
         throw error('ENV_CONFLICTS', key)
       }
 
