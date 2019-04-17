@@ -75,6 +75,15 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 PREFIX('SERVER', 'server')
 .E('NOT_READY', 'server.listen() called before the server is ready')
 
+.E('LOAD_CONFIG_LOADER_FAILS',
+  'fails to load class ConfigLoader, reason:\n%s')
+
+.E('INVALID_CLASS_PATH',
+  'options.configLoaderClassPath must be a string, but got `%s`',
+  TypeError)
+
+.E('INVALID_PORT', 'port must be a number, but got `%s`', TypeError)
+
 const createError = pre =>
   (code, ...args) => error(`${pre}_${code}`, ...args)
 

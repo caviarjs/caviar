@@ -102,11 +102,19 @@ server.listen(8888)
 
 Initialize the server
 
+#### server.callback(): Function
+
+Returns a callback function suitable for the http.createServer() method to handle a request.
+
+```js
+require('http').createServer(server.callback())
+```
+
+This method must **NOT** be called before the server is ready (`await server.ready()`)
+
 #### server.listen(port?)
 
-- **port?** `number` server port. If `port` is specified, it will override `options.port`.
-
-This method must **NOT** be called after the server is ready (`await server.ready()`)
+- **port?** `number` optional server port. If `port` is specified, it will override `options.port`.
 
 ## License
 

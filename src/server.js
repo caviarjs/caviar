@@ -3,7 +3,7 @@ const {parse} = require('url')
 const EE = require('events')
 const log = require('util').debuglog('caviar')
 
-const {isString} = require('core-util-is')
+const {isString, isNumber} = require('core-util-is')
 const e2k = require('express-to-koa')
 const {serve} = require('egg-serve-static')
 
@@ -109,14 +109,23 @@ class Server extends EE {
   }
 
   get ConfigLoader () {
-    return require(this._configLoaderClassPath)
+    const configLoaderClassPath = this._configLoaderClassPath
+
+    if (!isString(configLoaderClassPath)) {
+      throw error('INVALID_CLASS_PATH', configLoaderClassPath)
+    }
+
+    try {
+      return requireModule(configLoaderClassPath)
+    } catch (err) {
+      throw error('LOAD_CONFIG_LOADER_FAILS', err.stack)
+    }
   }
   /////////////////////////////////////////////////////////////////////
 
   _getAppPkg () {
     this._appPkg = require(path.join(this._cwd, 'package.json'))
   }
-
 
   _initConfigLoader () {
     this._configLoader = new this.ConfigLoader({
@@ -291,7 +300,7 @@ class Server extends EE {
   _createServer () {
     log('create server app')
 
-    const server = require('http').createServer(this._serverApp.callback())
+    const server = require('http').createServer(this.callback())
 
     server.on('error', err => {
       this.emit('error', err)
@@ -366,7 +375,6 @@ class Server extends EE {
     await this._initEnv()
     await this._nextBuild()
     await this._createNextApp()
-
     await this._createServerApp()
     this._applyNextHandler()
 
@@ -374,18 +382,24 @@ class Server extends EE {
     return this
   }
 
-  listen (port) {
+  callback () {
     if (!this._ready) {
       throw error('NOT_READY')
     }
 
-    port = port || this._port || this._configLoader.prop('port')
+    return this.app.callback()
+  }
 
-    this.server.listen(port, () => {
-      /* eslint-disable no-console */
-      console.log(`server started at http://127.0.0.1:${port}`)
-      /* eslint-enable no-console */
-    })
+  listen (port, callback) {
+    const realPort = port
+      || this._port
+      || this._configLoader && this._configLoader.prop('port')
+
+    if (!isNumber(realPort)) {
+      throw error('INVALID_PORT', realPort)
+    }
+
+    return this.server.listen(realPort, callback)
   }
 
   close () {

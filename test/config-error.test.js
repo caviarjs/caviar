@@ -31,9 +31,7 @@ test('base: getPaths()', t => {
     clientEnvKeys: new Set()
   })
 
-  t.throws(() => cl.next, {
-    code: 'CONFIG_LOADER_NEXT_CONFIG_NOT_FOUND'
-  })
+  t.deepEqual(cl.next(), {})
 })
 
 const ERROR_CASES = [

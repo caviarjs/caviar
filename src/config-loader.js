@@ -11,6 +11,7 @@ const {getRawConfig, inspect} = require('./utils')
 
 const error = createError('CONFIG_LOADER')
 const UNDEFINED = undefined
+const RETURN_OBJECT = () => ({})
 
 const checkResult = (result, field, configFile) => {
   if (!isObject(result)) {
@@ -131,9 +132,7 @@ const createConfigChainReducer = ({
 // ```
 const reduceServerConfigs = createConfigChainReducer({
   key: 'server',
-  initConfig () {
-    return {}
-  },
+  initConfig: RETURN_OBJECT,
   runner: (factory, prev, appInfo) => factory(prev, appInfo)
 })
 
@@ -293,13 +292,7 @@ class ConfigLoader {
 
   // Returns `Object` the next config
   get next () {
-    const nextConfig = reduceNextConfigs(this._chain)
-
-    if (!nextConfig) {
-      throw error('NEXT_CONFIG_NOT_FOUND')
-    }
-
-    return nextConfig
+    return reduceNextConfigs(this._chain) || RETURN_OBJECT
   }
 
   // Returns `Function(appInfo): Object`

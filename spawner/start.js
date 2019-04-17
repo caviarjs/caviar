@@ -1,6 +1,7 @@
 // This JavaScript file should be spawned with
 // `node /path/to/spawner/start.js ${optionsJSON}`
 const log = require('util').debuglog('caviar:spawner')
+const {requireModule} = require('../src/utils')
 
 const {
   // Pass `serverClassPath` as an option,
@@ -12,7 +13,7 @@ const {
 
 log('spawner env: %s', JSON.stringify(process.env, null, 2))
 
-const Server = require(serverClassPath)
+const Server = requireModule(serverClassPath)
 
 new Server(options).ready()
 .then(server => {
