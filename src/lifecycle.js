@@ -14,6 +14,7 @@ const createSandboxHooks = () => new Hooks({
 })
 
 const createNonSandboxHooks = () => new Hooks({
+  start: new SyncHook(),
   // Intercept into the last phase of environment setting
   environment: new AsyncParallelHook(['context']),
   // Intercept into the last phase of webpack config generating

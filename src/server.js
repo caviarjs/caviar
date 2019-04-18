@@ -138,12 +138,14 @@ class Server extends EE {
   }
 
   _initLifecycle () {
-    this._lifecycle = new Lifecycle({
+    const lifecycle = this._lifecycle = new Lifecycle({
       sandbox: false,
       configLoader: this._configLoader
     })
 
-    this._lifecycle.applyPlugins()
+    lifecycle.applyPlugins()
+
+    lifecycle.hooks.start.call()
   }
 
   // Initialize env
