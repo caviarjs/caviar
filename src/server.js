@@ -8,6 +8,7 @@ const {
 } = require('core-util-is')
 const e2k = require('express-to-koa')
 const {serve} = require('egg-serve-static')
+const mix = require('mix2')
 
 const next = require('next')
 const {
@@ -155,7 +156,8 @@ class Server extends EE {
       clientEnvKeys
     } = this._configLoader.env
 
-    Object.assign(process.env, envs)
+    // Do not override existing env keys
+    mix(process.env, envs, false)
 
     // clientEnvKeys is a Set
     this._clientEnvKeys = [...clientEnvKeys.keys()]
