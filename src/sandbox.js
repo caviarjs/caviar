@@ -27,18 +27,18 @@ const PRIVATE_ENV_KEYS = [
   'CAVIAR_DEV'
 ]
 
-const createAddEnv = host => (key, value) => {
+const createSetEnv = host => (key, value) => {
   if (value !== undefined) {
     host[key] = value
   }
 }
 
-const createInheritEnv = add => key => {
+const createInheritEnv = set => key => {
   if (PRIVATE_ENV_KEYS.includes(key)) {
     throw error('PRESERVED_ENV_KEY', key)
   }
 
-  add(key, process.env[key])
+  set(key, process.env[key])
 }
 
 const ensureEnv = inheritEnv => {
@@ -117,8 +117,8 @@ module.exports = class Sandbox {
       options.env.CAVIAR_DEV = true
     }
 
-    const addEnv = createAddEnv(options.env)
-    const inheritEnv = createInheritEnv(addEnv)
+    const setEnv = createSetEnv(options.env)
+    const inheritEnv = createInheritEnv(setEnv)
 
     ensureEnv(inheritEnv)
 
@@ -131,7 +131,7 @@ module.exports = class Sandbox {
 
     const sandbox = {
       inheritEnv,
-      addEnv
+      setEnv
     }
 
     // Apply sandbox env plugins
