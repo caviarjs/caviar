@@ -5,7 +5,7 @@ const spawn = require('cross-spawn')
 
 const {createError} = require('./error')
 const {Lifecycle} = require('./lifecycle')
-const {requireConfigLoader} = require('./utils')
+const {requireConfigLoader, prependCaviarNodePath} = require('./utils')
 
 const error = createError('SANDBOX')
 
@@ -14,8 +14,6 @@ const ESSENTIAL_ENV_KEYS = [
   'NODE_DEBUG',
   // For userland debug module
   'DEBUG',
-  // For global installed npm packages
-  'NODE_PATH',
   // For `child_process.spawn`ers
   'PATH'
 ]
@@ -124,6 +122,11 @@ module.exports = class Sandbox {
     const inheritEnv = createInheritEnv(setEnv)
 
     ensureEnv(inheritEnv)
+
+    // TODO: a better solution
+    // Just a workaround that webpack fails to compile babeled modules
+    // which depends on @babel/runtime-corejs2
+    prependCaviarNodePath(options.env)
 
     const lifecycle = new Lifecycle({
       sandbox: true,
