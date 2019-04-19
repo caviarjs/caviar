@@ -114,3 +114,12 @@ test('server', t => {
   const cl = createAndLoad('server')
   t.deepEqual(cl.server(), {a: 1})
 })
+
+test('deeper chain', t => {
+  const cl = createAndLoad('deeper')
+
+  t.deepEqual(cl.getPaths(), ['empty', 'server', 'deeper', 'app'].map(name => ({
+    caviarPath: fixture(name),
+    configFileName: 'caviar.config'
+  })))
+})

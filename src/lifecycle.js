@@ -27,7 +27,7 @@ const createNonSandboxHooks = () => new Hooks({
 
 class Lifecycle {
   constructor ({
-    sandbox = false,
+    sandbox,
     configLoader
   }) {
     this._sandbox = sandbox
