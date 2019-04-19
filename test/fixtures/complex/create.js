@@ -68,7 +68,7 @@ const createRequestGet = async server => {
   assert(server.port === port, 'port not match')
 
   return url => new Promise((resolve, reject) => {
-    req(`http://localhost:${port}${url}`, (err, response, body) => {
+    req(`http://127.0.0.1:${port}${url}`, (err, response, body) => {
       if (err) {
         return reject(err)
       }
