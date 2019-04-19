@@ -145,7 +145,7 @@ module.exports = class Sandbox {
     return spawn(command, args, options)
   }
 
-  start () {
+  start (options) {
     const command = 'node'
 
     // TODO: child process events
@@ -153,7 +153,8 @@ module.exports = class Sandbox {
       command, [
         this.spawner,
         JSON.stringify(this._options)
-      ]
+      ],
+      options
     )
   }
 }

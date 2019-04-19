@@ -50,7 +50,7 @@ test('process exit', async t => {
 })
 
 
-test('not exists', async t => {
+test('exit', async t => {
   const Sandbox = createSandboxClass('spawner')
   const child = await new Sandbox({
     cwd: __dirname,
@@ -63,5 +63,20 @@ test('not exists', async t => {
 
   await t.throwsAsync(() => monitor(child), {
     code: 'CHILD_PROCESS_KILLED'
+  })
+})
+
+test('invalid plugin usage, with config chain', async t => {
+  const Sandbox = createSandboxClass('spawner')
+
+  await t.throwsAsync(() => new Sandbox({
+    cwd: __dirname,
+    dev: false,
+    configLoaderClassPath: require.resolve(
+      './fixtures/config-loader/error-sandbox-plugin/config-loader')
+  }).start({
+    stdio: 'pipe'
+  }), {
+    code: 'SANDBOX_PRESERVED_ENV_KEY'
   })
 })
