@@ -4,7 +4,6 @@ const test = require('ava')
 const {
   fixture, create, createAndLoad, createAndTestReload
 } = require('./fixtures/config-loader/create')
-const {NODE_MODULES} = require('../src/utils')
 
 test('default webpackModule', t => {
   const cl = createAndLoad('fake-base')
@@ -28,7 +27,7 @@ test('no config: loader and app same dir', t => {
   }], 'should not duplicate')
 
   t.deepEqual(cl.getNodeModulesPaths(), [
-    fixture('fake-base'), NODE_MODULES
+    fixture('fake-base')
   ])
 })
 

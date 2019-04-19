@@ -7,7 +7,7 @@ const {extend, withPlugins} = require('next-compose-plugins')
 const caviarWebpackModule = require('webpack')
 
 const {createError} = require('./error')
-const {getRawConfig, inspect, NODE_MODULES} = require('./utils')
+const {getRawConfig, inspect} = require('./utils')
 
 const error = createError('CONFIG_LOADER')
 const UNDEFINED = undefined
@@ -269,13 +269,13 @@ class ConfigLoader {
   }
 
   getNodeModulesPaths () {
-    return this.getPaths().reduce((prev, {nodeModulesPath}) => {
+    return this.getPaths().reduceRight((prev, {nodeModulesPath}) => {
       if (nodeModulesPath) {
-        prev.unshift(nodeModulesPath)
+        prev.push(nodeModulesPath)
       }
 
       return prev
-    }, [NODE_MODULES])
+    }, [])
   }
 
   load () {

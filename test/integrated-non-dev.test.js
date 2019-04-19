@@ -1,3 +1,3 @@
-delete process.env.NODE_PATH
+process.env.NODE_PATH = ''
 
 require('./integrated')

@@ -99,54 +99,6 @@ const requireConfigLoader = (configLoaderClassPath, createError) => {
   }
 }
 
-const createAddBuiltinModule = webpackConfig => {
-  const {
-    resolve: {
-      alias
-    }
-  } = webpackConfig
-
-  return (name, resolved, exact) => {
-    const aliasName = exact
-      ? `${name}$`
-      : name
-    alias[aliasName] = resolved
-  }
-}
-
-const NODE_MODULES = path.join(__dirname, '..', 'node_modules')
-const DELIMITER = '/'
-
-// By default, `next/babel`, ie the default babel preset of next,
-// requires these modules
-
-// A collection package is the package that we will require by
-// ```js
-// require('package-name/some-module')
-// ```
-const BUILTIN_COLLECTION_PACKAGES = [
-  '@babel/runtime-corejs2'
-]
-
-const BUILTIN_PACKAGES = [
-  'react-dom'
-]
-
-const getPackageRoot = name =>
-  path.join(NODE_MODULES, ...name.split(DELIMITER))
-
-const addResolveAliases = webpackConfig => {
-  const addBuiltinModule = createAddBuiltinModule(webpackConfig)
-
-  BUILTIN_COLLECTION_PACKAGES.forEach(name => {
-    addBuiltinModule(name, getPackageRoot(name))
-  })
-
-  BUILTIN_PACKAGES.forEach(name => {
-    addBuiltinModule(name, require.resolve(name), true)
-  })
-}
-
 const joinEnvPaths = (base, ...paths) => {
   const {delimiter} = path
 
@@ -166,8 +118,5 @@ module.exports = {
   inspect,
   requireModule,
   requireConfigLoader,
-  createAddBuiltinModule,
-  addResolveAliases,
-  joinEnvPaths,
-  NODE_MODULES
+  joinEnvPaths
 }
