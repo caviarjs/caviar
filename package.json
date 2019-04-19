@@ -4,8 +4,8 @@
   "description": "A pluggable and extendable web framework which integrates React, Next and Koa to create your own web application out of the box with even zero configuration",
   "main": "src/index.js",
   "scripts": {
-    "test": "nyc ava --timeout=10s --verbose",
-    "test:only": "NODE_DEBUG=caviar nyc ava --timeout=10s --verbose",
+    "test": "nyc ava --timeout=30s --verbose",
+    "test:only": "NODE_DEBUG=caviar nyc ava --timeout=30s --verbose",
     "lint": "eslint .",
     "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "report:dev": "nyc report --reporter=html && npm run report:open",
