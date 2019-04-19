@@ -4,7 +4,7 @@ const EE = require('events')
 const log = require('util').debuglog('caviar')
 
 const {
-  isString, isNumber, isObject, isFunction
+  isString, isNumber, isObject
 } = require('core-util-is')
 const e2k = require('express-to-koa')
 const {serve} = require('egg-serve-static')
@@ -391,12 +391,7 @@ class Server extends EE {
     return this._serverApp.callback()
   }
 
-  listen (port, callback) {
-    if (isFunction(port)) {
-      callback = port
-      port = undefined
-    }
-
+  listen (port) {
     const realPort = port
       || this._port
       || this._configLoader && this._configLoader.prop('port')
@@ -407,11 +402,9 @@ class Server extends EE {
 
     this._port = realPort
 
-    return this.server.listen(realPort, callback)
-  }
-
-  close () {
-    this.server.close()
+    return new Promise(resolve => {
+      this.server.listen(realPort, resolve)
+    })
   }
 }
 

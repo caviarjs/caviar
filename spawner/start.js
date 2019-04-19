@@ -17,7 +17,7 @@ const Server = requireModule(serverClassPath)
 
 new Server(options).ready()
 .then(server => {
-  server.listen(() => {
+  server.listen().then(() => {
     console.log(`server started at http://localhost:${server.port}`)
   })
 })

@@ -5,28 +5,33 @@ const {
 } = require('./fixtures/complex/create')
 
 const dev = !!process.env.CAVIAR_TEST_IS_DEV
+const mock = process.env.CAVIAR_NO_MOCK
+  ? 'NO_MOCK'
+  : 'MOCK'
+
 process.env.CAVIAR_APP_TYPE = dev
-  ? 'DEV'
-  : 'NON_DEV'
+  ? `DEV-${mock}`
+  : `NON_DEV-${mock}`
 
 test(`simple, dev: ${dev}`, async t => {
-  const {request} = await createRequest({
+  const {get} = await createRequest({
     name: 'simple',
-    dev
+    dev,
+    mock: !process.env.CAVIAR_NO_MOCK
   })
 
   const {
     text
-  } = await request.get('/say/hello')
+  } = await get('/say/hello')
 
   t.is(text, 'hello')
 
   const {
     text: html
-  } = await request.get('/en')
+  } = await get('/en')
 
   t.true(html.includes('<div>en</div>'))
   t.true(html.includes('<div>hello</div>'))
 
-  await testNextResources(t, html, request)
+  await testNextResources(t, html, get)
 })

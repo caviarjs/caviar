@@ -58,7 +58,8 @@ module.exports = class Sandbox {
       configLoaderClassPath = path.join(__dirname, 'config-loader.js'),
       cwd,
       dev,
-      port
+      port,
+      stdio = 'inherit'
     } = options
 
     if (!isString(serverClassPath)) {
@@ -74,8 +75,10 @@ module.exports = class Sandbox {
       configLoaderClassPath,
       cwd,
       dev: !!dev,
-      port
+      port,
     }
+
+    this._stdio = stdio
 
     this._configLoader = new this.ConfigLoader({
       cwd
@@ -105,7 +108,7 @@ module.exports = class Sandbox {
   // ```
   async spawn (command, args, options = {}) {
     if (!options.stdio) {
-      options.stdio = 'inherit'
+      options.stdio = this._stdio
     }
 
     options.env = {
@@ -139,14 +142,7 @@ module.exports = class Sandbox {
 
     log('spawn: %s %j', command, args)
 
-    const child = spawn(command, args, options)
-    child.on('error', err => {
-      log('child process errored: %s', err.stack)
-    })
-
-    // TODO
-    // handle exit signal
-    return child
+    return spawn(command, args, options)
   }
 
   start () {

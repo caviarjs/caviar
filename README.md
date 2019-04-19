@@ -74,7 +74,7 @@ const {
 
 Creates a new sandbox. Sandbox is design to filter the environment variables.
 
-#### await sandbox.start()
+#### await sandbox.start(): ChildProcess
 
 Start the sandbox, and it will create a new `Server` by passing `{cwd, port, dev}` as options.
 
@@ -98,7 +98,7 @@ await server.ready()
 server.listen(8888)
 ```
 
-#### await server.ready()
+#### await server.ready(): this
 
 Initialize the server
 
@@ -114,9 +114,7 @@ require('http')
 
 This method must **NOT** be called before the server is ready (`await server.ready()`)
 
-#### server.listen()
-#### server.listen(callback?)
-#### server.listen(port, callback?)
+#### server.listen(port?): Promise
 
 - **port?** `number` optional server port. If `port` is specified, it will override `options.port`.
 - **callback?** `Function`

@@ -1,6 +1,9 @@
 const path = require('path')
+const assert = require('assert')
 const supertest = require('supertest')
 const fs = require('fs-extra')
+const req = require('request')
+const getPort = require('get-port')
 
 const Server = require('../../../src/server')
 
@@ -49,16 +52,53 @@ const createAndLoad = async options => {
   return server
 }
 
+const createSupertestGet = server => {
+  const request = supertest(server.callback())
+  return url => request.get(url)
+}
+
+const createRequestGet = async server => {
+  const port = await getPort()
+
+  /* eslint-disable no-unused-expressions */
+  server.server
+
+  await server.listen(port)
+
+  assert(server.port === port, 'port not match')
+
+  return url => new Promise((resolve, reject) => {
+    req(`http://localhost:${port}${url}`, (err, response, body) => {
+      if (err) {
+        return reject(err)
+      }
+
+      const {
+        statusCode
+      } = response
+
+      resolve({
+        text: body,
+        statusCode
+      })
+    })
+  })
+}
+
 const createRequest = async options => {
   const server = await createAndLoad(options)
+  const get = options.mock === false
+    ? await createRequestGet(server)
+    : createSupertestGet(server)
+
   return {
     server,
-    request: supertest(server.callback())
+    get
   }
 }
 
 const REGIX_MATCH_JS = /href="([^"]+)"/
-const testNextResources = async (t, text, request) => {
+const testNextResources = async (t, text, get) => {
   const matched = text.match(REGIX_MATCH_JS)
 
   if (!matched) {
@@ -68,7 +108,7 @@ const testNextResources = async (t, text, request) => {
   const js = matched[1]
   const {
     text: jsContent
-  } = await request.get(js)
+  } = await get(js)
 
   t.true(jsContent.includes('webpackJson'), 'should contains webpack')
 }

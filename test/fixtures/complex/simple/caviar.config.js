@@ -2,7 +2,12 @@ const config = module.exports = {
   clientEnvs: {
     HELLO_WORLD: 'hello'
   },
-  plugins: []
+  plugins: [],
+  next: withPlugins => withPlugins([], {
+    webpack (c) {
+      return c
+    }
+  })
 }
 
 if (process.env.CAVIAR_INCLUDE_SANDBOX_PLUGIN) {
