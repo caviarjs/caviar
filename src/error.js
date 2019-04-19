@@ -67,8 +67,8 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .TE('INVALID_CONFIG_FILE_NAME',
   'ConfigLoader::configFileName must be a string')
 
-.TE('INVALID_NODE_MODULES_PATH',
-  'ConfigLoader::nodeModulesPath must be a string')
+.TE('INVALID_NODE_PATH',
+  'ConfigLoader::nodePath must be a string')
 
 .TE('INVALID_CONFIG_FIELD',
   'caviar.config.%s in "%s" must be a function')

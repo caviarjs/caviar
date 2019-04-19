@@ -130,7 +130,7 @@ module.exports = class Sandbox {
     // which depends on @babel/runtime-corejs2
     options.env.NODE_PATH = joinEnvPaths(
       process.env.NODE_PATH,
-      ...this._configLoader.getNodeModulesPaths()
+      ...this._configLoader.getNodePaths()
     )
 
     const lifecycle = new Lifecycle({

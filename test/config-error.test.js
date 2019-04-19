@@ -13,7 +13,7 @@ test('base: getPaths()', t => {
   t.deepEqual(cl.getPaths(), [FAKE_BASE, 'app'].map(name => ({
     caviarPath: fixture(name),
     configFileName: 'caviar.config',
-    nodeModulesPath: name === FAKE_BASE
+    nodePath: name === FAKE_BASE
       ? fixture(name)
       : undefined
   })))
@@ -37,7 +37,7 @@ const ERROR_CASES = [
   ['error-no-path', 'PATH_GETTER_REQUIRED'],
   ['error-path-not-exists', 'PATH_NOT_EXISTS'],
   ['error-number-path', 'INVALID_PATH'],
-  ['error-number-node-modules', 'INVALID_NODE_MODULES_PATH'],
+  ['error-number-node-modules', 'INVALID_NODE_PATH'],
   ['error-config-name', 'INVALID_CONFIG_FILE_NAME'],
   ['error-invalid-webpack', 'INVALID_CONFIG_FIELD', cl => cl.webpack({})],
   ['error-invalid-env', 'INVALID_CONFIG_FIELD', cl => cl.env],

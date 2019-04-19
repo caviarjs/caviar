@@ -146,7 +146,7 @@ const reduceWebpackConfigs = createConfigChainReducer({
 const createFinder = realpath => ({caviarPath: p}) => realpath === p
 const addConfigPath = (paths, {
   caviarPath,
-  nodeModulesPath,
+  nodePath,
   configFileName
 }, append) => {
   if (paths.findIndex(createFinder(caviarPath)) === - 1) {
@@ -155,15 +155,15 @@ const addConfigPath = (paths, {
       : 'unshift'
     paths[method]({
       caviarPath,
-      nodeModulesPath,
+      nodePath,
       configFileName
     })
   }
 }
 
-const checkNodeModulesPath = p => {
+const checkNodePath = p => {
   if (!isString(p)) {
-    throw error('INVALID_NODE_MODULES_PATH', p)
+    throw error('INVALID_NODE_PATH', p)
   }
 
   return p
@@ -238,8 +238,8 @@ class ConfigLoader {
         break
       }
 
-      const nodeModulesPath = hasOwnProperty(proto, 'nodeModulesPath')
-        ? checkNodeModulesPath(proto.nodeModulesPath)
+      const nodePath = hasOwnProperty(proto, 'nodePath')
+        ? checkNodePath(proto.nodePath)
         : UNDEFINED
 
       if (!isString(caviarPath)) {
@@ -252,7 +252,7 @@ class ConfigLoader {
 
       addConfigPath(paths, {
         caviarPath: fs.realpathSync(caviarPath),
-        nodeModulesPath: nodeModulesPath && fs.realpathSync(nodeModulesPath),
+        nodePath: nodePath && fs.realpathSync(nodePath),
         configFileName
       }, false)
     }
@@ -268,10 +268,10 @@ class ConfigLoader {
     return this._paths = paths
   }
 
-  getNodeModulesPaths () {
-    return this.getPaths().reduceRight((prev, {nodeModulesPath}) => {
-      if (nodeModulesPath) {
-        prev.push(nodeModulesPath)
+  getNodePaths () {
+    return this.getPaths().reduceRight((prev, {nodePath}) => {
+      if (nodePath) {
+        prev.push(nodePath)
       }
 
       return prev

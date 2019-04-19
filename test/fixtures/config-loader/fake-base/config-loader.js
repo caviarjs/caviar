@@ -7,7 +7,7 @@ module.exports = class extends require('../../../../src/config-loader') {
     return 'caviar.config'
   }
 
-  get nodeModulesPath () {
+  get nodePath () {
     return __dirname
   }
 }

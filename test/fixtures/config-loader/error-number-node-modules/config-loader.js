@@ -3,7 +3,7 @@ module.exports = class extends require('../../../../src/config-loader') {
     return 'foo'
   }
 
-  get nodeModulesPath () {
+  get nodePath () {
     return 1
   }
 
