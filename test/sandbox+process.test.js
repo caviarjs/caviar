@@ -26,7 +26,7 @@ test('basic', async t => {
 })
 
 test('process exit 1', async t => {
-  const Sandbox = createSandboxClass('spawner-exit')
+  const Sandbox = createSandboxClass('spawner-exit-1')
   const child = await new Sandbox({
     cwd: __dirname,
     dev: true
@@ -37,15 +37,31 @@ test('process exit 1', async t => {
   })
 })
 
+test('process exit', async t => {
+  const Sandbox = createSandboxClass('spawner-exit-0')
+  const child = await new Sandbox({
+    cwd: __dirname,
+    dev: true
+  }).start()
 
-// test('not exists', async t => {
-//   const Sandbox = createSandboxClass('spawner-not-exists')
-//   const child = await new Sandbox({
-//     cwd: __dirname,
-//     dev: true
-//   }).start()
+  await t.throwsAsync(() => monitor(child), {
+    code: 'CHILD_PROCESS_UNEXPECTED_CLOSE'
+  })
+})
 
-//   await t.throwsAsync(() => monitor(child), {
-//     code: 'CHILD_PROCESS_ERROR'
-//   })
-// })
+
+test('not exists', async t => {
+  const Sandbox = createSandboxClass('spawner')
+  const child = await new Sandbox({
+    cwd: __dirname,
+    dev: true
+  }).start()
+
+  setTimeout(() => {
+    child.kill('SIGINT')
+  })
+
+  await t.throwsAsync(() => monitor(child), {
+    code: 'CHILD_PROCESS_KILLED'
+  })
+})

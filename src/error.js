@@ -95,13 +95,13 @@ PREFIX('SERVER', 'server')
 .E('INVALID_PORT', 'port must be a number, but got `%s`', TypeError)
 
 PREFIX('CHILD_PROCESS', 'child-process')
-.E('ERROR', 'child process encountered an error, reason:\n%s')
+.E('ERRORED', 'child process encountered an error, reason:\n%s')
 
 .E('KILLED', 'child process is killed by signal "%s"')
 
 .E('NONE_ZERO_EXIT_CODE', 'child process closed with non-zero code %s')
 
-.E('UNEXPECTED_CLOSED', 'child process closed unexpectedly')
+.E('UNEXPECTED_CLOSE', 'child process closed unexpectedly')
 
 const createError = pre =>
   (code, ...args) => error(`${pre}_${code}`, ...args)

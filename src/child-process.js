@@ -6,9 +6,11 @@ const error = createError('CHILD_PROCESS')
 const monitor = subprocess => new Promise((_, reject) => {
   reject = once(reject)
 
+  // It is hard to produce, skip testing
+  /* istanbul ignore next */
   subprocess.on('error', err => {
     /* istanbul ignore next */
-    reject(error('ERROR', err.stack))
+    reject(error('ERRORED', err.stack))
   })
 
   subprocess.on('close', (code, signal) => {
@@ -22,7 +24,7 @@ const monitor = subprocess => new Promise((_, reject) => {
       return reject(error('NONE_ZERO_EXIT_CODE', code))
     }
 
-    reject(error('UNEXPECTED'))
+    reject(error('UNEXPECTED_CLOSE'))
   })
 })
 
