@@ -1,6 +1,6 @@
 {
   "name": "caviar",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "A pluggable and extendable web framework which integrates React, Next and Koa to create your own web application out of the box with even zero configuration",
   "main": "src/index.js",
   "scripts": {
@@ -62,7 +62,7 @@
     "dotenv": "^7.0.0",
     "egg-serve-static": "^2.1.1",
     "env-to-code": "^1.0.4",
-    "err-object": "^4.2.0",
+    "err-object": "^4.3.1",
     "express-to-koa": "^1.1.4",
     "has-own-prop": "^1.0.1",
     "mix2": "^1.0.3",
