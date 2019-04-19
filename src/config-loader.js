@@ -7,7 +7,7 @@ const {extend, withPlugins} = require('next-compose-plugins')
 const caviarWebpackModule = require('webpack')
 
 const {createError} = require('./error')
-const {getRawConfig, inspect} = require('./utils')
+const {getRawConfig, inspect, NODE_MODULES} = require('./utils')
 
 const error = createError('CONFIG_LOADER')
 const UNDEFINED = undefined
@@ -146,6 +146,7 @@ const reduceWebpackConfigs = createConfigChainReducer({
 const createFinder = realpath => ({caviarPath: p}) => realpath === p
 const addConfigPath = (paths, {
   caviarPath,
+  nodeModulesPath,
   configFileName
 }, append) => {
   if (paths.findIndex(createFinder(caviarPath)) === - 1) {
@@ -154,9 +155,18 @@ const addConfigPath = (paths, {
       : 'unshift'
     paths[method]({
       caviarPath,
+      nodeModulesPath,
       configFileName
     })
   }
+}
+
+const checkNodeModulesPath = p => {
+  if (!isString(p)) {
+    throw error('INVALID_NODE_MODULES_PATH', p)
+  }
+
+  return p
 }
 
 const CONFIG_FILE_NAME = 'caviar.config'
@@ -228,6 +238,10 @@ class ConfigLoader {
         break
       }
 
+      const nodeModulesPath = hasOwnProperty(proto, 'nodeModulesPath')
+        ? checkNodeModulesPath(proto.nodeModulesPath)
+        : UNDEFINED
+
       if (!isString(caviarPath)) {
         throw error('INVALID_PATH', caviarPath)
       }
@@ -236,9 +250,9 @@ class ConfigLoader {
         throw error('PATH_NOT_EXISTS', caviarPath)
       }
 
-      const realpath = fs.realpathSync(caviarPath)
       addConfigPath(paths, {
-        caviarPath: realpath,
+        caviarPath: fs.realpathSync(caviarPath),
+        nodeModulesPath: nodeModulesPath && fs.realpathSync(nodeModulesPath),
         configFileName
       }, false)
     }
@@ -252,6 +266,16 @@ class ConfigLoader {
 
     // Caviar.Server::path, ...[SubServer::path]
     return this._paths = paths
+  }
+
+  getNodeModulesPaths () {
+    return this.getPaths().reduce((prev, {nodeModulesPath}) => {
+      if (nodeModulesPath) {
+        prev.unshift(nodeModulesPath)
+      }
+
+      return prev
+    }, [NODE_MODULES])
   }
 
   load () {

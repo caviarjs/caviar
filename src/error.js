@@ -7,65 +7,71 @@ const {E, error} = new Errors({
   notDefined: exitOnNotDefined
 })
 
+const STRING_BUT_GOT = ', but got `%s`'
 class Prefixer {
-  constructor (codePrefix, messagePrefix, ctor = Error) {
+  constructor (codePrefix, messagePrefix) {
     this._codePrefix = codePrefix
     this._messagePrefix = messagePrefix
-    this._ctor = ctor
   }
 
   E (code, message, Ctor) {
     E(
       `${this._codePrefix}_${code}`,
       `[caviar:${this._messagePrefix}] ${message}`,
-      Ctor || this._ctor
+      Ctor
     )
 
     return this
+  }
+
+  TE (code, message) {
+    return this.E(code, message + STRING_BUT_GOT, TypeError)
   }
 }
 
 const PREFIX = (...args) => new Prefixer(...args)
 
-const INVALID_OPTIONS = 'options must be an object, but got `%s`'
-const INVALID_CWD = 'options.cwd must be a string, but got `%s`'
-const INVALID_CONFIG_LOADER_CLASS_PATH = 'options.configLoaderClassPath must be a string, but got `%s`'
+const INVALID_OPTIONS = 'options must be an object'
+const INVALID_CWD = 'options.cwd must be a string'
+const INVALID_CONFIG_LOADER_CLASS_PATH = 'options.configLoaderClassPath must be a string'
 const LOAD_CONFIG_LOADER_FAILS = 'fails to load class ConfigLoader, reason:\n%s'
 
-PREFIX('SANDBOX', 'sandbox', TypeError)
-.E('INVALID_OPTIONS', INVALID_OPTIONS)
+PREFIX('SANDBOX', 'sandbox')
+.TE('INVALID_OPTIONS', INVALID_OPTIONS)
 
-.E('INVALID_SERVER_CLASS_PATH',
-  'options.serverClassPath must be a string, but got `%s`')
+.TE('INVALID_SERVER_CLASS_PATH',
+  'options.serverClassPath must be a string')
 
-.E('INVALID_CONFIG_LOADER_CLASS_PATH', INVALID_CONFIG_LOADER_CLASS_PATH)
+.TE('INVALID_CONFIG_LOADER_CLASS_PATH', INVALID_CONFIG_LOADER_CLASS_PATH)
 
 .E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
 
-.E('INVALID_CWD', INVALID_CWD)
+.TE('INVALID_CWD', INVALID_CWD)
 
 .E('PRESERVED_ENV_KEY',
   'env key "%s" is preserved by caviar', RangeError)
 
 PREFIX('CONFIG_LOADER', 'config-loader')
-.E('INVALID_OPTIONS', INVALID_OPTIONS, TypeError)
+.TE('INVALID_OPTIONS', INVALID_OPTIONS)
 
-.E('INVALID_CWD', INVALID_CWD, TypeError)
+.TE('INVALID_CWD', INVALID_CWD)
 
 .E('PATH_GETTER_REQUIRED',
   'getter "path" is required on ConfigLoader.prototype')
 
 .E('PATH_NOT_EXISTS', 'ConfigLoader::path "%s" not exists')
 
-.E('INVALID_PATH',
-  'ConfigLoader::path must be a string, but got `%s`', TypeError)
+.TE('INVALID_PATH',
+  'ConfigLoader::path must be a string')
 
-.E('INVALID_CONFIG_FILE_NAME',
-  'ConfigLoader::configFileName must be a string, but got `%s`',
-  TypeError)
+.TE('INVALID_CONFIG_FILE_NAME',
+  'ConfigLoader::configFileName must be a string')
 
-.E('INVALID_CONFIG_FIELD',
-  'caviar.config.%s in "%s" must be a function, but got `%s`', TypeError)
+.TE('INVALID_NODE_MODULES_PATH',
+  'ConfigLoader::nodeModulesPath must be a string')
+
+.TE('INVALID_CONFIG_FIELD',
+  'caviar.config.%s in "%s" must be a function')
 
 .E('INVALID_RETURN_VALUE',
   'caviar.config.%s in "%s" must return an object', TypeError)
@@ -81,18 +87,17 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .E('CONFIG_ERRORED', 'fails to load config file "%s", reason:\n%s')
 
 PREFIX('SERVER', 'server')
-.E('INVALID_OPTIONS', INVALID_OPTIONS, TypeError)
+.TE('INVALID_OPTIONS', INVALID_OPTIONS)
 
-.E('INVALID_CWD', INVALID_CWD, TypeError)
+.TE('INVALID_CWD', INVALID_CWD)
 
 .E('NOT_READY', 'server.listen() called before the server is ready')
 
-.E('INVALID_CONFIG_LOADER_CLASS_PATH',
-  INVALID_CONFIG_LOADER_CLASS_PATH, TypeError)
+.TE('INVALID_CONFIG_LOADER_CLASS_PATH', INVALID_CONFIG_LOADER_CLASS_PATH)
 
 .E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
 
-.E('INVALID_PORT', 'port must be a number, but got `%s`', TypeError)
+.TE('INVALID_PORT', 'port must be a number')
 
 PREFIX('CHILD_PROCESS', 'child-process')
 .E('ERRORED', 'child process encountered an error, reason:\n%s')

@@ -147,18 +147,17 @@ const addResolveAliases = webpackConfig => {
   })
 }
 
-const prependCaviarNodePath = host => {
+const joinEnvPaths = (base, ...paths) => {
   const {delimiter} = path
-  const {NODE_PATH} = process.env
 
-  host.NODE_PATH = NODE_PATH
-    ? NODE_PATH
+  return base
+    ? base
     .split(delimiter)
     .filter(Boolean)
-    .concat(NODE_MODULES)
+    .concat(...paths)
     .join(delimiter)
 
-    : NODE_MODULES
+    : paths.join(delimiter)
 }
 
 module.exports = {
@@ -169,5 +168,6 @@ module.exports = {
   requireConfigLoader,
   createAddBuiltinModule,
   addResolveAliases,
-  prependCaviarNodePath
+  joinEnvPaths,
+  NODE_MODULES
 }

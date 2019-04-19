@@ -4,6 +4,7 @@ const test = require('ava')
 const {
   fixture, create, createAndLoad, createAndTestReload
 } = require('./fixtures/config-loader/create')
+const {NODE_MODULES} = require('../src/utils')
 
 test('default webpackModule', t => {
   const cl = createAndLoad('fake-base')
@@ -22,8 +23,13 @@ test('no config: loader and app same dir', t => {
 
   t.deepEqual(cl.getPaths(), [{
     caviarPath: fixture('fake-base'),
-    configFileName: 'caviar.config'
+    configFileName: 'caviar.config',
+    nodeModulesPath: fixture('fake-base')
   }], 'should not duplicate')
+
+  t.deepEqual(cl.getNodeModulesPaths(), [
+    fixture('fake-base'), NODE_MODULES
+  ])
 })
 
 test('env', t => {
@@ -120,6 +126,7 @@ test('deeper chain', t => {
 
   t.deepEqual(cl.getPaths(), ['empty', 'server', 'deeper', 'app'].map(name => ({
     caviarPath: fixture(name),
-    configFileName: 'caviar.config'
+    configFileName: 'caviar.config',
+    nodeModulesPath: undefined
   })))
 })

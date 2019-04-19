@@ -5,7 +5,7 @@ const spawn = require('cross-spawn')
 
 const {createError} = require('./error')
 const {Lifecycle} = require('./lifecycle')
-const {requireConfigLoader, prependCaviarNodePath} = require('./utils')
+const {requireConfigLoader, joinEnvPaths} = require('./utils')
 
 const error = createError('SANDBOX')
 
@@ -114,7 +114,9 @@ module.exports = class Sandbox {
       CAVIAR_CWD: this._options.cwd
     }
 
-    if (this._options.dev) {
+    const {dev} = this._options
+
+    if (dev) {
       options.env.CAVIAR_DEV = true
     }
 
@@ -126,7 +128,10 @@ module.exports = class Sandbox {
     // TODO: a better solution
     // Just a workaround that webpack fails to compile babeled modules
     // which depends on @babel/runtime-corejs2
-    prependCaviarNodePath(options.env)
+    options.env.NODE_PATH = joinEnvPaths(
+      process.env.NODE_PATH,
+      ...this._configLoader.getNodeModulesPaths()
+    )
 
     const lifecycle = new Lifecycle({
       sandbox: true,
