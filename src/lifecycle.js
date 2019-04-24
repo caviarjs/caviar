@@ -10,17 +10,17 @@ const {
 // const {readConfig} = require('./utils')
 
 const createSandboxHooks = () => new Hooks({
-  sandboxEnvironment: new AsyncParallelHook(['sandbox']),
+  sandboxEnvironment: new AsyncParallelHook(['sandbox', 'options']),
 })
 
 const createNonSandboxHooks = () => new Hooks({
-  start: new SyncHook(),
+  start: new SyncHook(['options']),
   // Intercept into the last phase of environment setting
-  environment: new AsyncParallelHook(['context']),
+  environment: new AsyncParallelHook(['options']),
   // Intercept into the last phase of webpack config generating
   webpackConfig: new SyncHook(['webpackConfig', 'options']),
-  serverConfig: new SyncHook(['serverConfig']),
-  nextConfig: new SyncHook(['nextConfig'])
+  serverConfig: new SyncHook(['serverConfig', 'options']),
+  nextConfig: new SyncHook(['nextConfig', 'options'])
 }, {
   disableAfterCalled: false
 })

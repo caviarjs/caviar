@@ -146,7 +146,9 @@ class Server extends EE {
 
     lifecycle.applyPlugins()
 
-    lifecycle.hooks.start.call()
+    lifecycle.hooks.start.call({
+      cwd: this._cwd
+    })
   }
 
   // Initialize env
@@ -164,17 +166,18 @@ class Server extends EE {
 
     const lifecycle = this._lifecycle
     const {environment} = lifecycle.hooks
+    const cwd = this._cwd
 
     // No taps added to environment hook
     if (!environment.isUsed()) {
       // We also need to call the hook to enable the next hook
-      await environment.promise()
+      await environment.promise({cwd})
       return
     }
 
     lifecycle.clearPlugins()
 
-    await environment.promise()
+    await environment.promise({cwd})
 
     lifecycle.reloadConfig()
     lifecycle.applyPlugins()
@@ -187,6 +190,7 @@ class Server extends EE {
       webpack: webpackConfigFactory,
       webpackModule
     } = this._configLoader
+    const cwd = this._cwd
 
     const nextConfig = nextConfigFactory(
       phase,
@@ -213,7 +217,8 @@ class Server extends EE {
       }
 
       this._lifecycle.hooks.webpackConfig.call(config, {
-        isServer: options.isServer
+        isServer: options.isServer,
+        cwd
       })
 
       return config
@@ -228,7 +233,9 @@ class Server extends EE {
       enrichedNextConfig.distDir = '.next'
     }
 
-    this._lifecycle.hooks.nextConfig.call(enrichedNextConfig)
+    this._lifecycle.hooks.nextConfig.call(enrichedNextConfig, {
+      cwd
+    })
 
     return enrichedNextConfig
   }
@@ -282,7 +289,9 @@ class Server extends EE {
       },
       config: appInfo => {
         const serverConfig = serverConfigFactory(appInfo)
-        this._lifecycle.hooks.serverConfig.call(serverConfig)
+        this._lifecycle.hooks.serverConfig.call(serverConfig, {
+          cwd: this._cwd
+        })
         return serverConfig
       }
     })

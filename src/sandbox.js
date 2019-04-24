@@ -109,9 +109,11 @@ module.exports = class Sandbox {
       options.stdio = this._stdio
     }
 
+    const {cwd} = this._options
+
     options.env = {
       ...this._env,
-      CAVIAR_CWD: this._options.cwd
+      CAVIAR_CWD: cwd
     }
 
     const {dev} = this._options
@@ -146,7 +148,9 @@ module.exports = class Sandbox {
     }
 
     // Apply sandbox env plugins
-    await lifecycle.hooks.sandboxEnvironment.promise(sandbox)
+    await lifecycle.hooks.sandboxEnvironment.promise(sandbox, {
+      cwd
+    })
 
     log('spawn: %s %j', command, args)
 
