@@ -120,6 +120,10 @@ class Server extends EE {
     return Roe
   }
 
+  get next () {
+    return next
+  }
+
   get ConfigLoader () {
     return requireConfigLoader(this._configLoaderClassPath, error)
   }
@@ -252,7 +256,7 @@ class Server extends EE {
   }
 
   _createNextApp (conf) {
-    return next({
+    return this.next({
       // TODO
       dev: this._dev,
       conf,
