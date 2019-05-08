@@ -251,7 +251,16 @@ class Server extends EE {
     )
   }
 
-  async _createNextApp () {
+  _createNextApp (conf) {
+    return next({
+      // TODO
+      dev: this._dev,
+      conf,
+      dir: this._cwd
+    })
+  }
+
+  async _setupNextApp () {
     log('create next app')
 
     const conf = this._nextConfig = this._createNextConfig(
@@ -260,17 +269,11 @@ class Server extends EE {
         : PHASE_PRODUCTION_SERVER
     )
 
-    const app = this._nextApp = next({
-      // TODO
-      dev: this._dev,
-      conf,
-      dir: this._cwd
-    })
-
+    const app = this._nextApp = this._createNextApp(conf)
     await app.prepare()
   }
 
-  _createServerApp () {
+  _setupServerApp () {
     log('create server app')
 
     const baseDir = this._cwd
@@ -382,8 +385,8 @@ class Server extends EE {
     this._initLifecycle()
     await this._initEnv()
     await this._nextBuild()
-    await this._createNextApp()
-    await this._createServerApp()
+    await this._setupNextApp()
+    await this._setupServerApp()
     this._applyNextHandler()
 
     this._ready = true

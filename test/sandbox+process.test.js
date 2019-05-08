@@ -15,6 +15,14 @@ const createSandboxClass = name => class extends S {
   }
 }
 
+test('vanilla Sandbox', t => {
+  const s = new S({
+    cwd: __dirname,
+    dev: true
+  })
+  t.is(s.spawner, path.join(__dirname, '..', 'spawner', 'start.js'))
+})
+
 test('basic', async t => {
   const Sandbox = createSandboxClass('spawner')
   await new Sandbox({
