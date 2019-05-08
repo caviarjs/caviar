@@ -78,11 +78,15 @@ module.exports = class Sandbox {
 
     this._stdio = stdio
 
-    this._configLoader = new this.ConfigLoader({
-      cwd
-    })
+    this._configLoader = this._createConfigLoader()
 
     this._configLoader.load()
+  }
+
+  _createConfigLoader () {
+    return new this.ConfigLoader({
+      cwd: this._options.cwd
+    })
   }
 
   get spawner () {
@@ -157,15 +161,21 @@ module.exports = class Sandbox {
     return spawn(command, args, options)
   }
 
+  // For override
+  _spawnArgs () {
+    return [
+      this.spawner,
+      JSON.stringify(this._options)
+    ]
+  }
+
   start (options) {
     const command = 'node'
 
     // TODO: child process events
     return this.spawn(
-      command, [
-        this.spawner,
-        JSON.stringify(this._options)
-      ],
+      command,
+      this._spawnArgs(),
       options
     )
   }
