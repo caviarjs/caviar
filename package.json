@@ -1,6 +1,6 @@
 {
   "name": "caviar",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "A pluggable and extendable web framework which integrates React, Next and Koa to create your own web application out of the box with even zero configuration",
   "main": "src/index.js",
   "scripts": {
@@ -41,9 +41,9 @@
     "url": "https://github.com/kaelzhang/caviar/issues"
   },
   "devDependencies": {
-    "@babel/runtime-corejs2": "^7.4.3",
+    "@babel/runtime-corejs2": "^7.4.4",
     "ava": "^1.4.1",
-    "codecov": "^3.3.0",
+    "codecov": "^3.4.0",
     "eslint": "^5.16.0",
     "eslint-config-ostai": "^3.0.0",
     "eslint-plugin-import": "^2.17.2",
@@ -51,25 +51,25 @@
     "get-port": "^5.0.0",
     "is-type-of": "^1.2.1",
     "next": "^8.1.0",
-    "nyc": "^14.0.0",
+    "nyc": "^14.1.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "request": "^2.88.0",
     "roe-define-router": "^1.0.0",
     "supertest": "^4.0.2",
-    "webpack": "^4.30.0"
+    "webpack": "^4.31.0"
   },
   "dependencies": {
     "core-util-is": "^1.0.2",
     "cross-spawn": "^6.0.5",
-    "dotenv": "^7.0.0",
+    "dotenv": "^8.0.0",
     "egg-serve-static": "^2.1.1",
     "env-to-code": "^1.0.4",
     "err-object": "^4.3.1",
-    "express-to-koa": "^1.1.4",
+    "express-to-koa": "^1.2.0",
     "has-own-prop": "^1.0.1",
-    "mix2": "^1.0.3",
-    "next-compose-plugins": "^2.1.1",
+    "mix2": "^1.0.4",
+    "next-compose-plugins": "^2.2.0",
     "once": "^1.4.0",
     "progress-hooks": "^2.3.1",
     "roe": "^2.0.0",
@@ -80,6 +80,6 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "webpack": "^4.30.0",
-    "@babel/runtime-corejs2": "^7.4.3"
+    "@babel/runtime-corejs2": "^7.4.4"
   }
 }
