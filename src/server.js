@@ -210,11 +210,13 @@ class Server extends EE {
         webpackModule
       )
 
-      const definePlugin = createDefinePlugin(
-        this._clientEnvKeys,
-        webpackModule
-      )
-      config.plugins.push(definePlugin)
+      if (!options.isServer) {
+        const definePlugin = createDefinePlugin(
+          this._clientEnvKeys,
+          webpackModule
+        )
+        config.plugins.push(definePlugin)
+      }
 
       if (nextConfig.webpack) {
         config = nextConfig.webpack(config, options)
