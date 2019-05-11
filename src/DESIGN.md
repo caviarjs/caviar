@@ -1,4 +1,29 @@
-# Goals and Non-Goals
+> Drafts, that may be outdated
+
+# Terminology
+
+- **Users** who cares about business logic
+- **Implementors** who cases about the development experience of users.
+
+# Goals & Non-Goals
+
+## Tagline
+
+The framework skeleton of web frameworks.
+
+## Scope
+
+Some reusable and relatively insulated operation blocks need to work with each other to reach the shared goals.
+
+## Goals
+
+- Try to eliminate configurations for normal users
+- Provide a way to create layers which can be empowered by Docker
+- Finally start the server
+
+## Non-Goals
+
+- Cares about a certain library or framework
 
 # Types
 
@@ -17,6 +42,18 @@ Actually a reversed `tapable` hook
 - Provides `Hook`s
 - Provides `Trigger`s
 - Config `Composer`
+
+Should be
+
+- `Orchestrator`-agnostic
+
+### Built-in Block
+
+> Inherit tree should be reviewed
+
+- `Sandbox`
+- `Orchestrator`
+- `Server`
 
 ## Config chain and Config loader
 
@@ -38,7 +75,7 @@ an config endpoint in each config layer
 
 ## Orchestrator
 
-- `Block` orchestration
+- `Block` orchestration to determine what your caviar really tastes
 - Name `Block`s
   - Name `BlocksMap`
   - Name `BlocksList`
@@ -46,10 +83,15 @@ an config endpoint in each config layer
 - Define anchor from config chain for Blocks
 - Define the main block
 
-## Plugin
+## `Plugin`
 
 Hook on Block outlets and Block hooks
+
+## Plugin System
+
+Support to plugin a hook into a generic `Block` type rather than hooking into an instance of a `Block`
 
 ## Utilities
 
 - Error handler
+- Sub hooks creator
