@@ -12,6 +12,7 @@ const {getRawConfig, inspect} = require('./utils')
 const error = createError('CONFIG_LOADER')
 const UNDEFINED = undefined
 const RETURN_OBJECT = () => ({})
+const RETURN_NEXT_CONFIG = (_, {defaultConfig = {}} = {}) => defaultConfig
 
 const checkResult = (result, field, configFile) => {
   if (!isObject(result)) {
@@ -58,10 +59,9 @@ const reduceEnvsConfigs = chain => chain.reduce((prev, {
   envs: {}
 })
 
-const createNextWithPlugins = config =>
-  (...args) => config
-    ? extend(config).withPlugins(...args)
-    : withPlugins(...args)
+const createNextWithPlugins = config => config
+  ? extend(config).withPlugins
+  : withPlugins
 
 const reduceNextConfigs = chain => chain.reduce((prev, {
   config: {
@@ -265,6 +265,13 @@ class ConfigLoader {
     log('config-loader: paths: %s', inspect(paths))
 
     // Caviar.Server::path, ...[SubServer::path]
+    // Sequence:
+    // - Layer 0: Caviar.Server::path,
+    // - ...[SubServer::path]
+    //   - Layer 1
+    //   - Layer 2
+    //   - ...
+    //   - Layer for business
     return this._paths = paths
   }
 
@@ -326,7 +333,7 @@ class ConfigLoader {
 
   // Returns `Object` the next config
   get next () {
-    return reduceNextConfigs(this._chain) || RETURN_OBJECT
+    return reduceNextConfigs(this._chain) || RETURN_NEXT_CONFIG
   }
 
   // Returns `Function(appInfo): Object`
