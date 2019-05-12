@@ -58,7 +58,7 @@ Should be
 ## Config chain and Config loader
 
 - Loader
-  - Handles NODE_PATH
+  - Handles `NODE_PATH`
 - require resolver injection
 
 ## Layer
@@ -83,7 +83,7 @@ an config endpoint in each config layer
 - Define anchor from config chain for Blocks
 - Define the main block
 
-## `Plugin`
+## Plugin
 
 Hook on Block outlets and Block hooks
 
@@ -95,3 +95,4 @@ Support to plugin a hook into a generic `Block` type rather than hooking into an
 
 - Error handler
 - Sub hooks creator
+- Cli
