@@ -131,8 +131,6 @@ const makeDepsExternal = config => {
 }
 
 module.exports = {
-  makeDepsExternal,
-  hasOwnProperty,
   getRawConfig,
   inspect,
   requireModule,

@@ -1,147 +1,14 @@
 const fs = require('fs')
 const log = require('util').debuglog('caviar')
 
-const {isString, isFunction, isObject} = require('core-util-is')
+const {isString, isObject} = require('core-util-is')
 const hasOwnProperty = require('has-own-prop')
-const {extend, withPlugins} = require('next-compose-plugins')
-const caviarWebpackModule = require('webpack')
 
-const {createError} = require('./error')
-const {getRawConfig, inspect} = require('./utils')
+const {createError} = require('../error')
+const {getRawConfig, inspect} = require('../utils')
 
 const error = createError('CONFIG_LOADER')
 const UNDEFINED = undefined
-const RETURN_OBJECT = () => ({})
-const RETURN_NEXT_CONFIG = (_, {defaultConfig = {}} = {}) => defaultConfig
-
-const checkResult = (result, field, configFile) => {
-  if (!isObject(result)) {
-    throw error('INVALID_RETURN_VALUE', field, configFile)
-  }
-
-  return result
-}
-
-const reduceEnvsConfigs = chain => chain.reduce((prev, {
-  config: {
-    envs,
-    clientEnvs,
-    env
-  },
-  configFile
-}) => {
-  Object.assign(prev.envs, envs)
-
-  if (clientEnvs) {
-    Object.keys(clientEnvs).forEach(key => {
-      if (envs && (key in envs)) {
-        throw error('ENV_CONFLICTS', key)
-      }
-
-      prev.envs[key] = clientEnvs[key]
-      prev.clientEnvKeys.add(key)
-    })
-  }
-
-  if (!env) {
-    return prev
-  }
-
-  if (!isFunction(env)) {
-    throw error('INVALID_CONFIG_FIELD', 'env', configFile, env)
-  }
-
-  prev.envs = checkResult(env(prev.envs), 'env', configFile)
-
-  return prev
-}, {
-  clientEnvKeys: new Set(),
-  envs: {}
-})
-
-const createNextWithPlugins = config => config
-  ? extend(config).withPlugins
-  : withPlugins
-
-const reduceNextConfigs = chain => chain.reduce((prev, {
-  config: {
-    next
-  },
-  configFile
-}) => {
-  if (!next) {
-    return prev
-  }
-
-  const key = 'next'
-
-  if (!isFunction(next)) {
-    throw error('INVALID_CONFIG_FIELD', key, configFile, next)
-  }
-
-  // Usage
-  // ```js
-  // module.exports = withPlugins => withPlugins([...plugins], newConfig)
-  // ```
-  // withPlugins <- createNextWithPlugins(prev)
-  const result = next(createNextWithPlugins(prev))
-
-  if (!isFunction(result)) {
-    throw error('INVALID_NEXT_RETURN_VALUE', configFile)
-  }
-
-  return result
-}, UNDEFINED)
-
-const createConfigChainReducer = ({
-  key,
-  initConfig,
-  runner
-}) => chain => (...args) => {
-  const {length} = chain
-  const run = (prevConfig, i) => {
-    if (i === length) {
-      return prevConfig
-    }
-
-    const {
-      config,
-      configFile
-    } = chain[i]
-
-    if (!(key in config)) {
-      return run(prevConfig, i + 1)
-    }
-
-    const factory = config[key]
-
-    if (!isFunction(factory)) {
-      throw error(`INVALID_CONFIG_FIELD`, key, configFile, factory)
-    }
-
-    const result = runner(factory, prevConfig, ...args)
-    return run(checkResult(result, key, configFile), i + 1)
-  }
-
-  return run(initConfig(...args), 0)
-}
-
-// Usage
-// ```js
-// module.exports = (config, appInfo) => config
-// ```
-const reduceServerConfigs = createConfigChainReducer({
-  key: 'server',
-  initConfig: RETURN_OBJECT,
-  runner: (factory, prev, appInfo) => factory(prev, appInfo)
-})
-
-const reduceWebpackConfigs = createConfigChainReducer({
-  key: 'webpack',
-  initConfig: nextWebpackConfig => nextWebpackConfig,
-  runner: (factory, prev, _, options, webpack) =>
-    factory(prev, options, webpack)
-})
 
 const createFinder = realpath => ({caviarPath: p}) => realpath === p
 const addConfigPath = (paths, {
@@ -210,6 +77,10 @@ class ConfigLoader {
 
     let proto = this
     let latestConfigFileName
+
+    // 1. should has a own property `path`
+    // 2. this.configFileName should be a string
+    // 3. has a own property `nodePath` or not
 
     // Loop back for the prototype chain
     while (proto) {
@@ -299,6 +170,8 @@ class ConfigLoader {
     log('config-loader: chain: %s', inspect(this._chain))
   }
 
+  // TODO:
+  // for now, we could not actually reload depencencies of confi files
   reload () {
     this._chain.forEach(({configFileName}) => {
       // delete the require caches, so that the files will be required again
@@ -318,9 +191,24 @@ class ConfigLoader {
     || defaultValue
   }
 
-  // We deferred the process of merging configurations
-  //////////////////////////////////////////////////////
+  // Componse config anchor of kind `key` from each layer
+  compose (key, checker, composer) {
+    return this._chain.reduce((prev, {
+      config: {
+        [key]: anchor
+      },
+      configFile
+    }) => {
+      const bail = checker(prev, anchor, configFile)
+      if (bail !== UNDEFINED) {
+        return bail
+      }
 
+      return composer(prev, anchor)
+    }, UNDEFINED)
+  }
+
+  // Get plugins
   // Returns `Array`
   get plugins () {
     return this._chain.reduce(
@@ -330,35 +218,6 @@ class ConfigLoader {
       []
     )
   }
-
-  // Returns `Object` the next config
-  get next () {
-    return reduceNextConfigs(this._chain) || RETURN_NEXT_CONFIG
-  }
-
-  // Returns `Function(appInfo): Object`
-  get server () {
-    return reduceServerConfigs(this._chain)
-  }
-
-  // Returns `Function(nextWebpackConfig, options, webpack): Object`
-  get webpack () {
-    // We can specify a version of webpack in the config
-    return reduceWebpackConfigs(this._chain)
-  }
-
-  // Returns `Webpack`
-  get webpackModule () {
-    return this.prop('webpackModule', caviarWebpackModule)
-  }
-
-  // Returns `Object`
-  // - envs `Object` user customized envs
-  // - clientEnvKeys `Set` user client env keys
-  get env () {
-    return reduceEnvsConfigs(this._chain)
-  }
-  //////////////////////////////////////////////////////
 }
 
 module.exports = ConfigLoader

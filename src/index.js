@@ -1,5 +1,5 @@
-const Server = require('./server')
-const Sandbox = require('./sandbox')
+const Server = require('./block/server')
+const Sandbox = require('./block/sandbox')
 const ConfigLoader = require('./config-loader')
 const {monitor} = require('./child-process')
 
