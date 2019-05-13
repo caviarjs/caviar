@@ -65,8 +65,9 @@ Should be
 
 We split the real world into reusable and hirachical abstractions, one over another, the foundation at the bottom, and disorder mess at the top.
 
-## Config
+## ConfigLoader
 
+- Supports chainable
 - Defines `Composer` to compose config anchors from different `Layer`s hierachicaly
 
 ## Config `Anchor`
@@ -80,7 +81,7 @@ an config endpoint in each config layer
   - Name `BlocksMap`
   - Name `BlocksList`
 - Shares outlets
-- Define anchor from config chain for Blocks
+- Define config loader
 - Define the main block
 
 ## Plugin

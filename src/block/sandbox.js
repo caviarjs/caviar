@@ -3,9 +3,9 @@ const log = require('util').debuglog('caviar')
 const {isString, isObject} = require('core-util-is')
 const spawn = require('cross-spawn')
 
-const {createError} = require('./error')
-const {Lifecycle} = require('./lifecycle')
-const {requireConfigLoader, joinEnvPaths} = require('./utils')
+const {createError} = require('../error')
+const {Lifecycle} = require('../lifecycle')
+const {requireConfigLoader, joinEnvPaths} = require('../utils')
 
 const error = createError('SANDBOX')
 

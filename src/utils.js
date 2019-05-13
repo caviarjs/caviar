@@ -113,7 +113,6 @@ const joinEnvPaths = (base, ...paths) => {
 }
 
 module.exports = {
-  hasOwnProperty,
   getRawConfig,
   inspect,
   requireModule,
