@@ -192,20 +192,21 @@ class ConfigLoader {
   }
 
   // Componse config anchor of kind `key` from each layer
-  compose (key, checker, composer) {
+  compose ({
+    key,
+    compose
+  }) {
     return this._chain.reduce((prev, {
       config: {
         [key]: anchor
       },
       configFile
-    }) => {
-      const bail = checker(prev, anchor, configFile)
-      if (bail !== UNDEFINED) {
-        return bail
-      }
-
-      return composer(prev, anchor)
-    }, UNDEFINED)
+    }) => compose({
+      key,
+      prev,
+      anchor,
+      configFile
+    }), UNDEFINED)
   }
 
   // Get plugins

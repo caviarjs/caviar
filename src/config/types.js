@@ -1,31 +1,78 @@
-const reduceNextConfigs = chain => chain.reduce((prev, {
-  config: {
-    next
-  },
-  configFile
-}) => {
-  if (!next) {
-    return prev
+const {isFunction, isObject} = require('core-util-is')
+const {error} = require('../error')
+
+// Usage
+
+// ```
+// const {Types} = require('caviar')
+// Types.func.isRequired
+// ```
+
+class Type {
+  constructor ({
+    // `Function`
+    check,
+    isRequired = false
+  }) {
+    this._isRequired = isRequired
+    this._check = check
   }
 
-  const key = 'next'
+  get isRequired () {
+    if (this._isRequired) {
+      return this
+    }
 
-  if (!isFunction(next)) {
-    throw error('INVALID_CONFIG_FIELD', key, configFile, next)
+    return new Type({
+      check: this._check,
+      isRequired: true
+    })
   }
 
-  // Usage
-  // ```js
-  // module.exports = withPlugins => withPlugins([...plugins], newConfig)
-  // ```
-  // withPlugins <- createNextWithPlugins(prev)
-  const result = next(createNextWithPlugins(prev))
+  check ({
+    value,
+    key,
+    configFile
+  }) {
+    if (!this._check({value, key, configFile})) {
+      error('INVALID_CONFIG_ANCHOR', key, configFile, value)
+    }
+  }
+}
 
-  if (!isFunction(result)) {
-    throw error('INVALID_NEXT_RETURN_VALUE', configFile)
+const createChecker = is => ({value}) => is(value)
+const CHECKER = {
+  func: createChecker(isFunction),
+  object: createChecker(isObject)
+}
+
+class Types {
+  constructor () {
+    this._types = Object.create(null)
   }
 
-  return result
-}, UNDEFINED)
+  _get (typeName) {
+    const type = this._types[typeName]
+    if (type) {
+      return type
+    }
 
+    return this._types[typeName] = new Type({
+      check: CHECKER[typeName]
+    })
+  }
 
+  get func () {
+    return this._get('func')
+  }
+
+  get object () {
+    return this._get('object')
+  }
+}
+
+module.exports = {
+  Types,
+  Type,
+  types: new Types()
+}
