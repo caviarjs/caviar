@@ -47,7 +47,7 @@ Should be
 
 - `Orchestrator`-agnostic
 
-### Built-in Block
+### Built-in Block (Roe)
 
 > Inherit tree should be reviewed
 
@@ -61,7 +61,7 @@ Should be
   - Handles `NODE_PATH`
 - require resolver injection
 
-## Layer
+## Layer (Spoon)
 
 We split the real world into reusable and hirachical abstractions, one over another, the foundation at the bottom, and disorder mess at the top.
 
@@ -74,7 +74,7 @@ We split the real world into reusable and hirachical abstractions, one over anot
 
 an config endpoint in each config layer
 
-## Orchestrator
+## Orchestrator (Sauce)
 
 - `Block` orchestration to determine what your caviar really tastes
 - Name `Block`s

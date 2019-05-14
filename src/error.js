@@ -70,7 +70,7 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .TE('INVALID_NODE_PATH',
   'ConfigLoader::nodePath must be a string')
 
-.TE('INVALID_CONFIG_FIELD',
+.TE('INVALID_CONFIG_ANCHOR',
   'caviar.config.%s in "%s" must be a function')
 
 .E('INVALID_RETURN_VALUE',

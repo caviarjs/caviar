@@ -3,7 +3,11 @@ module.exports = class Block {
 
   }
 
-  start () {
+  _composeConfig () {
+
+  }
+
+  _start () {
     throw 'should be implemented'
   }
 }
