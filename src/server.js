@@ -23,7 +23,7 @@ const {code} = require('env-to-code')
 const {Lifecycle} = require('./lifecycle')
 const {createError} = require('./error')
 const {
-  requireModule, requireConfigLoader
+  requireModule, requireConfigLoader, makeDepsExternal
 } = require('./utils')
 
 const error = createError('SERVER')
@@ -226,6 +226,10 @@ class Server extends EE {
         isServer: options.isServer,
         cwd
       })
+
+      if (options.isServer) {
+        makeDepsExternal(config)
+      }
 
       return config
     }

@@ -102,17 +102,36 @@ const requireConfigLoader = (configLoaderClassPath, createError) => {
 const joinEnvPaths = (base, ...paths) => {
   const {delimiter} = path
 
-  return base
-    ? base
-    .split(delimiter)
-    .filter(Boolean)
-    .concat(...paths)
-    .join(delimiter)
+  if (base) {
+    paths = paths
+    .concat(
+      base
+      .split(delimiter)
+      .filter(Boolean)
+    )
+  }
 
-    : paths.join(delimiter)
+  return paths.join(delimiter)
+}
+
+const SERVER_SIDE_EXTERNAL_DEPS = [
+  'react',
+  'react-dom'
+]
+
+const makeDepsExternal = config => {
+  config.externals.push((_, request, callback) => {
+    if (SERVER_SIDE_EXTERNAL_DEPS.includes(request)) {
+      callback(null, `commonjs ${request}`)
+      return
+    }
+
+    callback()
+  })
 }
 
 module.exports = {
+  makeDepsExternal,
   hasOwnProperty,
   getRawConfig,
   inspect,
