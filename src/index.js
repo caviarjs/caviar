@@ -1,6 +1,6 @@
 const Server = require('./block/server')
-const Sandbox = require('./block/sandbox')
-const ConfigLoader = require('./config-loader')
+const Sandbox = require('./sandbox')
+const ConfigLoader = require('./config/loader')
 const {monitor} = require('./child-process')
 
 module.exports = {
