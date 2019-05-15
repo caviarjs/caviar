@@ -251,8 +251,12 @@ class Server extends EE {
       return
     }
 
-    await requireModule('next/dist/build')(
-      this._cwd,
+    await this._buildNextDist(this._cwd)
+  }
+
+  _buildNextDist (dir) {
+    return requireModule('next/dist/build')(
+      dir,
       this._createNextConfig(PHASE_PRODUCTION_BUILD)
     )
   }
