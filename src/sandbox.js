@@ -3,9 +3,10 @@ const log = require('util').debuglog('caviar')
 const {isString, isObject} = require('core-util-is')
 const spawn = require('cross-spawn')
 
-const {createError} = require('../error')
-const {Lifecycle} = require('../lifecycle')
-const {requireConfigLoader, joinEnvPaths} = require('../utils')
+const Block = require('./block')
+const {createError} = require('./error')
+// const {Lifecycle} = require('../lifecycle.no-track')
+const {requireConfigLoader, joinEnvPaths} = require('./utils')
 
 const error = createError('SANDBOX')
 
@@ -45,14 +46,16 @@ const ensureEnv = inheritEnv => {
 
 // Sanitize and inject new environment variables into
 // the child process
-module.exports = class Sandbox {
+module.exports = class Sandbox extends Block {
   constructor (options) {
+    super()
+
     if (!isObject(options)) {
       throw error('INVALID_OPTIONS', options)
     }
 
     const {
-      serverClassPath = path.join(__dirname, 'server.js'),
+      caviarClassPath = path.join(__dirname, 'caviar.js'),
       configLoaderClassPath = path.join(__dirname, 'config-loader.js'),
       cwd,
       dev,
@@ -60,8 +63,8 @@ module.exports = class Sandbox {
       stdio = 'inherit'
     } = options
 
-    if (!isString(serverClassPath)) {
-      throw error('INVALID_SERVER_CLASS_PATH', serverClassPath)
+    if (!isString(caviarClassPath)) {
+      throw error('INVALID_SERVER_CLASS_PATH', caviarClassPath)
     }
 
     if (!isString(cwd)) {
@@ -69,7 +72,7 @@ module.exports = class Sandbox {
     }
 
     this._options = {
-      serverClassPath,
+      caviarClassPath,
       configLoaderClassPath,
       cwd,
       dev: !!dev,

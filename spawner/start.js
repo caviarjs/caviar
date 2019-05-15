@@ -4,16 +4,16 @@ const log = require('util').debuglog('caviar:spawner')
 const {requireModule} = require('../src/utils')
 
 const {
-  // Pass `serverClassPath` as an option,
-  // so that user can extends `require('caviar').Server`,
+  // Pass `caviarClassPath` as an option,
+  // so that user can extends `require('caviar').Caviar`,
   // and use spawner to start the own server
-  serverClassPath,
+  caviarClassPath,
   ...options
 } = JSON.parse(process.argv[2])
 
 log('spawner env: %s', JSON.stringify(process.env, null, 2))
 
-const Server = requireModule(serverClassPath)
+const Caviar = requireModule(serverClassPath)
 
 new Server(options).ready()
 .then(server => {
