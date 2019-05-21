@@ -70,6 +70,7 @@
     "has-own-prop": "^1.0.1",
     "mix2": "^1.0.4",
     "next-compose-plugins": "^2.2.0",
+    "object-access": "^2.0.4",
     "once": "^1.4.0",
     "progress-hooks": "^2.3.1",
     "roe": "^2.0.0",

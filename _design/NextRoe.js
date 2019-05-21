@@ -1,5 +1,10 @@
+// Orchestrator
+///////////////////////////////////////////////
 const RoeBlock = require('@caviar/block-roe')
 const {set} = require('object-access')
+
+// Thinking:
+// Should Orchestrator and Block extend the same interface?
 
 class NextRoe extends Orchestrator {
   constructor (options) {

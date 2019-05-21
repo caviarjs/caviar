@@ -1,12 +1,17 @@
 module.exports = {
   // Configurations for caviar
   caviar: {
-    preset: NextRoe
+    // The config anchor for caviar
+    orchestrator: NextRoe
     plugins: [
 
     ],
+    // If with sandbox
     withSandbox: false
   },
 
   // Config anchor for blocks
+  next () {
+
+  }
 }
