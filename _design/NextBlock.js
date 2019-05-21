@@ -1,3 +1,5 @@
+// Block
+///////////////////////////////////////////////
 const {isString, isFunction, isObject} = require('core-util-is')
 const {extend, withPlugins} = require('next-compose-plugins')
 const next = require('next')

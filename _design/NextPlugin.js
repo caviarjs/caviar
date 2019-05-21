@@ -1,3 +1,5 @@
+// Plugin
+///////////////////////////////////////////////
 const NextBlock = require('./NextBlock')
 
 class NextXXXPlugin {

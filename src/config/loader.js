@@ -4,11 +4,15 @@ const log = require('util').debuglog('caviar')
 const {isString, isObject} = require('core-util-is')
 const hasOwnProperty = require('has-own-prop')
 
-const {createError} = require('../error')
-const {getRawConfig, inspect} = require('../utils')
+const {
+  ConfigGetter,
+  PROTECTED_SET_TARGET,
+  PROTECTED_SET_PATHS
+} = require('./getter')
 
-const error = createError('CONFIG_LOADER')
-const UNDEFINED = undefined
+const error = require('./error')
+const {getRawConfig, inspect} = require('../utils')
+const {UNDEFINED} = require('../constants')
 
 const createFinder = realpath => ({caviarPath: p}) => realpath === p
 const addConfigPath = (paths, {
@@ -38,8 +42,10 @@ const checkNodePath = p => {
 
 const CONFIG_FILE_NAME = 'caviar.config'
 
-class ConfigLoader {
+class ConfigLoader extends ConfigGetter {
   constructor (options) {
+    super()
+
     if (!isObject(options)) {
       throw error('INVALID_OPTIONS', options)
     }
@@ -55,6 +61,20 @@ class ConfigLoader {
     this._cwd = cwd
     this._paths = null
     this._chain = []
+
+    this[PROTECTED_SET_TARGET](this._chain)
+    this[PROTECTED_SET_PATHS](['config'])
+  }
+
+  // Usage
+  // const caviarConfig = config.createSubGetter('caviar')
+  // caviarConfig.compose()
+  createSubGetter (namespace) {
+    const sub = new ConfigGetter()
+    sub[PROTECTED_SET_TARGET](this._chain)
+    sub[PROTECTED_SET_PATHS](['config', namespace])
+
+    return sub
   }
 
   // Fields for implementors to override
@@ -68,6 +88,14 @@ class ConfigLoader {
   }
   ///////////////////////////////////////////////////////////
 
+  // Caviar.Server::path, ...[SubServer::path]
+  // TOP
+  //  ^      - Layer for business
+  //  |      - ...
+  //  |      - Layer 2
+  //  |      - Layer 1: [SubServer::path]    -> paths[1]
+  //  |      - Layer 0: Caviar.Server::path  -> paths[0]
+  // BOTTOM
   getPaths () {
     if (this._paths) {
       return this._paths
@@ -135,14 +163,6 @@ class ConfigLoader {
 
     log('config-loader: paths: %s', inspect(paths))
 
-    // Caviar.Server::path, ...[SubServer::path]
-    // Sequence:
-    // - Layer 0: Caviar.Server::path,
-    // - ...[SubServer::path]
-    //   - Layer 1
-    //   - Layer 2
-    //   - ...
-    //   - Layer for business
     return this._paths = paths
   }
 
@@ -180,44 +200,6 @@ class ConfigLoader {
 
     this._chain.length = 0
     this.load()
-  }
-
-  // Returns a latest defined property
-  prop (key, defaultValue) {
-    return this._chain.reduceRight(
-      (prev, current) => prev || current.config[key],
-      UNDEFINED
-    )
-    || defaultValue
-  }
-
-  // Componse config anchor of kind `key` from each layer
-  compose ({
-    key,
-    compose
-  }) {
-    return this._chain.reduce((prev, {
-      config: {
-        [key]: anchor
-      },
-      configFile
-    }) => compose({
-      key,
-      prev,
-      anchor,
-      configFile
-    }), UNDEFINED)
-  }
-
-  // Get plugins
-  // Returns `Array`
-  get plugins () {
-    return this._chain.reduce(
-      (plugins, {config}) => config.plugins
-        ? plugins.concat(config.plugins)
-        : plugins,
-      []
-    )
   }
 }
 

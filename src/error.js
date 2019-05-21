@@ -52,6 +52,8 @@ PREFIX('SANDBOX', 'sandbox')
   'env key "%s" is preserved by caviar', RangeError)
 
 PREFIX('CONFIG_LOADER', 'config-loader')
+.E('NOT_LOADED', 'should not load an anchor before config chain is loaded')
+
 .TE('INVALID_OPTIONS', INVALID_OPTIONS)
 
 .TE('INVALID_CWD', INVALID_CWD)
