@@ -20,10 +20,18 @@ Some reusable and relatively insulated operation blocks need to work with each o
 - Try to eliminate configurations for normal users
 - Provide a way to create layers which can be empowered by Docker
 - Finally start the server
+- Better for debugging
 
 ## Non-Goals
 
 - Cares about a certain library or framework
+
+# Features
+
+## Debugging
+
+- local configurations or testing env
+- with or without sandbox
 
 # Types
 

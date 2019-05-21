@@ -1,12 +1,12 @@
+
 const path = require('path')
 const log = require('util').debuglog('caviar')
 const {isString, isObject} = require('core-util-is')
-const spawn = require('cross-spawn')
 
-const Block = require('./block')
-const {createError} = require('./error')
+const Block = require('../block')
+const {createError} = require('../error')
 // const {Lifecycle} = require('../lifecycle.no-track')
-const {requireConfigLoader, joinEnvPaths} = require('./utils')
+const {requireConfigLoader, joinEnvPaths} = require('../utils')
 
 const error = createError('SANDBOX')
 
@@ -44,6 +44,7 @@ const ensureEnv = inheritEnv => {
   ESSENTIAL_ENV_KEYS.forEach(inheritEnv)
 }
 
+// Sandbox is a special block that
 // Sanitize and inject new environment variables into
 // the child process
 module.exports = class Sandbox extends Block {
@@ -111,7 +112,7 @@ module.exports = class Sandbox extends Block {
   // const child = await env.spawn(command, args)
   // child.on('')
   // ```
-  async spawn (command, args, options = {}) {
+  start (command, args, options = {}) {
     if (!options.stdio) {
       options.stdio = this._stdio
     }
@@ -170,16 +171,5 @@ module.exports = class Sandbox extends Block {
       this.spawner,
       JSON.stringify(this._options)
     ]
-  }
-
-  start (options) {
-    const command = 'node'
-
-    // TODO: child process events
-    return this.spawn(
-      command,
-      this._spawnArgs(),
-      options
-    )
   }
 }
