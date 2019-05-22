@@ -1,5 +1,5 @@
 const once = require('once')
-const {createError} = require('./error')
+const {createError} = require('../error')
 
 const error = createError('CHILD_PROCESS')
 

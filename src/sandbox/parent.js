@@ -112,7 +112,7 @@ module.exports = class Sandbox extends Block {
   // const child = await env.spawn(command, args)
   // child.on('')
   // ```
-  start (command, args, options = {}) {
+  async start (command, args, options = {}) {
     if (!options.stdio) {
       options.stdio = this._stdio
     }

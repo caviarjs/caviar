@@ -1,5 +1,5 @@
 const {isFunction, isObject} = require('core-util-is')
-const {error} = require('../error')
+const {error} = require('./error')
 
 // Usage
 
@@ -35,7 +35,7 @@ class Type {
     configFile
   }) {
     if (!this._check({value, key, configFile})) {
-      error('INVALID_CONFIG_ANCHOR', key, configFile, value)
+      error('INVALID_ANCHOR', key, configFile, value)
     }
   }
 }
