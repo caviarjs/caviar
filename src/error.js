@@ -4,6 +4,7 @@ const {
 } = require('err-object')
 
 const {E, error} = new Errors({
+  prefix: '[caviar] ',
   notDefined: exitOnNotDefined
 })
 
@@ -72,7 +73,7 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .TE('INVALID_NODE_PATH',
   'ConfigLoader::nodePath must be a string')
 
-.TE('INVALID_CONFIG_ANCHOR',
+.TE('INVALID_ANCHOR',
   'caviar.config.%s in "%s" must be a function')
 
 .E('INVALID_RETURN_VALUE',

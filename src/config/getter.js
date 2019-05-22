@@ -50,8 +50,8 @@ class ConfigGetter {
     }, UNDEFINED) || defaultValue
   }
 
-  compose (_) {
-    return this[PRIVATE_COMPOSE](_, REDUCE)
+  compose (_, defaultValue) {
+    return this[PRIVATE_COMPOSE](_, REDUCE, defaultValue)
   }
 
   // Iterate from top to bottom, return the first found
