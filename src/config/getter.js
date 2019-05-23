@@ -41,8 +41,13 @@ class ConfigGetter {
       const {configFilepath} = current
       const anchor = get(current, [...this[PRIVATE_PATHS], key])
 
+      // We treat undefined as has no property
+      // Just return the previous
+      if (anchor === UNDEFINED) {
+        return prev
+      }
+
       return compose({
-        key,
         prev,
         anchor,
         configFilepath

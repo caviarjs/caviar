@@ -27,6 +27,14 @@ Some reusable and relatively insulated operation blocks need to work with each o
 
 - Cares about a certain library or framework
 
+# Thinking
+
+- How to reuse orchestrators
+
+# Principle
+
+
+
 # Features
 
 ## Debugging
