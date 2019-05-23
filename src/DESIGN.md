@@ -21,6 +21,7 @@ Some reusable and relatively insulated operation blocks need to work with each o
 - Provide a way to create layers which can be empowered by Docker
 - Finally start the server
 - Better for debugging
+- Serverless support?
 
 ## Non-Goals
 
