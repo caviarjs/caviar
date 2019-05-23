@@ -13,7 +13,7 @@ const createNextWithPlugins = config => config
   ? extend(config).withPlugins
   : withPlugins
 
-const compose = ({
+const composeNext = ({
   key,
   prev,
   anchor,
@@ -41,42 +41,62 @@ const compose = ({
   return result
 }
 
+const composeNextWebpack = () => {
+  // TODO
+}
+
 // Thinking:
 // inherit or delegate?
 module.exports = class NextBlock extends Block {
   constructor () {
     super()
 
+    // Orchestrator will check the config structure
+    // this.config is a setter
     this.config = {
       next: {
-        compose
+        type: 'compose',
+        compose: composeNext
+      },
+
+      nextWebpack: {
+        type: 'compose',
+        compose: composeNextWebpack
       }
     }
 
+    // this.hooks is a setter
     this.hooks = {
       nextConfig: new SyncHook()
     }
   }
 
-  // config `Object` the composed configuration
-  // caviarOptions `Object`
-  async _create (config, caviarOptions) {
+  // Override
+  // - config `Object` the composed configuration
+  // - caviarOptions `Object`
+  //   - cwd
+  //   - dev
+  async _create (config, {dev, cwd}) {
     const nextConfig = config.next(
       phase,
-      // Just pass an empty string, but in next it passes `{defaultConfig}`
+      // {defaultConfig: undefined}
       {}
     )
 
-    this.hooks.nextConfig.call(nextConfig)
+    this.hooks.config.call(nextConfig)
 
     return next({
-      // TODO: ?
-      dev: caviarOptions.dev,
+      dev,
       conf: nextConfig,
-      dir: caviarOptions.dir
+      dir: cwd
     })
   }
 
+  async _prepare () {
+    await this.outlet.prepare()
+  }
+
+  // Custom public methods
   middleware () {
     // TODO: outlet ?
     const nextApp = this.outlet

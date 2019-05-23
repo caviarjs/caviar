@@ -1,5 +1,3 @@
-const
-
 class TapableProxy {
   constructor () {
 

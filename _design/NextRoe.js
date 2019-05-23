@@ -30,12 +30,12 @@ class NextRoe extends Orchestrator {
     next,
     roe
   }) {
-    next.hooks.afterReady.tap('XXX', nextApp => {
+    next.hooks.created.tap('XXX', nextApp => {
       roe.hooks.creating.tap('XXX', options => {
         set(options, ['extends.next'], nextApp)
       })
 
-      roe.hooks.afterReady.tap('XXX', roeApp => {
+      roe.hooks.ready.tap('XXX', roeApp => {
         // Set the Orchestrator as ready
         this.ready(roeApp)
       })
