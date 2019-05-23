@@ -38,14 +38,14 @@ class ConfigGetter {
     }
 
     return target[reduceType]((prev, current) => {
-      const {configFile} = current
+      const {configFilepath} = current
       const anchor = get(current, [...this[PRIVATE_PATHS], key])
 
       return compose({
         key,
         prev,
         anchor,
-        configFile
+        configFilepath
       })
     }, UNDEFINED) || defaultValue
   }

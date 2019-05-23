@@ -1,4 +1,6 @@
 // Block
+// Deprecated, moved to
+// https://github.com/caviarjs/caviar-block-next/blob/master/src/index.js
 ///////////////////////////////////////////////
 const {isString, isFunction, isObject} = require('core-util-is')
 const {extend, withPlugins} = require('next-compose-plugins')
@@ -45,8 +47,8 @@ const composeNextWebpack = () => {
   // TODO
 }
 
-// Thinking:
-// inherit or delegate?
+// Thinking(DONE):
+// inherit or delegate? inherit
 module.exports = class NextBlock extends Block {
   constructor () {
     super()
@@ -67,7 +69,7 @@ module.exports = class NextBlock extends Block {
 
     // this.hooks is a setter
     this.hooks = {
-      nextConfig: new SyncHook()
+      config: new SyncHook()
     }
   }
 
