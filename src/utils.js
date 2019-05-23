@@ -36,11 +36,11 @@ const readAndParseEnv = (...args) => {
   return parse(content)
 }
 
-const readConfig = configFile => {
+const readConfig = configFilepath => {
   try {
-    return require(configFile)
+    return require(configFilepath)
   } catch (err) {
-    throw error('CONFIG_LOADER_CONFIG_ERRORED', configFile, err.stack)
+    throw error('CONFIG_LOADER_CONFIG_ERRORED', configFilepath, err.stack)
   }
 }
 
@@ -53,16 +53,16 @@ const GENERIC_ENV_FILENAME = '.env'
 // - env
 // - plugins
 const getRawConfig = (cwd, configFileName) => {
-  let configFile
+  let configFilepath
 
   try {
-    configFile = require.resolve(path.join(cwd, configFileName))
+    configFilepath = require.resolve(path.join(cwd, configFileName))
   } catch (err) {
-    log('config file "%s" not found', configFile)
+    log('config file "%s" not found', configFilepath)
     return
   }
 
-  const config = readConfig(configFile)
+  const config = readConfig(configFilepath)
 
   config.envs = config.envs
     || readAndParseEnv(cwd, configFileName, GENERIC_ENV_FILENAME)
@@ -72,7 +72,7 @@ const getRawConfig = (cwd, configFileName) => {
 
   return {
     config,
-    configFile
+    configFilepath
   }
 }
 
