@@ -30,10 +30,14 @@ Some reusable and relatively insulated operation blocks need to work with each o
 # Thinking
 
 - How to reuse orchestrators
+- How to generate docker image by caviar. How to extend it.
+
+# Thinking in caviar ecosystem
+
+- How to reuse babel configuration
+- How to support build phase
 
 # Principle
-
-
 
 # Features
 
@@ -41,6 +45,11 @@ Some reusable and relatively insulated operation blocks need to work with each o
 
 - local configurations or testing env
 - with or without sandbox
+
+## Two Phases
+
+- **build** The phase to build the docker image
+- **ready** The phase to start the server
 
 # Types
 
