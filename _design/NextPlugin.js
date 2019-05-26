@@ -1,6 +1,6 @@
 // Plugin
 ///////////////////////////////////////////////
-const NextBlock = require('./NextBlock')
+const NextBlock = require('@caviar/next-block')
 
 class NextXXXPlugin {
   constructor () {
