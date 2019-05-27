@@ -1,50 +1,134 @@
+const {
+  SyncHook
+} = require('tapable')
+const {isObject} = require('core-util-is')
+
 const {createError} = require('../error')
+const {createSymbolFor} = require('../utils')
 
 const error = createError('BLOCK')
-
-const PREFIX = 'caviar:block.id'
 
 // The performance of accessing a symbol property or a normal property
 // is nearly the same
 // https://jsperf.com/normal-property-vs-symbol-prop
-const blockIdentifierSymbol = Symbol.for(PREFIX)
+const CONFIG_SETTING = Symbol('config')
+const CONFIG_VALUE = Symbol('config-value')
+const IS_READY = Symbol('is-ready')
+const HOOKS = Symbol('hooks')
+const OUTLET = Symbol('outlet')
+const CAVIAR_OPTS = Symbol('caviar-opts')
 
-const createBlockIdentifier = constructor =>
-  Symbol.for(`${PREFIX}:${constructor.name}`)
+const symbolFor = createSymbolFor('block')
+const FRIEND_GET_CONFIG_SETTING = symbolFor('get-config-setting')
+const FRIEND_SET_CONFIG_VALUE = symbolFor('set-config-value')
+const FRIEND_SET_CAVIAR_OPTIONS = symbolFor('set-caviar-opts')
+
+const DEFAULT_HOOKS = () => ({
+  // TODO: hooks paramaters
+  beforeBuild: new SyncHook(),
+  built: new SyncHook(),
+  beforeReady: new SyncHook(),
+  ready: new SyncHook(),
+  config: new SyncHook()
+})
+
+const extendHooks = hooks => {
+  const ret = {
+    ...hooks
+  }
+
+  for (const [key, hook] of Object.entries(DEFAULT_HOOKS())) {
+    if (key in ret) {
+      throw error('RESERVED_HOOK_NAME', key)
+    }
+
+    ret[key] = hook
+  }
+
+  return ret
+}
 
 class Block {
   constructor () {
-    this[blockIdentifierSymbol] = createBlockIdentifier(this.constructor)
-    this._app = null
-    this._config = null
+    this[CONFIG_SETTING] = null
+    this[HOOKS] = null
+    this[IS_READY] = false
+
+    this[CONFIG_VALUE] = null
+    this[CAVIAR_OPTS] = null
   }
 
   set config (config) {
-
+    // TODO: check config
+    this[CONFIG_SETTING] = config
   }
 
-  get config () {
-
+  get [FRIEND_GET_CONFIG_SETTING] () {
+    return this[CONFIG_SETTING]
   }
 
-  ready () {
-    const app = this._app || this.create()
+  set [FRIEND_SET_CONFIG_VALUE] (value) {
+    this[CONFIG_VALUE] = value
+    this.hooks.config.call(value)
   }
 
-  create (options, caviarOptions) {
-
-    this._app = this._create(options, caviarOptions)
-
-    return this._app
+  set [FRIEND_SET_CAVIAR_OPTIONS] (opts) {
+    this[CAVIAR_OPTS] = opts
   }
 
-  _create () {
-    throw error('NOT_IMPLEMENTED', '_create')
+  set hooks (hooks) {
+    if (!isObject(hooks)) {
+      throw error('INVALID_HOOKS', hooks)
+    }
+
+    // TODO: check hooks
+    // adds default hooks
+    this[HOOKS] = extendHooks(hooks)
+  }
+
+  get hooks () {
+    const hooks = this[HOOKS]
+    if (!hooks) {
+      throw error('HOOKS_NOT_DEFINED')
+    }
+
+    return hooks
+  }
+
+  get outlet () {
+    if (!this[IS_READY]) {
+      throw error('NOT_READY')
+    }
+
+    return this[OUTLET]
+  }
+
+  async build () {
+    await this._build(this[CONFIG_VALUE], this[CAVIAR_OPTS])
+    this.hooks.built.call()
+  }
+
+  async ready () {
+    const outlet = await this._ready(
+      this[CONFIG_VALUE], this[CAVIAR_OPTS])
+
+    this[IS_READY] = true
+    this[OUTLET] = outlet
+
+    return outlet
+  }
+
+  _build () {
+    throw error('NOT_IMPLEMENTED', '_build')
+  }
+
+  _ready () {
+    throw error('NOT_IMPLEMENTED', '_ready')
   }
 }
 
 module.exports = {
   Block,
-  blockIdentifierSymbol,
-  createBlockIdentifier
+  FRIEND_GET_CONFIG_SETTING,
+  FRIEND_SET_CONFIG_VALUE
 }
