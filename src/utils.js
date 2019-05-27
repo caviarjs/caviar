@@ -112,10 +112,15 @@ const joinEnvPaths = (base, ...paths) => {
     : paths.join(delimiter)
 }
 
+const SYMBOL_PREFIX = 'caviar:'
+const createSymbolFor = namespace => name =>
+  Symbol.for(`${SYMBOL_PREFIX}:${namespace}:${name}`)
+
 module.exports = {
   getRawConfig,
   inspect,
   requireModule,
   requireConfigLoader,
-  joinEnvPaths
+  joinEnvPaths,
+  createSymbolFor
 }
