@@ -63,16 +63,16 @@ class Block {
     this[CONFIG_SETTING] = config
   }
 
-  get [FRIEND_GET_CONFIG_SETTING] () {
+  [FRIEND_GET_CONFIG_SETTING] () {
     return this[CONFIG_SETTING]
   }
 
-  set [FRIEND_SET_CONFIG_VALUE] (value) {
+  [FRIEND_SET_CONFIG_VALUE] (value) {
     this[CONFIG_VALUE] = value
     this.hooks.config.call(value)
   }
 
-  set [FRIEND_SET_CAVIAR_OPTIONS] (opts) {
+  [FRIEND_SET_CAVIAR_OPTIONS] (opts) {
     this[CAVIAR_OPTS] = opts
   }
 
@@ -130,5 +130,6 @@ class Block {
 module.exports = {
   Block,
   FRIEND_GET_CONFIG_SETTING,
-  FRIEND_SET_CONFIG_VALUE
+  FRIEND_SET_CONFIG_VALUE,
+  FRIEND_SET_CAVIAR_OPTIONS
 }
