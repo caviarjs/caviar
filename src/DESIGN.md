@@ -31,6 +31,7 @@ Some reusable and relatively insulated operation blocks need to work with each o
 
 - How to reuse orchestrators
 - How to generate docker image by caviar. How to extend it.
+- How a plugin to create sub hooks? use `getHooks()`
 
 # Thinking in caviar ecosystem
 

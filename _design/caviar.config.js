@@ -13,6 +13,10 @@ module.exports = {
   // Config anchor for blocks
   next (withPlugins) {
     return withPlugins(nextPlugins, nextConfig)
+  },
+
+  router (app) {
+
   }
 }
 
