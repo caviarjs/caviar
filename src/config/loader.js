@@ -71,7 +71,7 @@ class ConfigLoader extends ConfigGetter {
   // Usage
   // const caviarConfig = config.createSubGetter('caviar')
   // caviarConfig.compose()
-  createSubGetter (namespace) {
+  namespace (namespace) {
     const sub = new ConfigGetter()
     sub[PROTECTED_SET_TARGET](this._chain)
     sub[PROTECTED_SET_PATHS](['config', namespace])

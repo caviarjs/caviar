@@ -39,7 +39,7 @@ class Caviar {
     this._configLoaderModulePath = configLoaderModulePath
 
     this._config = new this.ConfigLoader()
-    this._caviarConfig = this._config.createSubGetter('caviar')
+    this._caviarConfig = this._config.namespace('caviar')
 
     this._hooksMap = new WeakMap()
 
