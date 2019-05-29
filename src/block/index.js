@@ -19,9 +19,11 @@ const OUTLET = Symbol('outlet')
 const CAVIAR_OPTS = Symbol('caviar-opts')
 
 const symbolFor = createSymbolFor('block')
+
 const FRIEND_GET_CONFIG_SETTING = symbolFor('get-config-setting')
 const FRIEND_SET_CONFIG_VALUE = symbolFor('set-config-value')
 const FRIEND_SET_CAVIAR_OPTIONS = symbolFor('set-caviar-opts')
+const FRIEND_CREATE = symbolFor('create')
 
 const DEFAULT_HOOKS = () => ({
   // TODO: hooks paramaters
@@ -96,10 +98,6 @@ class Block {
   }
 
   get outlet () {
-    if (!this[IS_READY]) {
-      throw error('NOT_READY')
-    }
-
     return this[OUTLET]
   }
 
@@ -108,18 +106,25 @@ class Block {
     this.hooks.built.call()
   }
 
+  [FRIEND_CREATE] () {
+    this[OUTLET] = this._create(this[CONFIG_VALUE], this[CAVIAR_OPTS])
+  }
+
   async ready () {
-    const outlet = await this._ready(
+    const ret = await this._ready(
       this[CONFIG_VALUE], this[CAVIAR_OPTS])
 
     this[IS_READY] = true
-    this[OUTLET] = outlet
 
-    return outlet
+    return ret
   }
 
   _build () {
     throw error('NOT_IMPLEMENTED', '_build')
+  }
+
+  _create () {
+    throw error('NOT_IMPLEMENTED', '_create')
   }
 
   _ready () {
@@ -131,5 +136,6 @@ module.exports = {
   Block,
   FRIEND_GET_CONFIG_SETTING,
   FRIEND_SET_CONFIG_VALUE,
-  FRIEND_SET_CAVIAR_OPTIONS
+  FRIEND_SET_CAVIAR_OPTIONS,
+  FRIEND_CREATE
 }
