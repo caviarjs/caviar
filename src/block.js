@@ -3,8 +3,8 @@ const {
 } = require('tapable')
 const {isObject} = require('core-util-is')
 
-const {createError} = require('../error')
-const {createSymbolFor} = require('../utils')
+const {createError} = require('./error')
+const {createSymbolFor} = require('./utils')
 
 const error = createError('BLOCK')
 
