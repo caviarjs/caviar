@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 const log = require('util').debuglog('caviar')
 
 const {isString, isObject} = require('core-util-is')
@@ -59,6 +60,7 @@ class ConfigLoader extends ConfigGetter {
     }
 
     this._cwd = cwd
+    this._pkg = null
     this._paths = null
     this._chain = []
 
@@ -75,6 +77,24 @@ class ConfigLoader extends ConfigGetter {
     sub[PROTECTED_SET_PATHS](['config', namespace])
 
     return sub
+  }
+
+  get pkg () {
+    if (this._pkg) {
+      return this._pkg
+    }
+
+    const packageFilepath = path.join(this._cwd, 'package.json')
+
+    try {
+      return this._pkg = require(packageFilepath)
+    } catch (err) {
+      if (err.code === 'MODULE_NOT_FOUND') {
+        throw error('PKG_NOT_FOUND', this._cwd)
+      }
+
+      throw error('LOAD_PKG_FAILED', this._cwd, err)
+    }
   }
 
   // Fields for implementors to override

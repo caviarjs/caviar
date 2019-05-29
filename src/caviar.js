@@ -1,11 +1,17 @@
 const {isFunction, isArray} = require('core-util-is')
-const {create, APPLY_TAPS} = require('tapable-proxy')
+const {
+  create: createProxy,
+  APPLY_TAPS
+} = require('tapable-proxy')
 const {
   SyncHook
 } = require('tapable')
 
 const {error} = require('./error')
 const {RETURNS_TRUE} = require('./constants')
+const {
+  requireModule
+} = require('./utils')
 
 const DEFAULT_CONFIG_LOADER_MODULE_PATH = require.resolve('./config/loader')
 
@@ -62,6 +68,7 @@ class Caviar {
   }
 
   getHooks (Class) {
+    // Caviar hooks
     if (arguments.length === 0) {
       return this._hooks
     }
@@ -70,22 +77,30 @@ class Caviar {
       throw error('')
     }
 
+
     if (this._hooksMap.has(Class)) {
       return this._hooksMap.get(Class)
     }
 
-    const hooksProxy = create()
+    const hooksProxy = createProxy()
     this._hooksMap.set(Class, hooksProxy)
 
     return hooksProxy
   }
 
   get ConfigLoader () {
-    return 1
+    return requireModule(this._configLoaderModulePath)
+  }
+
+  async build () {
+
   }
 
   async ready () {
     this._config.load()
+    const Binder = this._caviarConfig.bailBottom('binder')
+
+
   }
 }
 
