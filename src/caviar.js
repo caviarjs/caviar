@@ -114,7 +114,6 @@ class Caviar {
   // }
 
   async ready () {
-    this._config.load()
     const Binder = this._caviarConfig.bailBottom('binder')
 
     const binder = new Binder({

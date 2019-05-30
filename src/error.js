@@ -5,7 +5,7 @@ const {
 
 const {E, error} = new Errors({
   // prefix: '[caviar] ',
-  notDefined: exitOnNotDefined
+  // notDefined: exitOnNotDefined
 })
 
 const STRING_BUT_GOT = ', but got `%s`'
