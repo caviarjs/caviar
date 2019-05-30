@@ -63,6 +63,12 @@ module.exports = class Binder {
     this._dev = dev
     this._configLoader = configLoader
     this._applyHooks = applyHooks
+
+    this._caviarOptions = {
+      cwd: this._cwd,
+      dev: this._dev,
+      pkg: this._configLoader.pkg
+    }
   }
 
   set blocks (blocks) {
@@ -79,10 +85,7 @@ module.exports = class Binder {
     // Apply proxied hook taps
     this._applyHooks(Block, block.hooks)
 
-    block[FRIEND_SET_CAVIAR_OPTIONS]({
-      cwd: this._cwd,
-      dev: this._dev
-    })
+    block[FRIEND_SET_CAVIAR_OPTIONS](this._caviarOptions)
 
     const configSetting = block[FRIEND_GET_CONFIG_SETTING]()
     const configLoader = namespace
@@ -107,16 +110,16 @@ module.exports = class Binder {
   }
 
   async ready () {
-    const blocks = Object.create(null)
+    const blocksMap = Object.create(null)
 
     for (const [name, blockSetting] of Object.entries(this._blocks)) {
-      blocks[name] = this._createBlock(blockSetting)
+      blocksMap[name] = this._createBlock(blockSetting)
     }
 
-    await this._orchestrate(blocks, {
-      cwd: this._cwd,
-      dev: this._dev
-    })
+    await this._orchestrate(blocksMap, this._caviarOptions)
+
+    const blocks = [...Object.values(blocksMap)]
+    await Promise.all(blocks.map(block => block.ready()))
   }
 
   _orchestrate () {
