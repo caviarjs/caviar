@@ -4,7 +4,7 @@ const {
 } = require('err-object')
 
 const {E, error} = new Errors({
-  prefix: '[caviar] ',
+  // prefix: '[caviar] ',
   notDefined: exitOnNotDefined
 })
 

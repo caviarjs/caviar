@@ -208,6 +208,8 @@ class ConfigLoader extends ConfigGetter {
     })
 
     log('config-loader: chain: %s', inspect(this._chain))
+
+    return this
   }
 
   // TODO:
@@ -220,6 +222,8 @@ class ConfigLoader extends ConfigGetter {
 
     this._chain.length = 0
     this.load()
+
+    return this
   }
 }
 
