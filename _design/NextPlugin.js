@@ -4,7 +4,10 @@ const NextBlock = require('@caviar/next-block')
 
 class NextXXXPlugin {
   constructor () {
+    // We can define custom hooks for
+    this.hooks = {
 
+    }
   }
 
   apply (getHooks) {

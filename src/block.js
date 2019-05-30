@@ -1,5 +1,6 @@
 const {
-  SyncHook
+  SyncHook,
+  AsyncParallelHook
 } = require('tapable')
 const {isObject} = require('core-util-is')
 
@@ -13,7 +14,7 @@ const error = createError('BLOCK')
 // https://jsperf.com/normal-property-vs-symbol-prop
 const CONFIG_SETTING = Symbol('config')
 const CONFIG_VALUE = Symbol('config-value')
-const IS_READY = Symbol('is-ready')
+// const IS_READY = Symbol('is-ready')
 const HOOKS = Symbol('hooks')
 const OUTLET = Symbol('outlet')
 const CAVIAR_OPTS = Symbol('caviar-opts')
@@ -29,8 +30,9 @@ const DEFAULT_HOOKS = () => ({
   // TODO: hooks paramaters
   beforeBuild: new SyncHook(),
   built: new SyncHook(),
-  beforeReady: new SyncHook(),
-  ready: new SyncHook(),
+  created: new SyncHook(['outlet', 'caviarOptions']),
+  beforeReady: new AsyncParallelHook(['caviarOptions']),
+  ready: new AsyncParallelHook(['outlet', 'caviarOptions']),
   config: new SyncHook()
 })
 
@@ -54,7 +56,7 @@ class Block {
   constructor () {
     this[CONFIG_SETTING] = null
     this[HOOKS] = null
-    this[IS_READY] = false
+    // this[IS_READY] = false
 
     this[CONFIG_VALUE] = null
     this[CAVIAR_OPTS] = null
@@ -107,14 +109,19 @@ class Block {
   }
 
   [FRIEND_CREATE] () {
-    this[OUTLET] = this._create(this[CONFIG_VALUE], this[CAVIAR_OPTS])
+    const outlet = this._create(this[CONFIG_VALUE], this[CAVIAR_OPTS])
+    this[OUTLET] = outlet
+
+    this.hooks.created.call(outlet, this[CAVIAR_OPTS])
   }
 
   async ready () {
+    await this.hooks.beforeReady.promise(this[CAVIAR_OPTS])
+
     const ret = await this._ready(
       this[CONFIG_VALUE], this[CAVIAR_OPTS])
 
-    this[IS_READY] = true
+    await this.hooks.ready.promise(ret, this[CAVIAR_OPTS])
 
     return ret
   }

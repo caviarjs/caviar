@@ -54,13 +54,15 @@ module.exports = class Binder {
   constructor ({
     cwd,
     dev,
-    configLoader
+    configLoader,
+    applyHooks
   }) {
     this._blocks = null
 
     this._cwd = cwd
     this._dev = dev
     this._configLoader = configLoader
+    this._applyHooks = applyHooks
   }
 
   set blocks (blocks) {
@@ -73,6 +75,9 @@ module.exports = class Binder {
     configMap
   }) {
     const block = new Block()
+
+    // Apply proxied hook taps
+    this._applyHooks(Block, block.hooks)
 
     block[FRIEND_SET_CAVIAR_OPTIONS]({
       cwd: this._cwd,
