@@ -11,7 +11,8 @@ const {
 const {error} = require('./error')
 const {RETURNS_TRUE} = require('./constants')
 const {
-  requireModule
+  requireModule,
+  joinEnvPaths
 } = require('./utils')
 
 const DEFAULT_CONFIG_LOADER_MODULE_PATH = require.resolve('./config/loader')
@@ -42,7 +43,6 @@ class Caviar {
     this._config = new this.ConfigLoader({
       cwd
     })
-    .load()
 
     this._caviarConfig = this._config.namespace('caviar')
 
@@ -54,6 +54,18 @@ class Caviar {
     }
 
     this.getHooks = this.getHooks.bind(this)
+
+    // Apply NODE_PATH before configLoader.load
+    if (!process.env.CAVIAR_SANDBOX) {
+      this._applyNodePaths()
+    }
+
+    this._config.load()
+  }
+
+  _applyNodePaths () {
+    const {NODE_PATH} = process.env
+    process.env.NODE_PATH = joinEnvPaths(NODE_PATH, this._config.getNodePaths())
   }
 
   // Apply caviar plugins
@@ -108,10 +120,6 @@ class Caviar {
   get ConfigLoader () {
     return requireModule(this._configLoaderModulePath)
   }
-
-  // async build () {
-
-  // }
 
   async ready () {
     const Binder = this._caviarConfig.bailBottom('binder')

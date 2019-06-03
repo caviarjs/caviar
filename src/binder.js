@@ -103,9 +103,6 @@ module.exports = class Binder {
 
     block[FRIEND_SET_CONFIG_VALUE](config)
 
-    // run Block::_create
-    block[FRIEND_CREATE]()
-
     return block
   }
 
@@ -118,8 +115,19 @@ module.exports = class Binder {
 
     await this._orchestrate(blocksMap, this._caviarOptions)
 
-    const blocks = [...Object.values(blocksMap)]
-    await Promise.all(blocks.map(block => block.ready()))
+    const blocks = Object.values(blocksMap)
+    for (const block of blocks) {
+      block[FRIEND_CREATE]()
+    }
+
+    // We iterate `blocks` again
+    // to make sure each `hooks.created` has been executed
+    const tasks = []
+    for (const block of blocks) {
+      tasks.push(block.ready())
+    }
+
+    await Promise.all(tasks)
   }
 
   _orchestrate () {
