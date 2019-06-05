@@ -116,11 +116,15 @@ const SYMBOL_PREFIX = 'caviar:'
 const createSymbolFor = namespace => name =>
   Symbol.for(`${SYMBOL_PREFIX}:${namespace}:${name}`)
 
+const isSubClass = (Class, ParentClass) =>
+  Class.prototype instanceof ParentClass
+
 module.exports = {
   getRawConfig,
   inspect,
   requireModule,
   requireConfigLoader,
   joinEnvPaths,
-  createSymbolFor
+  createSymbolFor,
+  isSubClass
 }

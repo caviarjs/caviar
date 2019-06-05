@@ -6,7 +6,7 @@ const {
 } = require('tapable-proxy')
 
 const {createError} = require('../error')
-const {createSymbolFor} = require('../utils')
+const {createSymbolFor, isSubClass} = require('../utils')
 
 const error = createError('HOOKABLE')
 const symbolFor = createSymbolFor('hookable')
@@ -79,7 +79,7 @@ class HooksManager {
       throw error('NO_CLASS')
     }
 
-    if (!(SubHookable.prototype instanceof Hookable)) {
+    if (!isSubClass(SubHookable, Hookable)) {
       throw error('NOT_HOOKABLE')
     }
 
