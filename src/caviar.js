@@ -1,9 +1,4 @@
-const {isFunction, isArray} = require('core-util-is')
-const {
-  create: createProxy,
-  APPLY_TAPS,
-  SET_HOOKS
-} = require('tapable-proxy')
+const {isArray} = require('core-util-is')
 const {
   SyncHook
 } = require('tapable')
@@ -14,6 +9,7 @@ const {
   requireModule,
   joinEnvPaths
 } = require('./utils')
+const {HooksManager} = require('./base/hookable')
 
 const DEFAULT_CONFIG_LOADER_MODULE_PATH = require.resolve('./config/loader')
 
@@ -46,14 +42,12 @@ class Caviar {
 
     this._caviarConfig = this._config.namespace('caviar')
 
-    this._hooksMap = new WeakMap()
+    this._hooksManager = new HooksManager()
 
     // caviar hooks
     this._hooks = {
       afterPlugins: new SyncHook(['caviar'])
     }
-
-    this.getHooks = this.getHooks.bind(this)
 
     // Apply NODE_PATH before configLoader.load
     if (!process.env.CAVIAR_SANDBOX) {
@@ -84,39 +78,6 @@ class Caviar {
     return this
   }
 
-  getHooks (Class) {
-    // Caviar hooks
-    if (arguments.length === 0) {
-      return this._hooks
-    }
-
-    if (!isFunction(Class)) {
-      throw error('')
-    }
-
-    if (this._hooksMap.has(Class)) {
-      return this._hooksMap.get(Class)
-    }
-
-    const hooksProxy = createProxy()
-    this._hooksMap.set(Class, hooksProxy)
-
-    return hooksProxy
-  }
-
-  // TODO:
-  // apply proxied hooks to real hooks
-  _applyHooks (Class, hooks) {
-    const proxy = this.getHooks(Class)
-    proxy[APPLY_TAPS](hooks)
-
-    // For those assigned proxy hooks
-    proxy[SET_HOOKS](hooks)
-
-    // If `getHooks()` again, then it will get the real hooks
-    this._hooksMap.set(Class, hooks)
-  }
-
   get ConfigLoader () {
     return requireModule(this._configLoaderModulePath)
   }
@@ -128,9 +89,7 @@ class Caviar {
       cwd: this._cwd,
       dev: this._dev,
       configLoader: this._config,
-      applyHooks: (Block, hooks) => {
-        this._applyHooks(Block, hooks)
-      }
+      hooksManager: this._hooksManager
     })
 
     await binder.ready()
