@@ -7,9 +7,10 @@ const {error} = require('./error')
 const {RETURNS_TRUE} = require('./constants')
 const {
   requireModule,
-  joinEnvPaths
+  joinEnvPaths,
+  isSubClass
 } = require('./utils')
-const {HooksManager} = require('./base/hookable')
+const {HooksManager, Hookable} = require('./base/hookable')
 
 const DEFAULT_CONFIG_LOADER_MODULE_PATH = require.resolve('./config/loader')
 
@@ -71,9 +72,26 @@ class Caviar {
       compose: composePlugins
     }, [])
 
+    const hooksManager = this._hooksManager
+    const {getHooks} = hooksManager
+
     plugins
     .filter(condition)
-    .forEach(plugin => plugin.apply(this.getHooks))
+    .forEach(plugin => {
+      const {
+        constructor,
+        hooks
+      } = plugin
+
+      // Handle sub hooks of a plugin
+      // If the plugin is a Hookable, and has hooks,
+      // then apply the proxies
+      if (isSubClass(constructor, Hookable) && hooks) {
+        hooksManager.applyHooks(constructor, hooks)
+      }
+
+      plugin.apply(getHooks)
+    })
 
     return this
   }
