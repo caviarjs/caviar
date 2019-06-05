@@ -2,7 +2,10 @@ const {
   SyncHook,
   AsyncParallelHook
 } = require('tapable')
-const {isObject} = require('core-util-is')
+const {
+  FRIEND_SET_RESERVED_HOOKS_FACTORY,
+  Hookable
+} = require('./base/hookable')
 
 const {createError} = require('./error')
 const {createSymbolFor} = require('./utils')
@@ -36,30 +39,18 @@ const DEFAULT_HOOKS = () => ({
   config: new SyncHook()
 })
 
-const extendHooks = hooks => {
-  const ret = {
-    ...hooks
-  }
-
-  for (const [key, hook] of Object.entries(DEFAULT_HOOKS())) {
-    if (key in ret) {
-      throw error('RESERVED_HOOK_NAME', key)
-    }
-
-    ret[key] = hook
-  }
-
-  return ret
-}
-
-class Block {
+class Block extends Hookable {
   constructor () {
+    super()
+
     this[CONFIG_SETTING] = null
     this[HOOKS] = null
     // this[IS_READY] = false
 
     this[CONFIG_VALUE] = null
     this[CAVIAR_OPTS] = null
+
+    this[FRIEND_SET_RESERVED_HOOKS_FACTORY](DEFAULT_HOOKS)
   }
 
   set config (config) {
@@ -78,25 +69,6 @@ class Block {
 
   [FRIEND_SET_CAVIAR_OPTIONS] (opts) {
     this[CAVIAR_OPTS] = opts
-  }
-
-  set hooks (hooks) {
-    if (!isObject(hooks)) {
-      throw error('INVALID_HOOKS', hooks)
-    }
-
-    // TODO: check hooks
-    // adds default hooks
-    this[HOOKS] = extendHooks(hooks)
-  }
-
-  get hooks () {
-    const hooks = this[HOOKS]
-    if (!hooks) {
-      throw error('HOOKS_NOT_DEFINED')
-    }
-
-    return hooks
   }
 
   get outlet () {
