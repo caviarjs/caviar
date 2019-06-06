@@ -66,6 +66,10 @@ module.exports = class CaviarBase {
     })
   }
 
+  get hooks () {
+    return this[HOOKS]
+  }
+
   // Apply caviar plugins
   // - condition `Function(plugin): boolean` tester to determine
   //     whether the plugin should be applied
