@@ -2,11 +2,12 @@
 ///////////////////////////////////////////////
 const NextBlock = require('@caviar/next-block')
 
+// Plugin for NextBlock
 class NextFooPlugin {
   constructor () {
     // We can define custom hooks for
     this.hooks = {
-
+      foo: new SyncHook()
     }
   }
 
@@ -16,17 +17,20 @@ class NextFooPlugin {
     // - uses the class name of a block as the identifier?
     // - or use WeakMap ?
     getHooks(NextBlock).webpackConfig.tap('NextFooPlugin', config => {
-
+      this.hooks.foo.call()
     })
   }
 }
 
+// Plugin for NextFooPlugin
 class NextFooBarPlugin {
   constructor () {
 
   }
 
   apply (getHooks) {
-    getHooks(NextFooPlugin)
+    getHooks(NextFooPlugin).foo.tap('NextFooBarPlugin', () => {
+
+    })
   }
 }
