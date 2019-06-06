@@ -1,4 +1,4 @@
-const {isArray, isString} = require('core-util-is')
+const {isArray, isString, isObject} = require('core-util-is')
 
 const {RETURNS_TRUE} = require('../constants')
 const {
@@ -18,18 +18,24 @@ const composePlugins = ({
   configFile
 }) => {
   if (!isArray(anchor)) {
-    throw error('INVALID_PLUGINS', anchor, configFile)
+    throw error('CONFIG_LOADER_INVALID_PLUGINS', configFile, anchor)
   }
 
   return prev.concat(anchor)
 }
 
 module.exports = class CaviarBase {
-  constructor ({
-    cwd,
-    dev,
-    configLoaderModulePath = DEFAULT_CONFIG_LOADER_MODULE_PATH
-  }, hooks = {}) {
+  constructor (options, hooks = {}) {
+    if (!isObject(options)) {
+      throw error('INVALID_OPTIONS', options)
+    }
+
+    const {
+      cwd,
+      dev,
+      configLoaderModulePath = DEFAULT_CONFIG_LOADER_MODULE_PATH
+    } = options
+
     if (!isString(cwd)) {
       throw error('INVALID_CWD', cwd)
     }

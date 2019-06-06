@@ -86,16 +86,16 @@ const requireModule = name => {
   return module.default || module
 }
 
-const requireConfigLoader = (configLoaderClassPath, createError) => {
+const requireConfigLoader = configLoaderClassPath => {
   if (!isString(configLoaderClassPath)) {
-    throw createError('INVALID_CONFIG_LOADER_CLASS_PATH',
+    throw error('INVALID_CONFIG_LOADER_CLASS_PATH',
       configLoaderClassPath)
   }
 
   try {
     return requireModule(configLoaderClassPath)
   } catch (err) {
-    throw createError('LOAD_CONFIG_LOADER_FAILS', err.stack)
+    throw error('LOAD_CONFIG_LOADER_FAILS', err.stack)
   }
 }
 
