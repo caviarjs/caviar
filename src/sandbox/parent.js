@@ -1,12 +1,15 @@
 
 const path = require('path')
 const log = require('util').debuglog('caviar')
-const {isString, isObject} = require('core-util-is')
+const {fork} = require('child_process')
+const {
+  AsyncParallelHook
+} = require('tapable')
 
-const Block = require('../block')
 const {createError} = require('../error')
-// const {Lifecycle} = require('../lifecycle.no-track')
-const {requireConfigLoader, joinEnvPaths} = require('../utils')
+const {joinEnvPaths} = require('../utils')
+const CaviarBase = require('../base/caviar')
+const {IS_SANDBOX_PLUGIN} = require('../constants')
 
 const error = createError('SANDBOX')
 
@@ -47,59 +50,25 @@ const ensureEnv = inheritEnv => {
 // Sandbox is a special block that
 // Sanitize and inject new environment variables into
 // the child process
-module.exports = class Sandbox extends Block {
+module.exports = class Sandbox extends CaviarBase {
   constructor (options) {
-    super()
-
-    if (!isObject(options)) {
-      throw error('INVALID_OPTIONS', options)
-    }
+    super(options, {
+      sandboxEnvironment: new AsyncParallelHook(['sandbox', 'caviarOptions'])
+    })
 
     const {
-      caviarClassPath = path.join(__dirname, 'caviar.js'),
-      configLoaderClassPath = path.join(__dirname, 'config-loader.js'),
-      cwd,
-      dev,
-      port,
+      configLoaderClassPath,
       stdio = 'inherit'
     } = options
 
-    if (!isString(caviarClassPath)) {
-      throw error('INVALID_SERVER_CLASS_PATH', caviarClassPath)
-    }
-
-    if (!isString(cwd)) {
-      throw error('INVALID_CWD', cwd)
-    }
-
-    this._options = {
-      caviarClassPath,
-      configLoaderClassPath,
-      cwd,
-      dev: !!dev,
-      port,
-    }
-
+    this._configLoaderClassPath = configLoaderClassPath
     this._stdio = stdio
 
-    this._configLoader = this._createConfigLoader()
-
-    this._configLoader.load()
-  }
-
-  _createConfigLoader () {
-    return new this.ConfigLoader({
-      cwd: this._options.cwd
-    })
+    this._config.load()
   }
 
   get spawner () {
-    return path.join(__dirname, '..', 'spawner', 'start.js')
-  }
-
-  get ConfigLoader () {
-    return requireConfigLoader(
-      this._options.configLoaderClassPath, error)
+    return path.join(__dirname, 'spawner.js')
   }
 
   // ## Usage
@@ -112,7 +81,7 @@ module.exports = class Sandbox extends Block {
   // const child = await env.spawn(command, args)
   // child.on('')
   // ```
-  async start (command, args, options = {}) {
+  async _fork (command, args, options = {}) {
     if (!options.stdio) {
       options.stdio = this._stdio
     }
@@ -140,15 +109,10 @@ module.exports = class Sandbox extends Block {
     // which depends on @babel/runtime-corejs2
     options.env.NODE_PATH = joinEnvPaths(
       process.env.NODE_PATH,
-      ...this._configLoader.getNodePaths()
+      ...this._config.getNodePaths()
     )
 
-    const lifecycle = new Lifecycle({
-      sandbox: true,
-      configLoader: this._configLoader
-    })
-
-    lifecycle.applyPlugins()
+    this.applyPlugins(IS_SANDBOX_PLUGIN)
 
     const sandbox = {
       inheritEnv,
@@ -156,20 +120,36 @@ module.exports = class Sandbox extends Block {
     }
 
     // Apply sandbox env plugins
-    await lifecycle.hooks.sandboxEnvironment.promise(sandbox, {
-      cwd
-    })
+    await this.hooks.sandboxEnvironment.promise(sandbox, this._options)
 
     log('spawn: %s %j', command, args)
 
-    return spawn(command, args, options)
+    const subProcess = fork(command, args, options)
+
+    return subProcess
   }
 
   // For override
   _spawnArgs () {
     return [
       this.spawner,
-      JSON.stringify(this._options)
+      JSON.stringify({
+        ...this._options,
+        configLoaderClassPath: this._configLoaderClassPath
+      })
     ]
+  }
+
+  async ready () {
+    const {spawner} = this
+    const args = this._spawnArgs()
+
+    return this._fork(spawner, args)
+  }
+
+  // TODO: reload sandbox if watcher emits
+  _reload () {
+    this._initHooksManager()
+    this._config.load()
   }
 }

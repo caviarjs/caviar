@@ -137,6 +137,20 @@ const createSymbolFor = namespace => name =>
 const isSubClass = (Class, ParentClass) =>
   Class.prototype instanceof ParentClass
 
+// const mixin = (Class, mixins) => {
+//   const {prototype} = Class
+
+//   for (const property of Object.keys(mixins)) {
+//     const descriptor = Reflect.getOwnPropertyDescriptor(mixins, property)
+//     Object.defineProperty(prototype, {
+//       ...descriptor,
+//       configurable: false,
+//       writable: false,
+//       enumerable: false
+//     })
+//   }
+// }
+
 module.exports = {
   getRawConfig,
   inspect,
@@ -144,5 +158,6 @@ module.exports = {
   requireConfigLoader,
   joinEnvPaths,
   createSymbolFor,
-  isSubClass
+  isSubClass,
+  // mixin
 }

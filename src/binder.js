@@ -59,14 +59,12 @@ module.exports = class Binder {
   }) {
     this._blocks = null
 
-    this._cwd = cwd
-    this._dev = dev
     this._configLoader = configLoader
     this._hooksManager = hooksManager
 
     this._caviarOptions = {
-      cwd: this._cwd,
-      dev: this._dev,
+      cwd,
+      dev,
       pkg: this._configLoader.pkg
     }
   }

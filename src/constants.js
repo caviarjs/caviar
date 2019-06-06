@@ -1,7 +1,7 @@
-const RETURNS_TRUE = () => true
-
-// const UNDEFINED = undefined
-
 module.exports = {
-  RETURNS_TRUE
+  // UNDEFINED: undefined,
+
+  RETURNS_TRUE: () => true,
+  IS_SANDBOX_PLUGIN: ({sandbox}) => sandbox === true,
+  IS_NOT_SANDBOX_PLUGIN: ({sandbox}) => sandbox !== true
 }

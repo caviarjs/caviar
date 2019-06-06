@@ -1,7 +1,7 @@
-class Configurable {
-  constructor () {
+const mixins = {
 
-  }
+}
 
-
+module.exports = {
+  mixins
 }
