@@ -93,7 +93,7 @@ class ConfigLoader extends ConfigGetter {
         throw error('PKG_NOT_FOUND', this._cwd)
       }
 
-      throw error('LOAD_PKG_FAILED', this._cwd, err)
+      throw error('LOAD_PKG_FAILED', this._cwd, err.stack)
     }
   }
 
