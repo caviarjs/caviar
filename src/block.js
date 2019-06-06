@@ -31,12 +31,12 @@ const FRIEND_CREATE = symbolFor('create')
 
 const DEFAULT_HOOKS = () => ({
   // TODO: hooks paramaters
-  beforeBuild: new SyncHook(),
-  built: new SyncHook(),
+  // beforeBuild: new SyncHook(),
+  // built: new SyncHook(),
   created: new SyncHook(['outlet', 'caviarOptions']),
   beforeReady: new AsyncParallelHook(['caviarOptions']),
   ready: new AsyncParallelHook(['outlet', 'caviarOptions']),
-  config: new SyncHook()
+  config: new SyncHook(['config', 'caviarOptions'])
 })
 
 class Block extends Hookable {
@@ -53,6 +53,7 @@ class Block extends Hookable {
     this[FRIEND_SET_RESERVED_HOOKS_FACTORY](DEFAULT_HOOKS)
   }
 
+  // Set config settings
   set config (config) {
     // TODO: check config
     this[CONFIG_SETTING] = config
@@ -64,7 +65,7 @@ class Block extends Hookable {
 
   [FRIEND_SET_CONFIG_VALUE] (value) {
     this[CONFIG_VALUE] = value
-    this.hooks.config.call(value)
+    this.hooks.config.call(value, this[CAVIAR_OPTS])
   }
 
   [FRIEND_SET_CAVIAR_OPTIONS] (opts) {

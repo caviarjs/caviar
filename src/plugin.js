@@ -1,12 +1,5 @@
 const {
-  Hookable,
-  FRIEND_SET_RESERVED_HOOKS_FACTORY
+  Hookable
 } = require('./base/hookable')
 
-class Plugin extends Hookable {
-  constructor () {
-
-  }
-
-
-}
+module.exports = class Plugin extends Hookable {}

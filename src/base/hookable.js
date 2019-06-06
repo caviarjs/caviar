@@ -19,13 +19,17 @@ const RESERVED_HOOKS_FACTORY = Symbol('reservedHooksFactory')
 const FRIEND_SET_RESERVED_HOOKS_FACTORY =
   symbolFor('reserved-hooks-factory')
 
-//
 class Hookable {
-  [FRIEND_SET_RESERVED_HOOKS_FACTORY] (hooks) {
-    this[RESERVED_HOOKS_FACTORY] = hooks
+  // - factory `Function(): object`
+  [FRIEND_SET_RESERVED_HOOKS_FACTORY] (factory) {
+    this[RESERVED_HOOKS_FACTORY] = factory
   }
 
   [EXTEND_HOOKS] (hooks) {
+    if (!this[RESERVED_HOOKS_FACTORY]) {
+      return hooks
+    }
+
     const ret = {
       ...hooks
     }
@@ -63,7 +67,8 @@ class Hookable {
 
 // The thing to manage all Hookable and hooks
 class HooksManager {
-  constructor () {
+  constructor (hooks) {
+    this._hooks = hooks
     this._map = new WeakMap()
     this.getHooks = this.getHooks.bind(this)
   }
