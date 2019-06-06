@@ -57,11 +57,11 @@ module.exports = class Sandbox extends CaviarBase {
     })
 
     const {
-      configLoaderClassPath,
+      configLoaderModulePath,
       stdio = 'inherit'
     } = options
 
-    this._configLoaderClassPath = configLoaderClassPath
+    this._configLoaderModulePath = configLoaderModulePath
     this._stdio = stdio
 
     this._config.load()
@@ -132,10 +132,9 @@ module.exports = class Sandbox extends CaviarBase {
   // For override
   _spawnArgs () {
     return [
-      this.spawner,
       JSON.stringify({
         ...this._options,
-        configLoaderClassPath: this._configLoaderClassPath
+        configLoaderModulePath: this._configLoaderModulePath
       })
     ]
   }
