@@ -49,6 +49,8 @@ module.exports = class CaviarBase {
 
     this._config = this._createConfigLoader(configLoaderModulePath)
     this._caviarConfig = this._config.namespace('caviar')
+
+    this._initHooksManager()
   }
 
   _initHooksManager () {

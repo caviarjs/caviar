@@ -4,15 +4,15 @@ const {requireModule} = require('./utils')
 const {Block} = require('./block')
 const Binder = require('./binder')
 const Plugin = require('./plugin')
-const {Caviar} = require('./caviar')
-const {Sandbox} = require('./sandbox/parent')
+const Caviar = require('./caviar')
+const Sandbox = require('./sandbox/parent')
 
 const caviar = ({
   withSandbox,
   ...options
 } = {}) => withSandbox
-  ? new Caviar(options)
-  : new Sandbox(options)
+  ? new Sandbox(options)
+  : new Caviar(options)
 
 module.exports = {
   caviar,
