@@ -119,14 +119,14 @@ module.exports = class Sandbox extends CaviarBase {
       setEnv
     }
 
+    const hooks = this._hooksManager.getHooks()
+
     // Apply sandbox env plugins
-    await this.hooks.sandboxEnvironment.promise(sandbox, this._options)
+    await hooks.sandboxEnvironment.promise(sandbox, this._options)
 
     log('spawn: %s %j', command, args)
 
-    const subProcess = fork(command, args, options)
-
-    return subProcess
+    return fork(command, args, options)
   }
 
   // For override

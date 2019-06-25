@@ -9,6 +9,7 @@ const CaviarBase = require('./base/caviar')
 module.exports = class Caviar extends CaviarBase {
   constructor (options) {
     super(options, {
+      start: new SyncHook(),
       afterPlugins: new SyncHook(['caviar'])
     })
 
@@ -26,6 +27,9 @@ module.exports = class Caviar extends CaviarBase {
   }
 
   async ready () {
+    const hooks = this._hooksManager.getHooks()
+    hooks.start.call()
+
     const Binder = this._caviarConfig.bailBottom('binder')
 
     const binder = new Binder({

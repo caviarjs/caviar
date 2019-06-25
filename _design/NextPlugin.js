@@ -7,7 +7,7 @@ class NextFooPlugin {
   constructor () {
     // We can define custom hooks for
     this.hooks = {
-      foo: new SyncHook()
+      foo: new AsyncParallelHook()
     }
   }
 
@@ -17,7 +17,7 @@ class NextFooPlugin {
     // - uses the class name of a block as the identifier?
     // - or use WeakMap ?
     getHooks(NextBlock).webpackConfig.tap('NextFooPlugin', config => {
-      this.hooks.foo.call()
+      await this.hooks.foo.call()
     })
   }
 }
@@ -29,8 +29,8 @@ class NextFooBarPlugin {
   }
 
   apply (getHooks) {
-    getHooks(NextFooPlugin).foo.tap('NextFooBarPlugin', () => {
-
+    getHooks(NextFooPlugin).foo.tapPromise('NextFooBarPlugin', async () => {
+      await xxxx()
     })
   }
 }
