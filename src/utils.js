@@ -130,10 +130,6 @@ const makeDepsExternal = config => {
   })
 }
 
-const SYMBOL_PREFIX = 'caviar:'
-const createSymbolFor = namespace => name =>
-  Symbol.for(`${SYMBOL_PREFIX}:${namespace}:${name}`)
-
 const isSubClass = (Class, ParentClass) =>
   Class.prototype instanceof ParentClass
 
@@ -157,7 +153,6 @@ module.exports = {
   requireModule,
   requireConfigLoader,
   joinEnvPaths,
-  createSymbolFor,
   isSubClass,
   // mixin
 }

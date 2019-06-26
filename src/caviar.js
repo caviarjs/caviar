@@ -1,10 +1,16 @@
 const {
   SyncHook
 } = require('tapable')
+const {isString} = require('core-util-is')
 const {
   joinEnvPaths
 } = require('./utils')
 const CaviarBase = require('./base/caviar')
+const {
+  PHASE_DEFAULT,
+  FRIEND_RUN
+} = require('./constants')
+const {error} = require('./error')
 
 module.exports = class Caviar extends CaviarBase {
   constructor (options) {
@@ -26,7 +32,11 @@ module.exports = class Caviar extends CaviarBase {
     process.env.NODE_PATH = joinEnvPaths(NODE_PATH, this._config.getNodePaths())
   }
 
-  async run (phase) {
+  async run (phase = PHASE_DEFAULT) {
+    if (!isString(phase)) {
+      throw error('INVALID_PHASE', phase)
+    }
+
     const hooks = this._hooksManager.getHooks()
     hooks.start.call()
 
@@ -38,6 +48,6 @@ module.exports = class Caviar extends CaviarBase {
       hooksManager: this._hooksManager
     })
 
-    await binder.run(phase)
+    await binder[FRIEND_RUN](phase)
   }
 }
