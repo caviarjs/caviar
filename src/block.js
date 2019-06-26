@@ -6,9 +6,15 @@ const {
   FRIEND_SET_RESERVED_HOOKS_FACTORY,
   Hookable
 } = require('./base/hookable')
+const {
+  FRIEND_GET_CONFIG_SETTING,
+  FRIEND_SET_CONFIG_VALUE,
+  FRIEND_SET_CAVIAR_OPTIONS,
+  FRIEND_CREATE,
+  FRIEND_RUN
+} = require('./constants')
 
 const {createError} = require('./error')
-const {createSymbolFor} = require('./utils')
 
 const error = createError('BLOCK')
 
@@ -22,20 +28,13 @@ const HOOKS = Symbol('hooks')
 const OUTLET = Symbol('outlet')
 const CAVIAR_OPTS = Symbol('caviar-opts')
 
-const symbolFor = createSymbolFor('block')
-
-const FRIEND_GET_CONFIG_SETTING = symbolFor('get-config-setting')
-const FRIEND_SET_CONFIG_VALUE = symbolFor('set-config-value')
-const FRIEND_SET_CAVIAR_OPTIONS = symbolFor('set-caviar-opts')
-const FRIEND_CREATE = symbolFor('create')
-
 const DEFAULT_HOOKS = () => ({
   // TODO: hooks paramaters
   // beforeBuild: new SyncHook(),
   // built: new SyncHook(),
   created: new SyncHook(['outlet', 'caviarOptions']),
   beforeRun: new AsyncParallelHook(['caviarOptions']),
-  run: new AsyncParallelHook(['outlet', 'caviarOptions']),
+  run: new AsyncParallelHook(['returnValue', 'caviarOptions']),
   config: new SyncHook(['config', 'caviarOptions'])
 })
 
@@ -78,38 +77,37 @@ class Block extends Hookable {
   }
 
   [FRIEND_CREATE] () {
-    const outlet = this._create(this[CONFIG_VALUE], this[CAVIAR_OPTS])
-    this[OUTLET] = outlet
+    const opts = this[CAVIAR_OPTS]
 
-    this.hooks.created.call(outlet, this[CAVIAR_OPTS])
-  }
-
-  async run (phase) {
-    const opts = {
-      ...this[CAVIAR_OPTS],
-      phase
+    // - is not the default phase
+    // - or the phase is not defined in Binder::blocks::phaseMap
+    if (!opts.phase) {
+      return
     }
 
+    const outlet = this.create(this[CONFIG_VALUE], opts)
+    this[OUTLET] = outlet
+    this.hooks.created.call(outlet, opts)
+  }
+
+  async [FRIEND_RUN] () {
+    const opts = this[CAVIAR_OPTS]
     await this.hooks.beforeRun.promise(opts)
-    const ret = await this._run(this[CONFIG_VALUE], opts)
+    const ret = await this.run(this[CONFIG_VALUE], opts)
     await this.hooks.run.promise(ret, opts)
 
     return ret
   }
 
-  _create () {
-    throw error('NOT_IMPLEMENTED', '_create')
+  create () {
+    throw error('NOT_IMPLEMENTED', 'create')
   }
 
-  _run () {
-    throw error('NOT_IMPLEMENTED', '_ready')
+  run () {
+    throw error('NOT_IMPLEMENTED', 'run')
   }
 }
 
 module.exports = {
-  Block,
-  FRIEND_GET_CONFIG_SETTING,
-  FRIEND_SET_CONFIG_VALUE,
-  FRIEND_SET_CAVIAR_OPTIONS,
-  FRIEND_CREATE
+  Block
 }

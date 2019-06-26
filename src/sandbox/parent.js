@@ -9,7 +9,10 @@ const {
 const {createError} = require('../error')
 const {joinEnvPaths} = require('../utils')
 const CaviarBase = require('../base/caviar')
-const {IS_SANDBOX_PLUGIN} = require('../constants')
+const {
+  IS_SANDBOX_PLUGIN,
+  PHASE_DEFAULT
+} = require('../constants')
 
 const error = createError('SANDBOX')
 
@@ -140,7 +143,7 @@ module.exports = class Sandbox extends CaviarBase {
     ]
   }
 
-  async run (phase) {
+  async run (phase = PHASE_DEFAULT) {
     const {spawner} = this
     const args = this._spawnArgs(phase)
 

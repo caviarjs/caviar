@@ -1,13 +1,23 @@
 const {
+  UNDEFINED,
+  PHASE_DEFAULT,
+
   FRIEND_GET_CONFIG_SETTING,
   FRIEND_SET_CONFIG_VALUE,
   FRIEND_SET_CAVIAR_OPTIONS,
-  FRIEND_CREATE
-} = require('./block')
-const {UNDEFINED} = require('./constants')
+  FRIEND_CREATE,
+  FRIEND_RUN,
+
+  createSymbol
+} = require('./constants')
 
 const {createError} = require('./error')
-// const {createSymbolFor} = require('../utils')
+
+const INIT_BLOCK = createSymbol('init-block')
+const BLOCKS = createSymbol('blocks')
+const CONFIG_LOADER = createSymbol('config-loader')
+const HOOKS_MANAGER = createSymbol('hooks-manager')
+const CAVIAR_OPTIONS = createSymbol('caviar-options')
 
 const error = createError('BINDER')
 
@@ -50,6 +60,15 @@ const getConfig = (loader, key, {
   return config
 }
 
+const getPhase = (blockPhase, phaseMap = {}) => {
+  let phase = phaseMap[blockPhase]
+  if (!phase && blockPhase === PHASE_DEFAULT) {
+    phase = PHASE_DEFAULT
+  }
+
+  return phase
+}
+
 module.exports = class Binder {
   constructor ({
     cwd,
@@ -57,15 +76,15 @@ module.exports = class Binder {
     configLoader,
     hooksManager
   }) {
-    this._blocks = null
+    this[BLOCKS] = null
 
-    this._configLoader = configLoader
-    this._hooksManager = hooksManager
+    this[CONFIG_LOADER] = configLoader
+    this[HOOKS_MANAGER] = hooksManager
 
-    this._caviarOptions = {
+    this[CAVIAR_OPTIONS] = {
       cwd,
       dev,
-      pkg: this._configLoader.pkg
+      pkg: this[CONFIG_LOADER].pkg
     }
   }
 
@@ -73,7 +92,9 @@ module.exports = class Binder {
   // Usage:
   // this.blocks = {
   //   next: {
+  //     // required
   //     from: NextBlock,
+  //     // required
   //     // Use default configMap
   //     configMap: {
   //       // key: the config name of NextBlock
@@ -81,6 +102,7 @@ module.exports = class Binder {
   //       next: 'next'
   //       nextWebpack: 'nextWebpack'
   //     },
+  //     // @required
   //     phaseMap: {
   //       // key: the phase name used by the Binder
   //       // value: the corresponding phase name of the block
@@ -89,25 +111,31 @@ module.exports = class Binder {
   //   }
   // }
   set blocks (blocks) {
-    this._blocks = blocks
+    this[BLOCKS] = blocks
   }
 
-  _createBlock ({
+  [INIT_BLOCK] ({
     from: Block,
     namespace,
-    configMap
-  }) {
+    configMap,
+    phaseMap
+  }, blockPhase) {
     const block = new Block()
 
     // Apply proxied hook taps
-    this._hooksManager.applyHooks(Block, block.hooks)
+    this[HOOKS_MANAGER].applyHooks(Block, block.hooks)
 
-    block[FRIEND_SET_CAVIAR_OPTIONS](this._caviarOptions)
+    const phase = getPhase(blockPhase, phaseMap)
+
+    block[FRIEND_SET_CAVIAR_OPTIONS]({
+      ...this[CAVIAR_OPTIONS],
+      phase
+    })
 
     const configSetting = block[FRIEND_GET_CONFIG_SETTING]()
     const configLoader = namespace
-      ? this._configLoader.namespace(namespace)
-      : this._configLoader
+      ? this[CONFIG_LOADER].namespace(namespace)
+      : this[CONFIG_LOADER]
 
     if (!configMap) {
       configMap = createConfigMap(configSetting)
@@ -123,18 +151,15 @@ module.exports = class Binder {
     return block
   }
 
-  async run (phase) {
+  async [FRIEND_RUN] (phase) {
     const blocksMap = Object.create(null)
 
-    for (const [name, setting] of Object.entries(this._blocks)) {
-      blocksMap[name] = {
-        setting,
-        block: this._createBlock(setting)
-      }
+    for (const [name, setting] of Object.entries(this[BLOCKS])) {
+      blocksMap[name] = this[INIT_BLOCK](setting, phase)
     }
 
-    await this._orchestrate(blocksMap, {
-      ...this._caviarOptions,
+    await this.orchestrate(blocksMap, {
+      ...this[CAVIAR_OPTIONS],
       phase
     })
 
@@ -146,23 +171,14 @@ module.exports = class Binder {
     // We iterate `blocks` again
     // to make sure each `hooks.created` has been executed
     const tasks = []
-    for (const {
-      block,
-      setting: {
-        phaseMap = {}
-      }
-    } of blocks) {
-      tasks.push(block.run(
-        phase
-          ? phaseMap[phase] || phase
-          : undefined
-      ))
+    for (const block of blocks) {
+      tasks.push(block[FRIEND_RUN]())
     }
 
     await Promise.all(tasks)
   }
 
-  _orchestrate () {
+  orchestrate () {
     throw error('NOT_IMPLEMENTED', '_orchestrate')
   }
 }
