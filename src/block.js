@@ -34,8 +34,8 @@ const DEFAULT_HOOKS = () => ({
   // beforeBuild: new SyncHook(),
   // built: new SyncHook(),
   created: new SyncHook(['outlet', 'caviarOptions']),
-  beforeReady: new AsyncParallelHook(['caviarOptions']),
-  ready: new AsyncParallelHook(['outlet', 'caviarOptions']),
+  beforeRun: new AsyncParallelHook(['caviarOptions']),
+  run: new AsyncParallelHook(['outlet', 'caviarOptions']),
   config: new SyncHook(['config', 'caviarOptions'])
 })
 
@@ -63,6 +63,7 @@ class Block extends Hookable {
     return this[CONFIG_SETTING]
   }
 
+  // The config chain is managed by caviar core
   [FRIEND_SET_CONFIG_VALUE] (value) {
     this[CONFIG_VALUE] = value
     this.hooks.config.call(value, this[CAVIAR_OPTS])
@@ -76,11 +77,6 @@ class Block extends Hookable {
     return this[OUTLET]
   }
 
-  async build () {
-    await this._build(this[CONFIG_VALUE], this[CAVIAR_OPTS])
-    this.hooks.built.call()
-  }
-
   [FRIEND_CREATE] () {
     const outlet = this._create(this[CONFIG_VALUE], this[CAVIAR_OPTS])
     this[OUTLET] = outlet
@@ -88,26 +84,24 @@ class Block extends Hookable {
     this.hooks.created.call(outlet, this[CAVIAR_OPTS])
   }
 
-  async ready () {
-    await this.hooks.beforeReady.promise(this[CAVIAR_OPTS])
+  async run (phase) {
+    const opts = {
+      ...this[CAVIAR_OPTS],
+      phase
+    }
 
-    const ret = await this._ready(
-      this[CONFIG_VALUE], this[CAVIAR_OPTS])
-
-    await this.hooks.ready.promise(ret, this[CAVIAR_OPTS])
+    await this.hooks.beforeRun.promise(opts)
+    const ret = await this._run(this[CONFIG_VALUE], opts)
+    await this.hooks.run.promise(ret, opts)
 
     return ret
-  }
-
-  _build () {
-    throw error('NOT_IMPLEMENTED', '_build')
   }
 
   _create () {
     throw error('NOT_IMPLEMENTED', '_create')
   }
 
-  _ready () {
+  _run () {
     throw error('NOT_IMPLEMENTED', '_ready')
   }
 }

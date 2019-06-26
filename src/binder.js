@@ -69,6 +69,25 @@ module.exports = class Binder {
     }
   }
 
+  // - blocks `{string: BlockSetting}`
+  // Usage:
+  // this.blocks = {
+  //   next: {
+  //     from: NextBlock,
+  //     // Use default configMap
+  //     configMap: {
+  //       // key: the config name of NextBlock
+  //       // value: the config anchor name of the config chain
+  //       next: 'next'
+  //       nextWebpack: 'nextWebpack'
+  //     },
+  //     phaseMap: {
+  //       // key: the phase name used by the Binder
+  //       // value: the corresponding phase name of the block
+  //       build: 'build'
+  //     }
+  //   }
+  // }
   set blocks (blocks) {
     this._blocks = blocks
   }
@@ -104,25 +123,40 @@ module.exports = class Binder {
     return block
   }
 
-  async ready () {
+  async run (phase) {
     const blocksMap = Object.create(null)
 
-    for (const [name, blockSetting] of Object.entries(this._blocks)) {
-      blocksMap[name] = this._createBlock(blockSetting)
+    for (const [name, setting] of Object.entries(this._blocks)) {
+      blocksMap[name] = {
+        setting,
+        block: this._createBlock(setting)
+      }
     }
 
-    await this._orchestrate(blocksMap, this._caviarOptions)
+    await this._orchestrate(blocksMap, {
+      ...this._caviarOptions,
+      phase
+    })
 
     const blocks = Object.values(blocksMap)
-    for (const block of blocks) {
+    for (const {block} of blocks) {
       block[FRIEND_CREATE]()
     }
 
     // We iterate `blocks` again
     // to make sure each `hooks.created` has been executed
     const tasks = []
-    for (const block of blocks) {
-      tasks.push(block.ready())
+    for (const {
+      block,
+      setting: {
+        phaseMap = {}
+      }
+    } of blocks) {
+      tasks.push(block.run(
+        phase
+          ? phaseMap[phase] || phase
+          : undefined
+      ))
     }
 
     await Promise.all(tasks)

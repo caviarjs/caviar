@@ -26,7 +26,7 @@ module.exports = class Caviar extends CaviarBase {
     process.env.NODE_PATH = joinEnvPaths(NODE_PATH, this._config.getNodePaths())
   }
 
-  async ready () {
+  async run (phase) {
     const hooks = this._hooksManager.getHooks()
     hooks.start.call()
 
@@ -38,6 +38,6 @@ module.exports = class Caviar extends CaviarBase {
       hooksManager: this._hooksManager
     })
 
-    await binder.ready()
+    await binder.run(phase)
   }
 }

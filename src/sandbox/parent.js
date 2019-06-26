@@ -130,18 +130,19 @@ module.exports = class Sandbox extends CaviarBase {
   }
 
   // For override
-  _spawnArgs () {
+  _spawnArgs (phase) {
     return [
       JSON.stringify({
         ...this._options,
+        phase,
         configLoaderModulePath: this._configLoaderModulePath
       })
     ]
   }
 
-  async ready () {
+  async run (phase) {
     const {spawner} = this
-    const args = this._spawnArgs()
+    const args = this._spawnArgs(phase)
 
     return this._fork(spawner, args)
   }

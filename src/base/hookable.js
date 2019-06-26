@@ -19,6 +19,11 @@ const RESERVED_HOOKS_FACTORY = Symbol('reservedHooksFactory')
 const FRIEND_SET_RESERVED_HOOKS_FACTORY =
   symbolFor('reserved-hooks-factory')
 
+// The base class to provide
+// - hooks setter
+// - hooks getter
+// - hooks validator
+// A Hookable could be proxied and managed by HooksManager
 class Hookable {
   // - factory `Function(): object`
   [FRIEND_SET_RESERVED_HOOKS_FACTORY] (factory) {
