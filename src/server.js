@@ -398,7 +398,7 @@ class Server extends EE {
     this._initConfigLoader()
     this._initLifecycle()
     await this._initEnv()
-    await this._nextBuild()
+    // await this._nextBuild()
     await this._setupNextApp()
     await this._setupServerApp()
     this._applyNextHandler()
