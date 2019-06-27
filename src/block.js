@@ -70,6 +70,11 @@ class Block extends Hookable {
 
   [FRIEND_SET_CAVIAR_OPTIONS] (opts) {
     this[CAVIAR_OPTS] = opts
+    Object.freeze(opts)
+  }
+
+  get options () {
+    return this[CAVIAR_OPTS]
   }
 
   get outlet () {
@@ -77,24 +82,24 @@ class Block extends Hookable {
   }
 
   [FRIEND_CREATE] () {
-    const opts = this[CAVIAR_OPTS]
+    const {options} = this
 
     // - is not the default phase
     // - or the phase is not defined in Binder::blocks::phaseMap
-    if (!opts.phase) {
+    if (!options.phase) {
       return
     }
 
-    const outlet = this.create(this[CONFIG_VALUE], opts)
+    const outlet = this.create(this[CONFIG_VALUE], options)
     this[OUTLET] = outlet
-    this.hooks.created.call(outlet, opts)
+    this.hooks.created.call(outlet, options)
   }
 
   async [FRIEND_RUN] () {
-    const opts = this[CAVIAR_OPTS]
-    await this.hooks.beforeRun.promise(opts)
-    const ret = await this.run(this[CONFIG_VALUE], opts)
-    await this.hooks.run.promise(ret, opts)
+    const {options} = this
+    await this.hooks.beforeRun.promise(options)
+    const ret = await this.run(this[CONFIG_VALUE], options)
+    await this.hooks.run.promise(ret, options)
 
     return ret
   }
