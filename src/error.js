@@ -2,7 +2,7 @@ const {
   Errors
 } = require('err-object')
 
-const {E, TE, error} = new Errors({
+const {E, error} = new Errors({
   filterStackSources: [
     __filename
   ]

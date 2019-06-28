@@ -165,7 +165,7 @@ module.exports = class Binder {
     })
 
     const blocks = Object.values(blocksMap)
-    for (const {block} of blocks) {
+    for (const block of blocks) {
       block[FRIEND_CREATE]()
     }
 
