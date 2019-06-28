@@ -8,6 +8,9 @@ const FRIEND_SET_CAVIAR_OPTIONS = createSymbol('set-caviar-opts')
 const FRIEND_CREATE = createSymbol('create')
 const FRIEND_RUN = createSymbol('run')
 
+const FRIEND_SET_RESERVED_HOOKS_FACTORY =
+  createSymbol('reserved-hooks-factory')
+
 module.exports = {
   // UNDEFINED: undefined,
 
@@ -21,6 +24,8 @@ module.exports = {
   FRIEND_SET_CAVIAR_OPTIONS,
   FRIEND_CREATE,
   FRIEND_RUN,
+
+  FRIEND_SET_RESERVED_HOOKS_FACTORY,
 
   createSymbol
 }

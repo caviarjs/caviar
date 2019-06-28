@@ -1,11 +1,11 @@
 const {
-  Errors,
-  exitOnNotDefined
+  Errors
 } = require('err-object')
 
 const {E, TE, error} = new Errors({
-  prefix: '[caviar] ',
-  notDefined: exitOnNotDefined
+  filterStackSources: [
+    __filename
+  ]
 })
 
 const STRING_BUT_GOT = ', but got `%s`'
@@ -16,9 +16,17 @@ class Prefixer {
   }
 
   E (code, message, Ctor) {
+    const codePrefix = this._codePrefix
+      ? `${this._codePrefix}_`
+      : ''
+
+    const messagePrefix = this._messagePrefix
+      ? `[caviar:${this._messagePrefix}] `
+      : '[caviar] '
+
     E(
-      `${this._codePrefix}_${code}`,
-      `[caviar:${this._messagePrefix}] ${message}`,
+      codePrefix + code,
+      messagePrefix + message,
       Ctor
     )
 
@@ -37,13 +45,16 @@ const INVALID_CWD = 'options.cwd must be a string'
 const INVALID_CONFIG_LOADER_CLASS_PATH = 'options.configLoaderClassPath must be a string'
 const LOAD_CONFIG_LOADER_FAILS = 'fails to load class ConfigLoader, reason:\n%s'
 
-TE('INVALID_CWD', INVALID_CWD)
-TE('INVALID_OPTIONS', INVALID_OPTIONS)
-TE('INVALID_PHASE', 'phase must be a string')
+PREFIX()
+.TE('INVALID_CWD', INVALID_CWD)
 
-TE('INVALID_CONFIG_LOADER_CLASS_PATH', INVALID_CONFIG_LOADER_CLASS_PATH)
+.TE('INVALID_OPTIONS', INVALID_OPTIONS)
 
-E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
+.TE('INVALID_PHASE', 'phase must be a string')
+
+.TE('INVALID_CONFIG_LOADER_CLASS_PATH', INVALID_CONFIG_LOADER_CLASS_PATH)
+
+.E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
 
 // PREFIX('SANDBOX', 'sandbox')
 

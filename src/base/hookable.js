@@ -6,18 +6,18 @@ const {
 } = require('tapable-proxy')
 
 const {createError} = require('../error')
-const {createSymbolFor, isSubClass} = require('../utils')
+const {isSubClass} = require('../utils')
+const {
+  createSymbol,
+  FRIEND_SET_RESERVED_HOOKS_FACTORY
+} = require('../constants')
 
 const error = createError('HOOKABLE')
-const symbolFor = createSymbolFor('hookable')
 
 // We use Symbol as private properties
-const HOOKS = Symbol('hooks')
-const EXTEND_HOOKS = Symbol('extendHooks')
-const RESERVED_HOOKS_FACTORY = Symbol('reservedHooksFactory')
-
-const FRIEND_SET_RESERVED_HOOKS_FACTORY =
-  symbolFor('reserved-hooks-factory')
+const HOOKS = createSymbol('hooks')
+const EXTEND_HOOKS = createSymbol('extendHooks')
+const RESERVED_HOOKS_FACTORY = createSymbol('reservedHooksFactory')
 
 // The base class to provide
 // - hooks setter
