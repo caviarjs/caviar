@@ -3,7 +3,7 @@ const {createError} = require('../error')
 
 const error = createError('CHILD_PROCESS')
 
-const monitor = subprocess => new Promise((_, reject) => {
+const monitor = (subprocess, allowExit) => new Promise((resolve, reject) => {
   reject = once(reject)
 
   // It is hard to produce, skip testing
@@ -22,6 +22,11 @@ const monitor = subprocess => new Promise((_, reject) => {
 
     if (code) {
       return reject(error('NONE_ZERO_EXIT_CODE', code))
+    }
+
+    if (allowExit) {
+      resolve()
+      return
     }
 
     reject(error('UNEXPECTED_CLOSE'))
