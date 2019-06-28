@@ -89,6 +89,7 @@ module.exports = class Binder {
   }
 
   // - blocks `{string: BlockSetting}`
+
   // Usage:
   // this.blocks = {
   //   next: {
