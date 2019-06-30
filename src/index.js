@@ -8,6 +8,8 @@ const Caviar = require('./caviar')
 const Sandbox = require('./sandbox/parent')
 
 const caviar = ({
+  // TODO:
+  // refactor: withSandbox -> sandbox as sandbox options
   withSandbox,
   ...options
 } = {}) => withSandbox
