@@ -2,6 +2,7 @@ const {
   SyncHook,
   AsyncParallelHook
 } = require('tapable')
+const {isStringArray} = require('./utils')
 const {
   FRIEND_SET_RESERVED_HOOKS_FACTORY,
   Hookable
@@ -11,7 +12,11 @@ const {
   FRIEND_SET_CONFIG_VALUE,
   FRIEND_SET_CAVIAR_OPTIONS,
   FRIEND_CREATE,
-  FRIEND_RUN
+  FRIEND_RUN,
+
+  PHASE_DEFAULT,
+
+  createSymbol
 } = require('./constants')
 
 const {createError} = require('./error')
@@ -21,12 +26,14 @@ const error = createError('BLOCK')
 // The performance of accessing a symbol property or a normal property
 // is nearly the same
 // https://jsperf.com/normal-property-vs-symbol-prop
-const CONFIG_SETTING = Symbol('config')
-const CONFIG_VALUE = Symbol('config-value')
+const CONFIG_SETTING = createSymbol('config')
+const CONFIG_VALUE = createSymbol('config-value')
 // const IS_READY = Symbol('is-ready')
-const HOOKS = Symbol('hooks')
-const OUTLET = Symbol('outlet')
-const CAVIAR_OPTS = Symbol('caviar-opts')
+const HOOKS = createSymbol('hooks')
+const OUTLET = createSymbol('outlet')
+const CAVIAR_OPTS = createSymbol('caviar-opts')
+const PHASES = createSymbol('phases')
+const SHOULD_SKIP_PHASE = createSymbol('should-skip-phase')
 
 const DEFAULT_HOOKS = () => ({
   // TODO: hooks paramaters
@@ -68,6 +75,28 @@ class Block extends Hookable {
     this.hooks.config.call(value, this[CAVIAR_OPTS])
   }
 
+  set phases (phases) {
+    if (!isStringArray(phases)) {
+      throw error('INVALID_PHASES', phases)
+    }
+
+    this[PHASES] = phases
+  }
+
+  [SHOULD_SKIP_PHASE] () {
+    const {phase} = this.options
+    // The phase is explicitly disabled in binder
+    return phase === false
+    // The block only supports the default phase,
+    // and the phase is not default
+    || (
+      !this[PHASES]
+      && phase !== PHASE_DEFAULT
+    )
+    // The phase is not supported by the block
+    || this[PHASES].includes(phase)
+  }
+
   [FRIEND_SET_CAVIAR_OPTIONS] (opts) {
     this[CAVIAR_OPTS] = opts
     Object.freeze(opts)
@@ -82,13 +111,11 @@ class Block extends Hookable {
   }
 
   [FRIEND_CREATE] () {
-    const {options} = this
-
-    // - is not the default phase
-    // - or the phase is not defined in Binder::blocks::phaseMap
-    if (!options.phase) {
+    if (this[SHOULD_SKIP_PHASE]()) {
       return
     }
+
+    const {options} = this
 
     const outlet = this.create(this[CONFIG_VALUE], options)
     this[OUTLET] = outlet
@@ -96,6 +123,10 @@ class Block extends Hookable {
   }
 
   async [FRIEND_RUN] () {
+    if (this[SHOULD_SKIP_PHASE]()) {
+      return
+    }
+
     const {options} = this
     await this.hooks.beforeRun.promise(options)
     const ret = await this.run(this[CONFIG_VALUE], options)

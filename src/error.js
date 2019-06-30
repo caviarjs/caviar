@@ -56,7 +56,13 @@ PREFIX()
 
 .E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
 
-// PREFIX('SANDBOX', 'sandbox')
+PREFIX('BLOCK', 'block')
+.TE('INVALID_PHASES', 'phases must be array of strings')
+
+.E('NOT_IMPLEMENTED', 'method "%s" must be implemented')
+
+PREFIX('BINDER', 'binder')
+.TE('INVALID_PHASE', '')
 
 PREFIX('CONFIG_LOADER', 'config-loader')
 .E('NOT_LOADED', 'should not load an anchor before config chain is loaded')
