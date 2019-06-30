@@ -3,7 +3,7 @@ const fs = require('fs')
 const util = require('util')
 const log = require('util').debuglog('caviar')
 const {parse} = require('dotenv')
-const {isString} = require('core-util-is')
+const {isString, isArray} = require('core-util-is')
 
 const {error} = require('./error')
 
@@ -129,6 +129,9 @@ const isSubClass = (Class, ParentClass) =>
 //   }
 // }
 
+const isStringArray = array =>
+  isArray(array) && array.every(isString)
+
 module.exports = {
   getRawConfig,
   inspect,
@@ -136,5 +139,6 @@ module.exports = {
   requireConfigLoader,
   joinEnvPaths,
   isSubClass,
+  isStringArray
   // mixin
 }

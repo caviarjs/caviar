@@ -1,6 +1,8 @@
+const hasOwnProperty = require('has-own-prop')
+const {isString} = require('core-util-is')
+
 const {
   UNDEFINED,
-  PHASE_DEFAULT,
 
   FRIEND_GET_CONFIG_SETTING,
   FRIEND_SET_CONFIG_VALUE,
@@ -60,10 +62,20 @@ const getConfig = (loader, key, {
   return config
 }
 
+// Returns `false|string`
 const getPhase = (blockPhase, phaseMap = {}) => {
-  let phase = phaseMap[blockPhase]
-  if (!phase && blockPhase === PHASE_DEFAULT) {
-    phase = PHASE_DEFAULT
+  const phase = hasOwnProperty(phaseMap, blockPhase)
+    // Explicitly defined
+    // - map a phase to `false` to disable the block
+    // - map a user phase to a certain phase of the block
+    ? phaseMap[blockPhase]
+
+    // All block supports a default phase
+    // If the default phase is not mapped
+    : blockPhase
+
+  if (phase !== false && !isString(phase)) {
+    throw error('INVALID_PHASE', phase)
   }
 
   return phase
