@@ -83,18 +83,17 @@ class Block extends Hookable {
     this[PHASES] = phases
   }
 
+  get phases () {
+    // Ensures this.phases
+    return this[PHASES] || (this[PHASES] = [PHASE_DEFAULT])
+  }
+
   [SHOULD_SKIP_PHASE] () {
     const {phase} = this.options
     // The phase is explicitly disabled in binder
     return phase === false
-    // The block only supports the default phase,
-    // and the phase is not default
-    || (
-      !this[PHASES]
-      && phase !== PHASE_DEFAULT
-    )
     // The phase is not supported by the block
-    || this[PHASES].includes(phase)
+    || !this.phases.includes(phase)
   }
 
   [FRIEND_SET_CAVIAR_OPTIONS] (opts) {
