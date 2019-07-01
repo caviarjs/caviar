@@ -15,7 +15,7 @@
 [![Dependency Status](https://david-dm.org/kaelzhang/caviar.svg)](https://david-dm.org/kaelzhang/caviar)
 -->
 
-A pluggable and extendable skeleton which integrates several existing web frameworks to create your own micro frontends out of the box with even zero configuration.
+A pluggable and extendable skeleton which help to integrate several existing web frameworks to create your own micro frontends out of the box with even zero configuration.
 
 > An architectural style where independently deliverable frontend applications are composed into a greater whole
 
