@@ -22,7 +22,12 @@
   },
   "keywords": [
     "caviar",
-    "roe cli",
+    "skeleton",
+    "frameworks",
+    "micro-frontends",
+    "frontends",
+    "koa",
+    "roe",
     "next",
     "webpack"
   ],
