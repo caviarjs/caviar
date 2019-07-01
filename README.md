@@ -15,7 +15,9 @@
 [![Dependency Status](https://david-dm.org/kaelzhang/caviar.svg)](https://david-dm.org/kaelzhang/caviar)
 -->
 
-A pluggable and extendable web framework which integrates React, Next and Koa(Eggjs) to create your own web application out of the box with even zero configuration.
+A pluggable and extendable skeleton which integrates several existing web frameworks to create your own micro frontends out of the box with even zero configuration.
+
+> An architectural style where independently deliverable frontend applications are composed into a greater whole
 
 ## Getting Started
 
