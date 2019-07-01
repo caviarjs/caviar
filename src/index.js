@@ -7,12 +7,7 @@ const Plugin = require('./plugin')
 const Caviar = require('./caviar')
 const Sandbox = require('./sandbox/parent')
 
-const caviar = ({
-  // TODO:
-  // refactor: withSandbox -> sandbox as sandbox options
-  withSandbox,
-  ...options
-} = {}) => withSandbox
+const caviar = (options = {}) => options.sandbox
   ? new Sandbox(options)
   : new Caviar(options)
 
