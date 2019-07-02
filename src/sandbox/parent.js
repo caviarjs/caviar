@@ -5,13 +5,16 @@ const {fork} = require('child_process')
 const {
   AsyncParallelHook
 } = require('tapable')
+const {isObject} = require('core-util-is')
+const mix = require('mix2')
 
 const {createError} = require('../error')
 const {joinEnvPaths} = require('../utils')
 const CaviarBase = require('../base/caviar')
 const {
   IS_SANDBOX_PLUGIN,
-  PHASE_DEFAULT
+  PHASE_DEFAULT,
+  UNDEFINED
 } = require('../constants')
 
 const error = createError('SANDBOX')
@@ -49,6 +52,18 @@ const createInheritEnv = set => key => {
 const ensureEnv = inheritEnv => {
   ESSENTIAL_ENV_KEYS.forEach(inheritEnv)
 }
+
+const composeEnvs = ({
+  prev,
+  anchor
+}) => isObject(prev)
+  ? {
+    ...prev,
+    ...anchor
+  }
+  : isObject(anchor)
+    ? anchor
+    : UNDEFINED
 
 // Sandbox is a special block that
 // Sanitize and inject new environment variables into
@@ -129,8 +144,13 @@ module.exports = class Sandbox extends CaviarBase {
     // Apply sandbox env plugins
     await hooks.sandboxEnvironment.promise(sandbox, this._options)
 
-    // TODO:
-    // apply envs and clientEnvs
+    const envs = this._caviarConfig.compose({
+      key: 'envs',
+      compose: composeEnvs
+    }, {})
+
+    // Do not override existing properties
+    mix(options.env, envs, false)
 
     log('spawn: %s %j', command, args)
 
