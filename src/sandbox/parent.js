@@ -6,7 +6,6 @@ const {
   AsyncParallelHook
 } = require('tapable')
 const {isObject} = require('core-util-is')
-const mix = require('mix2')
 
 const {createError} = require('../error')
 const {joinEnvPaths} = require('../utils')
@@ -144,13 +143,22 @@ module.exports = class Sandbox extends CaviarBase {
     // Apply sandbox env plugins
     await hooks.sandboxEnvironment.promise(sandbox, this._options)
 
-    const envs = this._caviarConfig.compose({
-      key: 'envs',
-      compose: composeEnvs
-    }, {})
+    Object.assign(
+      options.env,
 
-    // Do not override existing properties
-    mix(options.env, envs, false)
+      // caviar.envs
+      // which always included in the repo
+      this._caviarConfig.compose({
+        key: 'envs',
+        compose: composeEnvs
+      }),
+
+      // .env file which could be ignored by .gitignore
+      this._caviarConfig.compose({
+        key: 'dotenvs',
+        compose: composeEnvs
+      })
+    )
 
     log('spawn: %s %j', command, args)
 
