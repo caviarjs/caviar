@@ -21,6 +21,7 @@ module.exports = class Caviar extends CaviarBase {
 
     // Apply NODE_PATH before configLoader.load
     if (!process.env.CAVIAR_SANDBOX) {
+      // If caviar is runned without sandbox
       this._applyNodePaths()
     }
 

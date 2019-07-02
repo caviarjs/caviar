@@ -1,7 +1,10 @@
 const {isArray, isString, isObject} = require('core-util-is')
 const {resolve} = require('path')
 
-const {RETURNS_TRUE} = require('../constants')
+const {
+  RETURNS_TRUE,
+  UNDEFINED
+} = require('../constants')
 const {
   requireConfigLoader,
   isSubClass
@@ -55,7 +58,7 @@ module.exports = class CaviarBase {
     // Always ensures the env variables which are essential to caviar,
     // for both sandbox and caviar
     process.env.CAVIAR_CWD = cwd
-    process.env.CAVIAR_DEV = dev
+    process.env.CAVIAR_DEV = dev || UNDEFINED
 
     this[HOOKS] = hooks
 

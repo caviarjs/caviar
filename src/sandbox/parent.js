@@ -136,6 +136,8 @@ module.exports = class Sandbox extends CaviarBase {
       })
     )
 
+    options.env.CAVIAR_SANDBOX = true
+
     log('spawn: %s %j', command, args)
 
     return fork(command, args, options)
