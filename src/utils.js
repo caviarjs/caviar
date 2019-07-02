@@ -46,11 +46,7 @@ const readConfig = configFilepath => {
 
 const GENERIC_ENV_FILENAME = '.env'
 
-// Raw configurations for
-// - next
-// - webpack
-// - env
-// - plugins
+// Raw configurations of a config layer
 const getRawConfig = (cwd, configFileName) => {
   let configFilepath
 
@@ -65,7 +61,7 @@ const getRawConfig = (cwd, configFileName) => {
   const caviar = config.caviar || (config.caviar = {})
 
   caviar.envs = caviar.envs
-    || readAndParseEnv(cwd, configFileName, GENERIC_ENV_FILENAME)
+  caviar.dotenvs = readAndParseEnv(cwd, configFileName, GENERIC_ENV_FILENAME)
 
   return {
     config,
