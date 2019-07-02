@@ -1,4 +1,5 @@
 const {isArray, isString, isObject} = require('core-util-is')
+const {resolve} = require('path')
 
 const {RETURNS_TRUE} = require('../constants')
 const {
@@ -31,19 +32,30 @@ module.exports = class CaviarBase {
     }
 
     const {
-      cwd,
-      dev,
       configLoaderModulePath = DEFAULT_CONFIG_LOADER_MODULE_PATH
+    } = options
+
+    let {
+      cwd,
+      dev
     } = options
 
     if (!isString(cwd)) {
       throw error('INVALID_CWD', cwd)
     }
 
+    cwd = resolve(cwd)
+    dev = !!dev
+
     this._options = {
       cwd,
-      dev: !!dev
+      dev
     }
+
+    // Always ensures the env variables which are essential to caviar,
+    // for both sandbox and caviar
+    process.env.CAVIAR_CWD = cwd
+    process.env.CAVIAR_DEV = dev
 
     this[HOOKS] = hooks
 
