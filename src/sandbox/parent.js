@@ -90,32 +90,10 @@ module.exports = class Sandbox extends CaviarBase {
     return path.join(__dirname, 'spawner.js')
   }
 
-  // ## Usage
-  // ```js
-  // const env = new Env({
-  //   cwd,
-  //   env: envConverter
-  // })
-
-  // const child = await env.spawn(command, args)
-  // child.on('')
-  // ```
-  async _fork (command, args, options = {}) {
-    if (!options.stdio) {
-      options.stdio = this._stdio
-    }
-
-    const {cwd} = this._options
-
-    options.env = {
-      ...this._env,
-      CAVIAR_CWD: cwd
-    }
-
-    const {dev} = this._options
-
-    if (dev) {
-      options.env.CAVIAR_DEV = true
+  async _fork (command, args) {
+    const options = {
+      stdio: this._stdio,
+      env: {}
     }
 
     const setEnv = createSetEnv(options.env)
@@ -123,9 +101,7 @@ module.exports = class Sandbox extends CaviarBase {
 
     ensureEnv(inheritEnv)
 
-    // TODO: a better solution
-    // Just a workaround that webpack fails to compile babeled modules
-    // which depends on @babel/runtime-corejs2
+    // TODO: a better solution than NODE_PATH
     options.env.NODE_PATH = joinEnvPaths(
       process.env.NODE_PATH,
       ...this._config.getNodePaths()
