@@ -44,7 +44,6 @@ const readConfig = configFilepath => {
   }
 }
 
-const CLIENT_ENV_FILENAME = 'client.env'
 const GENERIC_ENV_FILENAME = '.env'
 
 // Raw configurations for
@@ -63,12 +62,10 @@ const getRawConfig = (cwd, configFileName) => {
   }
 
   const config = readConfig(configFilepath)
+  const caviar = config.caviar || (config.caviar = {})
 
-  config.envs = config.envs
+  caviar.envs = caviar.envs
     || readAndParseEnv(cwd, configFileName, GENERIC_ENV_FILENAME)
-
-  config.clientEnvs = config.clientEnvs
-    || readAndParseEnv(cwd, configFileName, CLIENT_ENV_FILENAME)
 
   return {
     config,

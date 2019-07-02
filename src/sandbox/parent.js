@@ -129,6 +129,9 @@ module.exports = class Sandbox extends CaviarBase {
     // Apply sandbox env plugins
     await hooks.sandboxEnvironment.promise(sandbox, this._options)
 
+    // TODO:
+    // apply envs and clientEnvs
+
     log('spawn: %s %j', command, args)
 
     return fork(command, args, options)
