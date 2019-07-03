@@ -107,22 +107,6 @@ const joinEnvPaths = (base, ...paths) => {
   return paths.join(delimiter)
 }
 
-const SERVER_SIDE_EXTERNAL_DEPS = [
-  'react',
-  'react-dom'
-]
-
-const makeDepsExternal = config => {
-  config.externals.push((_, request, callback) => {
-    if (SERVER_SIDE_EXTERNAL_DEPS.includes(request)) {
-      callback(null, `commonjs ${request}`)
-      return
-    }
-
-    callback()
-  })
-}
-
 const isSubClass = (Class, ParentClass) =>
   Class.prototype instanceof ParentClass
 
