@@ -1,6 +1,6 @@
 {
   "name": "caviar",
-  "version": "2.2.8",
+  "version": "3.0.0-alpha.5",
   "description": "A pluggable and extendable web framework which integrates React, Next and Koa to create your own web application out of the box with even zero configuration",
   "main": "src/index.js",
   "scripts": {
@@ -22,7 +22,12 @@
   },
   "keywords": [
     "caviar",
-    "roe cli",
+    "skeleton",
+    "frameworks",
+    "micro-frontends",
+    "frontends",
+    "koa",
+    "roe",
     "next",
     "webpack"
   ],
@@ -41,45 +46,33 @@
     "url": "https://github.com/kaelzhang/caviar/issues"
   },
   "devDependencies": {
-    "@babel/runtime-corejs2": "^7.4.4",
-    "ava": "^1.4.1",
-    "codecov": "^3.4.0",
-    "eslint": "^5.16.0",
+    "@babel/runtime-corejs2": "^7.4.5",
+    "ava": "^2.1.0",
+    "codecov": "^3.5.0",
+    "eslint": "^6.0.1",
     "eslint-config-ostai": "^3.0.0",
-    "eslint-plugin-import": "^2.17.2",
-    "fs-extra": "^7.0.1",
+    "eslint-plugin-import": "^2.18.0",
+    "fs-extra": "^8.0.1",
     "get-port": "^5.0.0",
     "is-type-of": "^1.2.1",
     "next": "^8.1.0",
-    "nyc": "^14.1.0",
+    "nyc": "^14.1.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "request": "^2.88.0",
-    "roe-define-router": "^1.0.0",
+    "roe-define-router": "^1.3.0",
     "supertest": "^4.0.2",
-    "webpack": "^4.31.0"
+    "webpack": "^4.35.0"
   },
   "dependencies": {
     "core-util-is": "^1.0.2",
-    "cross-spawn": "^6.0.5",
     "dotenv": "^8.0.0",
-    "egg-serve-static": "^2.1.1",
     "env-to-code": "^1.0.4",
-    "err-object": "^4.3.1",
-    "express-to-koa": "^1.2.0",
-    "has-own-prop": "^1.0.1",
-    "mix2": "^1.0.4",
-    "next-compose-plugins": "^2.2.0",
+    "err-object": "^5.1.2",
+    "has-own-prop": "^2.0.0",
+    "object-access": "^2.0.4",
     "once": "^1.4.0",
-    "progress-hooks": "^2.3.1",
-    "roe": "^2.0.0",
-    "tapable": "^1.1.3"
-  },
-  "peerDependencies": {
-    "next": "^8.1.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "webpack": "^4.30.0",
-    "@babel/runtime-corejs2": "^7.4.4"
+    "tapable": "^1.1.3",
+    "tapable-proxy": "^1.0.3"
   }
 }

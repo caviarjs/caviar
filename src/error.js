@@ -1,10 +1,11 @@
 const {
-  Errors,
-  exitOnNotDefined
+  Errors
 } = require('err-object')
 
 const {E, error} = new Errors({
-  notDefined: exitOnNotDefined
+  filterStackSources: [
+    __filename
+  ]
 })
 
 const STRING_BUT_GOT = ', but got `%s`'
@@ -15,9 +16,17 @@ class Prefixer {
   }
 
   E (code, message, Ctor) {
+    const codePrefix = this._codePrefix
+      ? `${this._codePrefix}_`
+      : ''
+
+    const messagePrefix = this._messagePrefix
+      ? `[caviar:${this._messagePrefix}] `
+      : '[caviar] '
+
     E(
-      `${this._codePrefix}_${code}`,
-      `[caviar:${this._messagePrefix}] ${message}`,
+      codePrefix + code,
+      messagePrefix + message,
       Ctor
     )
 
@@ -36,25 +45,38 @@ const INVALID_CWD = 'options.cwd must be a string'
 const INVALID_CONFIG_LOADER_CLASS_PATH = 'options.configLoaderClassPath must be a string'
 const LOAD_CONFIG_LOADER_FAILS = 'fails to load class ConfigLoader, reason:\n%s'
 
-PREFIX('SANDBOX', 'sandbox')
+PREFIX()
+.TE('INVALID_CWD', INVALID_CWD)
+
 .TE('INVALID_OPTIONS', INVALID_OPTIONS)
 
-.TE('INVALID_SERVER_CLASS_PATH',
-  'options.serverClassPath must be a string')
+.TE('INVALID_PHASE', 'phase must be a string')
 
 .TE('INVALID_CONFIG_LOADER_CLASS_PATH', INVALID_CONFIG_LOADER_CLASS_PATH)
 
 .E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
 
-.TE('INVALID_CWD', INVALID_CWD)
+PREFIX('BLOCK', 'block')
+.TE('INVALID_PHASES', 'phases must be array of strings')
 
-.E('PRESERVED_ENV_KEY',
-  'env key "%s" is preserved by caviar', RangeError)
+.E('NOT_IMPLEMENTED', 'method "%s" must be implemented')
+
+PREFIX('BINDER', 'binder')
+.TE('INVALID_PHASE', '')
 
 PREFIX('CONFIG_LOADER', 'config-loader')
+.E('NOT_LOADED', 'should not load an anchor before config chain is loaded')
+
+.TE('INVALID_NODE_PATH',
+  'ConfigLoader::nodePath must be a string')
+
 .TE('INVALID_OPTIONS', INVALID_OPTIONS)
 
 .TE('INVALID_CWD', INVALID_CWD)
+
+.E('PKG_NOT_FOUND', 'package.json not found in directory "%s"')
+
+.E('LOAD_PKG_FAILED', 'fails to load package.json in directory "%s": "%s"')
 
 .E('PATH_GETTER_REQUIRED',
   'getter "path" is required on ConfigLoader.prototype')
@@ -67,37 +89,15 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .TE('INVALID_CONFIG_FILE_NAME',
   'ConfigLoader::configFileName must be a string')
 
-.TE('INVALID_NODE_PATH',
-  'ConfigLoader::nodePath must be a string')
+.TE('INVALID_PLUGINS', 'config.caviar.plugins in "%s" must be an array')
 
-.TE('INVALID_CONFIG_FIELD',
-  'caviar.config.%s in "%s" must be a function')
+// .E('ENV_CONFLICTS',
+//   'env key "%s" conflicts in envs and client envs', RangeError)
 
-.E('INVALID_RETURN_VALUE',
-  'caviar.config.%s in "%s" must return an object', TypeError)
-
-.E('INVALID_NEXT_RETURN_VALUE',
-  'caviar.config.next in "%s" must return a function by using the first argument `withPlugins`', TypeError)
-
-.E('NEXT_CONFIG_NOT_FOUND', 'no caviar.config.next is found')
-
-.E('ENV_CONFLICTS',
-  'env key "%s" conflicts in envs and client envs', RangeError)
+// .E('PRESERVED_ENV_KEY',
+//   'env key "%s" is preserved by caviar', RangeError)
 
 .E('CONFIG_ERRORED', 'fails to load config file "%s", reason:\n%s')
-
-PREFIX('SERVER', 'server')
-.TE('INVALID_OPTIONS', INVALID_OPTIONS)
-
-.TE('INVALID_CWD', INVALID_CWD)
-
-.E('NOT_READY', 'server.listen() called before the server is ready')
-
-.TE('INVALID_CONFIG_LOADER_CLASS_PATH', INVALID_CONFIG_LOADER_CLASS_PATH)
-
-.E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
-
-.TE('INVALID_PORT', 'port must be a number')
 
 PREFIX('CHILD_PROCESS', 'child-process')
 .E('ERRORED', 'child process encountered an error, reason:\n%s')

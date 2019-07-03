@@ -20,11 +20,11 @@ const {
 const {Roe} = require('roe')
 const {code} = require('env-to-code')
 
-const {Lifecycle} = require('./lifecycle')
-const {createError} = require('./error')
+const {Lifecycle} = require('../lifecycle')
+const {createError} = require('../error')
 const {
-  requireModule, requireConfigLoader, makeDepsExternal
-} = require('./utils')
+  requireModule, requireConfigLoader
+} = require('../utils')
 
 const error = createError('SERVER')
 

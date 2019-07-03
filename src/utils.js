@@ -3,7 +3,7 @@ const fs = require('fs')
 const util = require('util')
 const log = require('util').debuglog('caviar')
 const {parse} = require('dotenv')
-const {isString} = require('core-util-is')
+const {isString, isArray} = require('core-util-is')
 
 const {error} = require('./error')
 
@@ -36,43 +36,36 @@ const readAndParseEnv = (...args) => {
   return parse(content)
 }
 
-const readConfig = configFile => {
+const readConfig = configFilepath => {
   try {
-    return require(configFile)
+    return require(configFilepath)
   } catch (err) {
-    throw error('CONFIG_LOADER_CONFIG_ERRORED', configFile, err.stack)
+    throw error('CONFIG_LOADER_CONFIG_ERRORED', configFilepath, err.stack)
   }
 }
 
-const CLIENT_ENV_FILENAME = 'client.env'
 const GENERIC_ENV_FILENAME = '.env'
 
-// Raw configurations for
-// - next
-// - webpack
-// - env
-// - plugins
+// Raw configurations of a config layer
 const getRawConfig = (cwd, configFileName) => {
-  let configFile
+  let configFilepath
 
   try {
-    configFile = require.resolve(path.join(cwd, configFileName))
+    configFilepath = require.resolve(path.join(cwd, configFileName))
   } catch (err) {
-    log('config file "%s" not found', configFile)
+    log('config file "%s" not found', configFilepath)
     return
   }
 
-  const config = readConfig(configFile)
+  const config = readConfig(configFilepath)
+  const caviar = config.caviar || (config.caviar = {})
 
-  config.envs = config.envs
-    || readAndParseEnv(cwd, configFileName, GENERIC_ENV_FILENAME)
-
-  config.clientEnvs = config.clientEnvs
-    || readAndParseEnv(cwd, configFileName, CLIENT_ENV_FILENAME)
+  caviar.envs = caviar.envs
+  caviar.dotenvs = readAndParseEnv(cwd, configFileName, GENERIC_ENV_FILENAME)
 
   return {
     config,
-    configFile
+    configFilepath
   }
 }
 
@@ -86,16 +79,16 @@ const requireModule = name => {
   return module.default || module
 }
 
-const requireConfigLoader = (configLoaderClassPath, createError) => {
+const requireConfigLoader = configLoaderClassPath => {
   if (!isString(configLoaderClassPath)) {
-    throw createError('INVALID_CONFIG_LOADER_CLASS_PATH',
+    throw error('INVALID_CONFIG_LOADER_CLASS_PATH',
       configLoaderClassPath)
   }
 
   try {
     return requireModule(configLoaderClassPath)
   } catch (err) {
-    throw createError('LOAD_CONFIG_LOADER_FAILS', err.stack)
+    throw error('LOAD_CONFIG_LOADER_FAILS', err.stack)
   }
 }
 
@@ -130,12 +123,33 @@ const makeDepsExternal = config => {
   })
 }
 
+const isSubClass = (Class, ParentClass) =>
+  Class.prototype instanceof ParentClass
+
+// const mixin = (Class, mixins) => {
+//   const {prototype} = Class
+
+//   for (const property of Object.keys(mixins)) {
+//     const descriptor = Reflect.getOwnPropertyDescriptor(mixins, property)
+//     Object.defineProperty(prototype, {
+//       ...descriptor,
+//       configurable: false,
+//       writable: false,
+//       enumerable: false
+//     })
+//   }
+// }
+
+const isStringArray = array =>
+  isArray(array) && array.every(isString)
+
 module.exports = {
-  makeDepsExternal,
-  hasOwnProperty,
   getRawConfig,
   inspect,
   requireModule,
   requireConfigLoader,
-  joinEnvPaths
+  joinEnvPaths,
+  isSubClass,
+  isStringArray
+  // mixin
 }
