@@ -1,4 +1,4 @@
-const SYMBOL_PREFIX = 'caviar:'
+const SYMBOL_PREFIX = 'caviar'
 const createSymbol = name =>
   Symbol(`${SYMBOL_PREFIX}:${name}`)
 
