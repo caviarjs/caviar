@@ -2,8 +2,7 @@ const {isArray, isString, isObject} = require('core-util-is')
 const {resolve} = require('path')
 
 const {
-  RETURNS_TRUE,
-  UNDEFINED
+  RETURNS_TRUE
 } = require('../constants')
 const {
   requireConfigLoader,
