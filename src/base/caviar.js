@@ -2,7 +2,8 @@ const {isArray, isString, isObject} = require('core-util-is')
 const {resolve} = require('path')
 
 const {
-  RETURNS_TRUE
+  RETURNS_TRUE,
+  PHASE_DEFAULT
 } = require('../constants')
 const {
   requireConfigLoader,
@@ -61,6 +62,9 @@ module.exports = class CaviarBase {
     if (dev) {
       process.env.CAVIAR_DEV = 'true'
     } else {
+      // process.env.FOO = undefined
+      // ->
+      // console.log(process.env.FOO)  -> 'undefined'
       delete process.env.CAVIAR_DEV
     }
 
@@ -88,7 +92,7 @@ module.exports = class CaviarBase {
   // Apply caviar plugins
   // - condition `Function(plugin): boolean` tester to determine
   //     whether the plugin should be applied
-  applyPlugins (condition = RETURNS_TRUE) {
+  _applyPlugins (condition = RETURNS_TRUE) {
     const plugins = this._caviarConfig.compose({
       key: 'plugins',
       compose: composePlugins
@@ -116,5 +120,16 @@ module.exports = class CaviarBase {
     })
 
     return this
+  }
+
+  async run (phase = PHASE_DEFAULT) {
+    if (!isString(phase)) {
+      throw error('INVALID_PHASE', phase)
+    }
+
+    process.env.CAVIAR_PHASE = phase
+
+    this._config.load()
+    return this._run(phase)
   }
 }

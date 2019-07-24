@@ -19,10 +19,8 @@ log('spawner env: %s', JSON.stringify(process.env, null, 2))
 log('spawner sandbox: %s', JSON.stringify(sandbox, null, 2))
 
 const Caviar = require('../caviar')
-const {IS_NOT_SANDBOX_PLUGIN} = require('../constants')
 
 new Caviar(options)
-.applyPlugins(IS_NOT_SANDBOX_PLUGIN)
 .run(phase)
 .then(() => {
   if (sandbox.exitOnComplete) {

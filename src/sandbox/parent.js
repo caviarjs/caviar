@@ -12,7 +12,6 @@ const {joinEnvPaths} = require('../utils')
 const CaviarBase = require('../base/caviar')
 const {
   IS_SANDBOX_PLUGIN,
-  PHASE_DEFAULT,
   UNDEFINED
 } = require('../constants')
 
@@ -107,7 +106,7 @@ module.exports = class Sandbox extends CaviarBase {
       ...this._config.getNodePaths()
     )
 
-    this.applyPlugins(IS_SANDBOX_PLUGIN)
+    this._applyPlugins(IS_SANDBOX_PLUGIN)
 
     const sandbox = {
       inheritEnv,
@@ -155,7 +154,7 @@ module.exports = class Sandbox extends CaviarBase {
     ]
   }
 
-  async run (phase = PHASE_DEFAULT) {
+  async _run (phase) {
     const {spawner} = this
     const args = this._spawnArgs(phase)
 
@@ -163,8 +162,8 @@ module.exports = class Sandbox extends CaviarBase {
   }
 
   // TODO: reload sandbox if watcher emits
-  _reload () {
-    this._initHooksManager()
-    this._config.load()
-  }
+  // _reload () {
+  //   this._initHooksManager()
+  //   this._config.load()
+  // }
 }
