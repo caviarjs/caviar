@@ -60,7 +60,10 @@ const getRawConfig = (cwd, configFileName) => {
   const config = readConfig(configFilepath)
   const caviar = config.caviar || (config.caviar = {})
 
-  caviar.envs = caviar.envs
+  // config.caviar.envs
+  caviar.envs = caviar.envs || {}
+
+  // .env file inside `ConfigLoader::configFileName`
   caviar.dotenvs = readAndParseEnv(cwd, configFileName, GENERIC_ENV_FILENAME)
 
   return {
@@ -127,6 +130,12 @@ const isSubClass = (Class, ParentClass) =>
 const isStringArray = array =>
   isArray(array) && array.every(isString)
 
+const define = (host, key, value) =>
+  Object.defineProperty(host, key, {
+    value,
+    writable: true
+  })
+
 module.exports = {
   getRawConfig,
   inspect,
@@ -134,6 +143,7 @@ module.exports = {
   requireConfigLoader,
   joinEnvPaths,
   isSubClass,
-  isStringArray
+  isStringArray,
+  define
   // mixin
 }
