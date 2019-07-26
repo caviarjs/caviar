@@ -1,6 +1,6 @@
 {
   "name": "caviar",
-  "version": "3.0.2",
+  "version": "4.0.0",
   "description": "A pluggable and extendable web framework which integrates React, Next and Koa to create your own web application out of the box with even zero configuration",
   "main": "src/index.js",
   "scripts": {
@@ -55,7 +55,6 @@
     "eslint-plugin-import": "^2.18.0",
     "fs-extra": "^8.0.1",
     "get-port": "^5.0.0",
-    "is-type-of": "^1.2.1",
     "next": "^8.1.0",
     "nyc": "^14.1.1",
     "react": "^16.8.6",

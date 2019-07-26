@@ -2,7 +2,7 @@ const ConfigLoader = require('./config/loader')
 const {monitor} = require('./sandbox/child-process')
 const {requireModule} = require('./utils')
 const {Block} = require('./block')
-const Binder = require('./binder')
+const Mixer = require('./mixer')
 const Plugin = require('./plugin')
 const Caviar = require('./caviar')
 const {Sandbox} = require('./sandbox/parent')
@@ -16,7 +16,7 @@ module.exports = {
   // Sandbox,
   // Caviar,
   Block,
-  Binder,
+  Mixer,
   Plugin,
   ConfigLoader,
   utils: {

@@ -35,9 +35,9 @@ module.exports = class Caviar extends CaviarBase {
     const hooks = this._hooksManager.getHooks()
     hooks.start.call()
 
-    const Binder = this._caviarConfig.bailBottom('binder')
+    const Mixer = this._caviarConfig.bailBottom('mixer')
 
-    const binder = new Binder({
+    const binder = new Mixer({
       ...this._options,
       configLoader: this._config,
       hooksManager: this._hooksManager

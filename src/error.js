@@ -61,7 +61,7 @@ PREFIX('BLOCK', 'block')
 
 .E('NOT_IMPLEMENTED', 'method "%s" must be implemented')
 
-PREFIX('BINDER', 'binder')
+PREFIX('MIXER', 'mixer')
 .TE('INVALID_PHASE', '')
 
 PREFIX('CONFIG_LOADER', 'config-loader')

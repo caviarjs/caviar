@@ -21,7 +21,7 @@ const CONFIG_LOADER = createSymbol('config-loader')
 const HOOKS_MANAGER = createSymbol('hooks-manager')
 const CAVIAR_OPTIONS = createSymbol('caviar-options')
 
-const error = createError('BINDER')
+const error = createError('MIXER')
 
 const createConfigMap = configSetting => {
   const map = Object.create(null)
@@ -81,7 +81,7 @@ const getPhase = (blockPhase, phaseMap = {}) => {
   return phase
 }
 
-module.exports = class Binder {
+module.exports = class Mixer {
   constructor ({
     cwd,
     dev,
