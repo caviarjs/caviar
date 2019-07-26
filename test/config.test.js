@@ -43,41 +43,9 @@ test('env, bailTop, bailBottom, and compose', t => {
     key: 'no-exists',
     compose: composeEnvs
   }, 1), 1)
+
+  t.deepEqual(cl.getNodePaths(), [])
 })
-
-// test('env: no converter function', t => {
-//   const cl = createAndLoad('env-no-converter')
-
-//   const {
-//     envs,
-//     clientEnvKeys
-//   } = cl.env
-
-//   t.deepEqual(envs, {
-//     A: '1',
-//     B: '2'
-//   })
-
-//   t.deepEqual([...clientEnvKeys.keys()], ['B'])
-// })
-
-// test('next', t => {
-//   const cl = createAndLoad('next')
-//   const nextConfig = cl.next('phase', {})
-
-//   t.deepEqual(nextConfig, {
-//     distDir: cl.path
-//   })
-// })
-
-// test('next sub', t => {
-//   const cl = createAndLoad('next-sub')
-//   const nextConfig = cl.next('phase', {})
-
-//   t.deepEqual(nextConfig, {
-//     distDir: cl.path
-//   })
-// })
 
 // test('next extend from an empty base', t => {
 //   const cl = createAndLoad('next-extends-empty')
@@ -98,31 +66,4 @@ test('env, bailTop, bailBottom, and compose', t => {
 //     t.is(plugins.length, 1)
 //     t.is(plugins[0].name, 'fake-plugin')
 //   })
-// })
-
-// test('fake plugins extends empty', t => {
-//   createAndTestReload('fake-plugins-extends-empty')
-//   .test(cl => {
-//     const {
-//       plugins
-//     } = cl
-
-//     t.is(plugins.length, 1)
-//     t.is(plugins[0].name, 'fake-plugin')
-//   })
-// })
-
-// test('server', t => {
-//   const cl = createAndLoad('server')
-//   t.deepEqual(cl.server(), {a: 1})
-// })
-
-// test('deeper chain', t => {
-//   const cl = createAndLoad('deeper')
-
-//   t.deepEqual(cl.getPaths(), ['empty', 'server', 'deeper', 'app'].map(name => ({
-//     caviarPath: fixture(name),
-//     configFileName: 'caviar.config',
-//     nodePath: undefined
-//   })))
 // })

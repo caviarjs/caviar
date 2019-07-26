@@ -37,7 +37,8 @@
   "ava": {
     "babel": false,
     "files": [
-      "test/config.test.js"
+      "test/config.test.js",
+      "test/config-error.test.js"
     ]
   },
   "author": "kaelzhang",
