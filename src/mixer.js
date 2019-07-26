@@ -171,7 +171,7 @@ module.exports = class Mixer {
       blocksMap[name] = this[INIT_BLOCK](setting, phase)
     }
 
-    await this.orchestrate(blocksMap, {
+    await this.mix(blocksMap, {
       ...this[CAVIAR_OPTIONS],
       phase
     })
@@ -191,7 +191,7 @@ module.exports = class Mixer {
     await Promise.all(tasks)
   }
 
-  orchestrate () {
+  mix () {
     throw error('NOT_IMPLEMENTED', '_orchestrate')
   }
 }
