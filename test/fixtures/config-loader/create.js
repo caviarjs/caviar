@@ -15,21 +15,8 @@ const createAndLoad = (...args) => {
   return cl
 }
 
-const createAndTestReload = (...args) => {
-  const cl = createAndLoad(...args)
-
-  return {
-    test (fn) {
-      fn(cl)
-      cl.reload()
-      fn(cl)
-    }
-  }
-}
-
 module.exports = {
   fixture,
   create,
-  createAndLoad,
-  createAndTestReload
+  createAndLoad
 }

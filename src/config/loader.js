@@ -212,19 +212,19 @@ class ConfigLoader extends ConfigGetter {
     return this
   }
 
-  // TODO:
-  // for now, we could not actually reload depencencies of confi files
-  reload () {
-    this._chain.forEach(({configFileName}) => {
-      // delete the require caches, so that the files will be required again
-      delete require.cache[configFileName]
-    })
+  // // TODO:
+  // // for now, we could not actually reload depencencies of confi files
+  // reload () {
+  //   this._chain.forEach(({configFileName}) => {
+  //     // delete the require caches, so that the files will be required again
+  //     delete require.cache[configFileName]
+  //   })
 
-    this._chain.length = 0
-    this.load()
+  //   this._chain.length = 0
+  //   this.load()
 
-    return this
-  }
+  //   return this
+  // }
 }
 
 module.exports = ConfigLoader

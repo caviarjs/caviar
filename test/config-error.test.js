@@ -9,24 +9,18 @@ const ERROR_CASES = [
   ['error-number-path', 'INVALID_PATH'],
   ['error-number-node-modules', 'INVALID_NODE_PATH'],
   ['error-config-name', 'INVALID_CONFIG_FILE_NAME'],
-  // ['error-invalid-webpack', 'INVALID_CONFIG_FIELD', cl => cl.webpack({})],
-  // ['error-invalid-env', 'INVALID_CONFIG_FIELD', cl => cl.env],
-  // ['error-invalid-next', 'INVALID_CONFIG_FIELD', cl => cl.next],
-  // ['error-return-value', 'INVALID_RETURN_VALUE', cl => cl.server({})],
-  // ['error-webpack-return-value', 'INVALID_RETURN_VALUE', cl => cl.webpack({})],
-  // ['error-next-return-value', 'INVALID_NEXT_RETURN_VALUE', cl => cl.next({})],
-  // ['error-env-conflicts', 'ENV_CONFLICTS', cl => cl.env],
-  // ['error-config-errored', 'CONFIG_ERRORED', () => {}]
+  ['env', 'PKG_NOT_FOUND', cl => cl.pkg],
+  ['error-pkg', 'LOAD_PKG_FAILED', cl => cl.pkg, 'error-pkg']
 ]
 
 const CODE = suffix => `CONFIG_LOADER_${suffix}`
 
-ERROR_CASES.forEach(([dir, suffix, runner]) => {
+ERROR_CASES.forEach(([dir, suffix, runner, app = 'app']) => {
   test(`error: ${dir}`, t => {
     const ConfigLoader = require(fixture(dir, 'config-loader.js'))
 
     const cl = new ConfigLoader({
-      cwd: fixture('app')
+      cwd: fixture(app)
     })
 
     const code = CODE(suffix)

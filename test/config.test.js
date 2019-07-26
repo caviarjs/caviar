@@ -3,7 +3,7 @@ const test = require('ava')
 const {composeEnvs} = require('../src/sandbox/parent')
 
 const {
-  fixture, create, createAndLoad, createAndTestReload
+  fixture, create, createAndLoad
 } = require('./fixtures/config-loader/create')
 
 test('no config: loader and app same dir', t => {
@@ -18,6 +18,14 @@ test('no config: loader and app same dir', t => {
   t.deepEqual(cl.getNodePaths(), [
     fixture('fake-base')
   ])
+
+  t.deepEqual(cl.pkg, {
+    name: 'app'
+  })
+
+  t.deepEqual(cl.pkg, {
+    name: 'app'
+  })
 })
 
 test('env, bailTop, bailBottom, and compose', t => {
