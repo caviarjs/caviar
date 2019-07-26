@@ -1,7 +1,7 @@
 const {get} = require('object-access')
 
 const {UNDEFINED} = require('../constants')
-const {define} = require('../utils')
+const {defineWritable} = require('../utils')
 
 const PROTECTED_SET_TARGET = Symbol('set-target')
 const PROTECTED_SET_PATHS = Symbol('set-paths')
@@ -17,8 +17,8 @@ const bail = ({prev, anchor}) => prev || anchor
 
 class ConfigGetter {
   constructor () {
-    define(this, PRIVATE_TARGET)
-    define(this, PRIVATE_PATHS)
+    defineWritable(this, PRIVATE_TARGET)
+    defineWritable(this, PRIVATE_PATHS)
   }
 
   [PROTECTED_SET_TARGET] (target) {

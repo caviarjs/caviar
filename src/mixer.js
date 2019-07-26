@@ -12,14 +12,17 @@ const {
 
   createSymbol
 } = require('./constants')
-
+const {
+  define, defineWritable
+} = require('./utils')
 const {createError} = require('./error')
 
-const INIT_BLOCK = createSymbol('init-block')
 const BLOCKS = createSymbol('blocks')
 const CONFIG_LOADER = createSymbol('config-loader')
 const HOOKS_MANAGER = createSymbol('hooks-manager')
 const CAVIAR_OPTIONS = createSymbol('caviar-options')
+
+const INIT_BLOCK = createSymbol('init-block')
 
 const error = createError('MIXER')
 
@@ -88,16 +91,18 @@ module.exports = class Mixer {
     configLoader,
     hooksManager
   }) {
-    this[BLOCKS] = null
+    defineWritable(this, BLOCKS)
+    define(this, CONFIG_LOADER, configLoader)
+    define(this, HOOKS_MANAGER, hooksManager)
 
-    this[CONFIG_LOADER] = configLoader
-    this[HOOKS_MANAGER] = hooksManager
+    const {pkg} = configLoader
 
-    this[CAVIAR_OPTIONS] = {
+    // Freeze the object, so that it could not be modified by blocks or mixers
+    define(this, CAVIAR_OPTIONS, Object.freeze({
       cwd,
       dev,
-      pkg: this[CONFIG_LOADER].pkg
-    }
+      pkg
+    }))
   }
 
   // - blocks `{string: BlockSetting}`
@@ -117,7 +122,7 @@ module.exports = class Mixer {
   //     },
   //     // @required
   //     phaseMap: {
-  //       // key: the phase name used by the Binder
+  //       // key: the phase name used by the Mixer
   //       // value: the corresponding phase name of the block
   //       build: 'build'
   //     }

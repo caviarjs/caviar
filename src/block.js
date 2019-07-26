@@ -2,7 +2,9 @@ const {
   SyncHook,
   AsyncParallelHook
 } = require('tapable')
-const {isStringArray} = require('./utils')
+const {
+  isStringArray, defineWritable, define
+} = require('./utils')
 const {
   FRIEND_SET_RESERVED_HOOKS_FACTORY,
   Hookable
@@ -28,11 +30,10 @@ const error = createError('BLOCK')
 // https://jsperf.com/normal-property-vs-symbol-prop
 const CONFIG_SETTING = createSymbol('config')
 const CONFIG_VALUE = createSymbol('config-value')
-// const IS_READY = Symbol('is-ready')
-const HOOKS = createSymbol('hooks')
 const OUTLET = createSymbol('outlet')
 const CAVIAR_OPTS = createSymbol('caviar-opts')
 const PHASES = createSymbol('phases')
+
 const SHOULD_SKIP_PHASE = createSymbol('should-skip-phase')
 
 const DEFAULT_HOOKS = () => ({
@@ -49,20 +50,14 @@ class Block extends Hookable {
   constructor () {
     super()
 
-    this[CONFIG_SETTING] = null
-    this[HOOKS] = null
-    // this[IS_READY] = false
-
-    this[CONFIG_VALUE] = null
-    this[CAVIAR_OPTS] = null
-
+    defineWritable(this, OUTLET)
     this[FRIEND_SET_RESERVED_HOOKS_FACTORY](DEFAULT_HOOKS)
   }
 
   // Set config settings
   set config (config) {
-    // TODO: check config
-    this[CONFIG_SETTING] = config
+    // We do not allow the property to change again
+    define(this, CONFIG_SETTING, config)
   }
 
   [FRIEND_GET_CONFIG_SETTING] () {
@@ -71,7 +66,7 @@ class Block extends Hookable {
 
   // The config chain is managed by caviar core
   [FRIEND_SET_CONFIG_VALUE] (value) {
-    this[CONFIG_VALUE] = value
+    define(this, CONFIG_VALUE, value)
     this.hooks.config.call(value, this[CAVIAR_OPTS])
   }
 
@@ -80,25 +75,30 @@ class Block extends Hookable {
       throw error('INVALID_PHASES', phases)
     }
 
-    this[PHASES] = phases
+    define(this, PHASES, phases)
   }
 
   get phases () {
     // Ensures this.phases
-    return this[PHASES] || (this[PHASES] = [PHASE_DEFAULT])
+    let phases = this[PHASES]
+    if (!phases) {
+      phases = [PHASE_DEFAULT]
+      define(this, PHASES, phases)
+    }
+
+    return phases
   }
 
   [SHOULD_SKIP_PHASE] () {
     const {phase} = this.options
-    // The phase is explicitly disabled in binder
+    // The phase is explicitly disabled in mixer
     return phase === false
     // The phase is not supported by the block
     || !this.phases.includes(phase)
   }
 
   [FRIEND_SET_CAVIAR_OPTIONS] (opts) {
-    this[CAVIAR_OPTS] = opts
-    Object.freeze(opts)
+    define(this, CAVIAR_OPTS, opts)
   }
 
   get options () {

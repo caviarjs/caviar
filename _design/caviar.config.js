@@ -2,7 +2,7 @@ module.exports = {
   // Configurations for caviar
   caviar: {
     // The config anchor for caviar
-    binder: NextRoe
+    mixer: NextRoe
     plugins: [
 
     ],

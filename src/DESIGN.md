@@ -37,7 +37,7 @@ Some reusable and relatively insulated operation blocks need to work with each o
 
 - How to reuse babel configuration
 - How to support build phase
-- How to replace a block type of a binder with another block who has a similar interface.
+- How to replace a block type of a mixer with another block who has a similar interface.
 
 # Principle
 

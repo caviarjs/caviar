@@ -130,11 +130,13 @@ const isSubClass = (Class, ParentClass) =>
 const isStringArray = array =>
   isArray(array) && array.every(isString)
 
-const define = (host, key, value) =>
+const define = (host, key, value, writable = false) =>
   Object.defineProperty(host, key, {
     value,
-    writable: true
+    writable
   })
+
+const defineWritable = (host, key, value) => define(host, key, value, true)
 
 module.exports = {
   getRawConfig,
@@ -144,6 +146,7 @@ module.exports = {
   joinEnvPaths,
   isSubClass,
   isStringArray,
-  define
+  define,
+  defineWritable
   // mixin
 }

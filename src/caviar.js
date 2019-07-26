@@ -37,12 +37,12 @@ module.exports = class Caviar extends CaviarBase {
 
     const Mixer = this._caviarConfig.bailBottom('mixer')
 
-    const binder = new Mixer({
+    const mixer = new Mixer({
       ...this._options,
       configLoader: this._config,
       hooksManager: this._hooksManager
     })
 
-    await binder[FRIEND_RUN](phase)
+    await mixer[FRIEND_RUN](phase)
   }
 }
