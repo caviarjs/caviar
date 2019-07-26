@@ -66,7 +66,7 @@ const composeEnvs = ({
 // Sandbox is a special block that
 // Sanitize and inject new environment variables into
 // the child process
-module.exports = class Sandbox extends CaviarBase {
+class Sandbox extends CaviarBase {
   constructor (options) {
     super(options, {
       sandboxEnvironment: new AsyncParallelHook(['sandbox', 'caviarOptions'])
@@ -166,4 +166,9 @@ module.exports = class Sandbox extends CaviarBase {
   //   this._initHooksManager()
   //   this._config.load()
   // }
+}
+
+module.exports = {
+  Sandbox,
+  composeEnvs
 }

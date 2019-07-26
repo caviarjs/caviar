@@ -1,7 +1,7 @@
 module.exports = {
   caviar: {
     envs: {
-      B: 2
+      B0: 2
     }
   }
 }

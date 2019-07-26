@@ -5,7 +5,7 @@ const {Block} = require('./block')
 const Binder = require('./binder')
 const Plugin = require('./plugin')
 const Caviar = require('./caviar')
-const Sandbox = require('./sandbox/parent')
+const {Sandbox} = require('./sandbox/parent')
 
 const caviar = (options = {}) => options.sandbox
   ? new Sandbox(options)

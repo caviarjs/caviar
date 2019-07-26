@@ -65,7 +65,7 @@ PREFIX('BINDER', 'binder')
 .TE('INVALID_PHASE', '')
 
 PREFIX('CONFIG_LOADER', 'config-loader')
-.E('NOT_LOADED', 'should not load an anchor before config chain is loaded')
+// .E('NOT_LOADED', 'should not load an anchor before config chain is loaded')
 
 .TE('INVALID_NODE_PATH',
   'ConfigLoader::nodePath must be a string')

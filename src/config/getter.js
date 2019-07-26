@@ -1,8 +1,7 @@
 const {get} = require('object-access')
-const {isArray} = require('core-util-is')
 
 const {UNDEFINED} = require('../constants')
-const error = require('./error')
+const {define} = require('../utils')
 
 const PROTECTED_SET_TARGET = Symbol('set-target')
 const PROTECTED_SET_PATHS = Symbol('set-paths')
@@ -17,6 +16,11 @@ const REDUCE_RIGHT = 'reduceRight'
 const bail = ({prev, anchor}) => prev || anchor
 
 class ConfigGetter {
+  constructor () {
+    define(this, PRIVATE_TARGET)
+    define(this, PRIVATE_PATHS)
+  }
+
   [PROTECTED_SET_TARGET] (target) {
     this[PRIVATE_TARGET] = target
   }
@@ -33,9 +37,10 @@ class ConfigGetter {
   }, reduceType, defaultValue) {
     const target = this[PRIVATE_TARGET]
 
-    if (!isArray(target) || target.length === 0) {
-      throw error('NOT_LOADED')
-    }
+    // Always use after loaded
+    // if (!isArray(target) || target.length === 0) {
+    //   throw error('NOT_LOADED')
+    // }
 
     return target[reduceType]((prev, current) => {
       const {configFilepath} = current
