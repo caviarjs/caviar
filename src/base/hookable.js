@@ -120,7 +120,6 @@ class HooksManager {
 }
 
 module.exports = {
-  FRIEND_SET_RESERVED_HOOKS_FACTORY,
   Hookable,
   HooksManager
 }

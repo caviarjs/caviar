@@ -6,10 +6,11 @@ const {
   isStringArray, defineWritable, define
 } = require('./utils')
 const {
-  FRIEND_SET_RESERVED_HOOKS_FACTORY,
   Hookable
 } = require('./base/hookable')
 const {
+  FRIEND_SET_RESERVED_HOOKS_FACTORY,
+
   FRIEND_GET_CONFIG_SETTING,
   FRIEND_SET_CONFIG_VALUE,
   FRIEND_SET_CAVIAR_OPTIONS,

@@ -13,7 +13,7 @@ const {
   createSymbol
 } = require('./constants')
 const {
-  define, defineWritable
+  define
 } = require('./utils')
 const {createError} = require('./error')
 
@@ -73,8 +73,7 @@ const getPhase = (blockPhase, phaseMap = {}) => {
     // - map a user phase to a certain phase of the block
     ? phaseMap[blockPhase]
 
-    // All block supports a default phase
-    // If the default phase is not mapped
+    // Not mapped
     : blockPhase
 
   if (phase !== false && !isString(phase)) {
@@ -91,7 +90,6 @@ module.exports = class Mixer {
     configLoader,
     hooksManager
   }) {
-    defineWritable(this, BLOCKS)
     define(this, CONFIG_LOADER, configLoader)
     define(this, HOOKS_MANAGER, hooksManager)
 
@@ -129,7 +127,7 @@ module.exports = class Mixer {
   //   }
   // }
   set blocks (blocks) {
-    this[BLOCKS] = blocks
+    define(this, BLOCKS, blocks)
   }
 
   [INIT_BLOCK] ({
