@@ -1,4 +1,4 @@
-module.exports = class extends require('./config-loader0') {
+module.exports = class extends require('./config-loader1') {
   get path () {
     return __dirname
   }

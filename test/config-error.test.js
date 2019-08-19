@@ -10,7 +10,8 @@ const ERROR_CASES = [
   ['error-number-node-modules', 'INVALID_NODE_PATH'],
   ['error-config-name', 'INVALID_CONFIG_FILE_NAME'],
   ['env', 'PKG_NOT_FOUND', cl => cl.pkg],
-  ['error-pkg', 'LOAD_PKG_FAILED', cl => cl.pkg, 'error-pkg']
+  ['error-pkg', 'LOAD_PKG_FAILED', cl => cl.pkg, 'error-pkg'],
+  ['error-config-errored', 'CONFIG_ERRORED', () => {}]
 ]
 
 const CODE = suffix => `CONFIG_LOADER_${suffix}`
