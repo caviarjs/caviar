@@ -53,6 +53,7 @@
     "eslint-config-ostai": "^3.0.0",
     "eslint-plugin-import": "^2.18.0",
     "fs-extra": "^8.0.1",
+    "is-type-of": "^1.2.1",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "nyc": "^14.1.1",
