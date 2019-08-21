@@ -3,7 +3,8 @@ const {resolve} = require('path')
 
 const {
   RETURNS_TRUE,
-  PHASE_DEFAULT
+  PHASE_DEFAULT,
+  INSIDE_SANDBOX
 } = require('../constants')
 const {
   requireConfigLoader,
@@ -43,6 +44,10 @@ module.exports = class CaviarBase {
       dev
     } = options
 
+    const {
+      [INSIDE_SANDBOX]: isInsideSandbox
+    } = options
+
     if (!isString(cwd)) {
       throw error('INVALID_CWD', cwd)
     }
@@ -55,18 +60,7 @@ module.exports = class CaviarBase {
       dev
     }
 
-    // Always ensures the env variables which are essential to caviar,
-    // for both sandbox and caviar
-    process.env.CAVIAR_CWD = cwd
-
-    if (dev) {
-      process.env.CAVIAR_DEV = 'true'
-    } else {
-      // process.env.FOO = undefined
-      // ->
-      // console.log(process.env.FOO)  -> 'undefined'
-      delete process.env.CAVIAR_DEV
-    }
+    this[INSIDE_SANDBOX] = !!isInsideSandbox
 
     this[HOOKS] = hooks
 
@@ -122,12 +116,38 @@ module.exports = class CaviarBase {
     return this
   }
 
+  async _initEnv (phase) {
+    if (this[INSIDE_SANDBOX]) {
+      return
+    }
+
+    const {
+      cwd,
+      dev
+    } = this._options
+
+    // Always ensures the env variables which are essential to caviar,
+    // for both sandbox and caviar
+    process.env.CAVIAR_CWD = cwd
+
+    if (dev) {
+      process.env.CAVIAR_DEV = 'true'
+    } else {
+      // process.env.FOO = undefined
+      // ->
+      // console.log(process.env.FOO)  -> 'undefined'
+      delete process.env.CAVIAR_DEV
+    }
+
+    process.env.CAVIAR_PHASE = phase
+  }
+
   async run (phase = PHASE_DEFAULT) {
     if (!isString(phase)) {
       throw error('INVALID_PHASE', phase)
     }
 
-    process.env.CAVIAR_PHASE = phase
+    this._initEnv(phase)
 
     this._config.load()
     return this._run(phase)

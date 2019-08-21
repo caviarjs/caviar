@@ -17,30 +17,35 @@ const {
 
 const error = createError('SANDBOX')
 
+// Env key used by caviar plugins and blocks,
+// which should not be changed by env plugins
+const PRIVATE_ENV_KEYS = [
+  'CAVIAR_CWD',
+  'CAVIAR_DEV',
+  'CAVIAR_PHASE'
+]
+
 const ESSENTIAL_ENV_KEYS = [
   // For util.debug
   'NODE_DEBUG',
   // For userland debug module
   'DEBUG',
   // For `child_process.spawn`ers
-  'PATH'
-]
+  'PATH',
 
-// Private env keys used by roe,
-// which should not be changed by env plugins
-const PRIVATE_ENV_KEYS = [
-  'CAVIAR_CWD',
-  'CAVIAR_DEV'
+  ...PRIVATE_ENV_KEYS
 ]
 
 const createSetEnv = host => (key, value) => {
+  // `process.env.FOO = undefined` is equivalent to
+  // `process.env.FOO = 'undefined'`
   if (value !== undefined) {
     host[key] = value
   }
 }
 
-const createInheritEnv = set => key => {
-  if (PRIVATE_ENV_KEYS.includes(key)) {
+const createInheritEnv = (set, check) => key => {
+  if (check && PRIVATE_ENV_KEYS.includes(key)) {
     throw error('PRESERVED_ENV_KEY', key)
   }
 
@@ -96,9 +101,9 @@ class Sandbox extends CaviarBase {
     }
 
     const setEnv = createSetEnv(options.env)
-    const inheritEnv = createInheritEnv(setEnv)
+    const justInheritEnv = createInheritEnv(setEnv)
 
-    ensureEnv(inheritEnv)
+    ensureEnv(justInheritEnv)
 
     // TODO: a better solution than NODE_PATH
     options.env.NODE_PATH = joinEnvPaths(
@@ -109,7 +114,7 @@ class Sandbox extends CaviarBase {
     this._applyPlugins(IS_SANDBOX_PLUGIN)
 
     const sandbox = {
-      inheritEnv,
+      inheritEnv: createInheritEnv(setEnv, true),
       setEnv
     }
 
@@ -134,8 +139,6 @@ class Sandbox extends CaviarBase {
         compose: composeEnvs
       })
     )
-
-    options.env.CAVIAR_SANDBOX = true
 
     log('spawn: %s %j', command, args)
 

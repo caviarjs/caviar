@@ -1,3 +1,4 @@
 if (!process.env.CAVIAR_DEV) {
-  throw new Error('process.env.CAVIAR_DEV not found')
+  console.error('process.env.CAVIAR_DEV not found')
+  process.exit(1)
 }

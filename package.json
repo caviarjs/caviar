@@ -38,7 +38,8 @@
     "babel": false,
     "files": [
       "test/config.test.js",
-      "test/config-error.test.js"
+      "test/config-error.test.js",
+      "test/sandbox+process.test.js"
     ]
   },
   "author": "kaelzhang",

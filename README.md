@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/caviarjs/caviar.svg?branch=master)](https://travis-ci.org/caviarjs/caviar)
 [![Coverage](https://codecov.io/gh/caviarjs/caviar/branch/master/graph/badge.svg)](https://codecov.io/gh/caviarjs/caviar)
 
+> ⚠️ This document is out-of-date
+
 A pluggable and extendable skeleton which help to integrate several existing web frameworks to create your own micro frontends out of the box with even zero configuration.
 
 > An architectural style where independently deliverable frontend applications are composed into a greater whole

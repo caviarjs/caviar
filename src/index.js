@@ -13,8 +13,6 @@ const caviar = (options = {}) => options.sandbox
 
 module.exports = {
   caviar,
-  // Sandbox,
-  // Caviar,
   Block,
   Mixer,
   Plugin,
