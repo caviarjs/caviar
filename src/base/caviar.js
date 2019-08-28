@@ -70,10 +70,12 @@ module.exports = class CaviarBase {
     this._initHooksManager()
   }
 
+  // @private
   _initHooksManager () {
     this._hooksManager = new HooksManager(this[HOOKS])
   }
 
+  // @private
   _createConfigLoader (configLoaderModulePath) {
     const ConfigLoader = requireConfigLoader(configLoaderModulePath)
 
@@ -83,6 +85,7 @@ module.exports = class CaviarBase {
     })
   }
 
+  // @protected
   // Apply caviar plugins
   // - condition `Function(plugin): boolean` tester to determine
   //     whether the plugin should be applied
@@ -116,6 +119,8 @@ module.exports = class CaviarBase {
     return this
   }
 
+  // @private
+  // Initialize envs which are essential to caviar
   async _initEnv (phase) {
     if (this[INSIDE_SANDBOX]) {
       return
@@ -142,6 +147,7 @@ module.exports = class CaviarBase {
     process.env.CAVIAR_PHASE = phase
   }
 
+  // @public
   async run (phase = PHASE_DEFAULT) {
     if (!isString(phase)) {
       throw error('INVALID_PHASE', phase)
