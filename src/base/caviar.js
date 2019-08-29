@@ -4,12 +4,14 @@ const {resolve} = require('path')
 const {
   RETURNS_TRUE,
   PHASE_DEFAULT,
-  INSIDE_SANDBOX
+  INSIDE_SANDBOX,
+  CAVIAR_MESSAGE_COMPLETE
 } = require('../constants')
 const {
   requireConfigLoader,
   isSubClass
 } = require('../utils')
+const {makeReady} = require('../sandbox/parent')
 const {HooksManager, Hookable} = require('../base/hookable')
 const {error} = require('../error')
 
@@ -156,6 +158,19 @@ module.exports = class CaviarBase {
     this._initEnv(phase)
 
     this._config.load()
-    return this._run(phase)
+
+    const ret = await this._run(phase)
+
+    if (!this[INSIDE_SANDBOX]) {
+      return ret
+    }
+
+    // Then `ret` is a child process
+
+    process.send({
+      type: CAVIAR_MESSAGE_COMPLETE
+    })
+
+    return makeReady(ret)
   }
 }

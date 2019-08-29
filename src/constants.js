@@ -9,9 +9,12 @@ const FRIEND_CREATE = createSymbol('create')
 const FRIEND_RUN = createSymbol('run')
 
 const INSIDE_SANDBOX = createSymbol('inside-sandbox')
+// const PROTECTED_CHILD = createSymbol('child-process')
 
 const FRIEND_SET_RESERVED_HOOKS_FACTORY =
   createSymbol('reserved-hooks-factory')
+
+const CAVIAR_MESSAGE_COMPLETE = 'caviar:child:complete'
 
 module.exports = {
   // UNDEFINED: undefined,
@@ -27,6 +30,9 @@ module.exports = {
   FRIEND_CREATE,
   FRIEND_RUN,
   INSIDE_SANDBOX,
+  // PROTECTED_CHILD,
+
+  CAVIAR_MESSAGE_COMPLETE,
 
   FRIEND_SET_RESERVED_HOOKS_FACTORY,
 

@@ -31,7 +31,7 @@ const error = createError('BLOCK')
 // https://jsperf.com/normal-property-vs-symbol-prop
 const CONFIG_SETTING = createSymbol('config')
 const CONFIG_VALUE = createSymbol('config-value')
-const OUTLET = createSymbol('outlet')
+const CREATED = createSymbol('outlet')
 const CAVIAR_OPTS = createSymbol('caviar-opts')
 const PHASES = createSymbol('phases')
 
@@ -51,7 +51,7 @@ class Block extends Hookable {
   constructor () {
     super()
 
-    defineWritable(this, OUTLET)
+    defineWritable(this, CREATED)
     this[FRIEND_SET_RESERVED_HOOKS_FACTORY](DEFAULT_HOOKS)
   }
 
@@ -106,8 +106,8 @@ class Block extends Hookable {
     return this[CAVIAR_OPTS]
   }
 
-  get outlet () {
-    return this[OUTLET]
+  get created () {
+    return this[CREATED]
   }
 
   [FRIEND_CREATE] () {
@@ -117,9 +117,9 @@ class Block extends Hookable {
 
     const {options} = this
 
-    const outlet = this.create(this[CONFIG_VALUE], options)
-    this[OUTLET] = outlet
-    this.hooks.created.call(outlet, options)
+    const created = this.create(this[CONFIG_VALUE], options)
+    this[CREATED] = created
+    this.hooks.created.call(created, options)
   }
 
   async [FRIEND_RUN] () {
