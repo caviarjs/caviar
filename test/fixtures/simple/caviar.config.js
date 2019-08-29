@@ -4,7 +4,7 @@ if (process.env.CAVIAR_PHASE !== 'default') {
 
 module.exports = {
   caviar: {
-    mixer: require('../koa-router-mixer')
+    mixer: require('../simple-mixer')
   },
 
   port: 50003,

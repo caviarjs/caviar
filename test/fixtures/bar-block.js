@@ -1,4 +1,4 @@
-const Router = require('koa-router')
+const delay = require('delay')
 
 const {Block} = require('../../src')
 
@@ -7,22 +7,27 @@ module.exports = class RouterBlock extends Block {
     super()
 
     this.config = {
-      router: {
+      bar: {
         type: 'bailTop'
       }
     }
   }
 
   create () {
-    return new Router()
+    return {
+      bar: true
+    }
   }
 
   async run (config) {
-    config.router(this.outlet)
+    await delay(100)
+
+    return {
+      bar: config.bar
+    }
   }
 
-  attach (app) {
-    app.use(this.outlet.routes())
-    app.use(this.outlet.allowedMethods())
+  method () {
+    return this.created
   }
 }

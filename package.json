@@ -50,15 +50,13 @@
   "devDependencies": {
     "ava": "^2.1.0",
     "codecov": "^3.5.0",
+    "delay": "^4.3.0",
     "eslint": "^6.0.1",
     "eslint-config-ostai": "^3.0.0",
     "eslint-plugin-import": "^2.18.0",
     "fs-extra": "^8.0.1",
     "is-type-of": "^1.2.1",
-    "koa": "^2.7.0",
-    "koa-router": "^7.4.0",
-    "nyc": "^14.1.1",
-    "supertest": "^4.0.2"
+    "nyc": "^14.1.1"
   },
   "dependencies": {
     "core-util-is": "^1.0.2",
