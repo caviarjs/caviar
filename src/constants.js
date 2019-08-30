@@ -16,6 +16,8 @@ const FRIEND_SET_RESERVED_HOOKS_FACTORY =
 
 const CAVIAR_MESSAGE_COMPLETE = 'caviar:child:complete'
 
+const MODULE_NOT_FOUND = 'MODULE_NOT_FOUND'
+
 module.exports = {
   // UNDEFINED: undefined,
 
@@ -35,6 +37,8 @@ module.exports = {
   CAVIAR_MESSAGE_COMPLETE,
 
   FRIEND_SET_RESERVED_HOOKS_FACTORY,
+
+  MODULE_NOT_FOUND,
 
   createSymbol
 }

@@ -8,14 +8,14 @@ const {
   CAVIAR_MESSAGE_COMPLETE
 } = require('../constants')
 const {
-  requireConfigLoader,
+  requirePreset,
   isSubClass
 } = require('../utils')
 const {makeReady} = require('../sandbox/parent')
 const {HooksManager, Hookable} = require('../base/hookable')
+const {createConfigLoaderClass} = require('../config/create')
 const {error} = require('../error')
 
-const DEFAULT_CONFIG_LOADER_MODULE_PATH = require.resolve('../config/loader')
 const HOOKS = Symbol('hooks')
 
 const composePlugins = ({
@@ -37,13 +37,14 @@ module.exports = class CaviarBase {
       throw error('INVALID_OPTIONS', options)
     }
 
-    const {
-      configLoaderModulePath = DEFAULT_CONFIG_LOADER_MODULE_PATH
-    } = options
-
     let {
       cwd,
       dev
+    } = options
+
+    const {
+      preset,
+      configFile
     } = options
 
     const {
@@ -66,7 +67,7 @@ module.exports = class CaviarBase {
 
     this[HOOKS] = hooks
 
-    this._config = this._createConfigLoader(configLoaderModulePath)
+    this._config = this._createConfigLoader(preset, configFile)
     this._caviarConfig = this._config.namespace('caviar')
 
     this._initHooksManager()
@@ -78,13 +79,11 @@ module.exports = class CaviarBase {
   }
 
   // @private
-  _createConfigLoader (configLoaderModulePath) {
-    const ConfigLoader = requireConfigLoader(configLoaderModulePath)
+  _createConfigLoader (preset, configFile) {
+    const PresetClass = requirePreset(preset)
+    const ConfigLoader = createConfigLoaderClass(PresetClass, configFile)
 
-    const {cwd} = this._options
-    return new ConfigLoader({
-      cwd
-    })
+    return new ConfigLoader()
   }
 
   // @protected

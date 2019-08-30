@@ -41,20 +41,17 @@ class Prefixer {
 const PREFIX = (...args) => new Prefixer(...args)
 
 const INVALID_OPTIONS = 'options must be an object'
-const INVALID_CWD = 'options.cwd must be a string'
-const INVALID_CONFIG_LOADER_CLASS_PATH = 'options.configLoaderClassPath must be a string'
-const LOAD_CONFIG_LOADER_FAILS = 'fails to load class ConfigLoader, reason:\n%s'
 
 PREFIX()
-.TE('INVALID_CWD', INVALID_CWD)
-
 .TE('INVALID_OPTIONS', INVALID_OPTIONS)
+
+.TE('INVALID_CWD', 'options.cwd must be a string')
 
 .TE('INVALID_PHASE', 'phase must be a string')
 
-.TE('INVALID_CONFIG_LOADER_CLASS_PATH', INVALID_CONFIG_LOADER_CLASS_PATH)
+.E('PRESET_NOT_FOUND', 'preset "%s" not found, reason:\n%s')
 
-.E('LOAD_CONFIG_LOADER_FAILS', LOAD_CONFIG_LOADER_FAILS)
+.E('LOAD_PRESET_FAILS', 'fails to load preset "%s", reason:\n%s')
 
 PREFIX('BLOCK', 'block')
 .TE('INVALID_PHASES', 'phases must be array of strings')
@@ -69,8 +66,6 @@ PREFIX('MIXER', 'mixer')
 .E('LOAD_PKG_FAILED', 'fails to load package.json in directory "%s": "%s"')
 
 PREFIX('CONFIG_LOADER', 'config-loader')
-// .E('NOT_LOADED', 'should not load an anchor before config chain is loaded')
-
 .TE('INVALID_NODE_PATH',
   'ConfigLoader::nodePath must be a string')
 
@@ -79,21 +74,12 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .E('CONFIG_FILE_GETTER_REQUIRED',
   'getter "configFile" is required on ConfigLoader.prototype')
 
-// .E('PATH_NOT_EXISTS', 'ConfigLoader::path "%s" not exists')
-
-// .TE('INVALID_PATH',
-//   'ConfigLoader::path must be a string')
-
 .TE('INVALID_CONFIG_FILE',
   'ConfigLoader::configFile must be a string')
 
+.E('CONFIG_FILE_NOT_FOUND', 'config file "%s" is not found')
+
 .TE('INVALID_PLUGINS', 'config.caviar.plugins in "%s" must be an array')
-
-// .E('ENV_CONFLICTS',
-//   'env key "%s" conflicts in envs and client envs', RangeError)
-
-// .E('PRESERVED_ENV_KEY',
-//   'env key "%s" is preserved by caviar', RangeError)
 
 .E('CONFIG_ERRORED', 'fails to load config file "%s", reason:\n%s')
 
