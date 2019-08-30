@@ -38,8 +38,7 @@
     "babel": false,
     "files": [
       "test/config.test.js",
-      "test/config-error.test.js",
-      "test/sandbox+process.test.js"
+      "test/config-error.test.js"
     ]
   },
   "author": "kaelzhang",
@@ -64,6 +63,7 @@
     "env-to-code": "^1.0.4",
     "err-object": "^5.1.2",
     "has-own-prop": "^2.0.0",
+    "is-absolute": "^1.0.0",
     "object-access": "^2.0.4",
     "once": "^1.4.0",
     "resolve-from": "^5.0.0",

@@ -1,12 +1,10 @@
 const path = require('path')
 
 const fixture = (...args) => path.join(__dirname, ...args)
-const create = (configPath, appPath = 'app') => {
+const create = configPath => {
   const ConfigLoader = require(fixture(configPath, 'config-loader.js'))
 
-  return new ConfigLoader({
-    cwd: fixture(appPath)
-  })
+  return new ConfigLoader()
 }
 
 const createAndLoad = (...args) => {

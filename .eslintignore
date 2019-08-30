@@ -1,12 +1,7 @@
 /*
 !src
 !test
-
-# JavaScript files intend to have errors
-test/fixtures/config-loader/error-config-errored/caviar.config.js
-
-# Test fixtures in React
-test/fixtures/**/pages
+test/fixtures
 
 # invalid package.json
 error-pkg

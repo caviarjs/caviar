@@ -74,6 +74,10 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .E('CONFIG_FILE_GETTER_REQUIRED',
   'getter "configFile" is required on ConfigLoader.prototype')
 
+.E('PATH_NOT_ABSOLUTE', '%s must be an absolute path, but got "%s"', RangeError)
+
+.E('PATH_NOT_FOUND', '%s "%s" not found, reason:\n%s')
+
 .TE('INVALID_CONFIG_FILE',
   'ConfigLoader::configFile must be a string')
 

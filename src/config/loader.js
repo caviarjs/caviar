@@ -3,6 +3,7 @@ const log = require('util').debuglog('caviar')
 
 const {isString} = require('core-util-is')
 const hasOwnProperty = require('has-own-prop')
+const isAbsolute = require('is-absolute')
 
 const {
   ConfigGetter,
@@ -21,6 +22,21 @@ const checkNodePath = p => {
 
   return p
 }
+
+const createRealPath = name => path => {
+  if (!isAbsolute(path)) {
+    throw error('PATH_NOT_ABSOLUTE', name, path)
+  }
+
+  try {
+    return realpathSync(path)
+  } catch (err) {
+    throw error('PATH_NOT_FOUND', name, path, err.stack)
+  }
+}
+
+const realNodePath = createRealPath('nodePath')
+const realConfigFile = createRealPath('configFile')
 
 class ConfigLoader extends ConfigGetter {
   constructor () {
@@ -69,6 +85,12 @@ class ConfigLoader extends ConfigGetter {
     while (proto) {
       proto = Object.getPrototypeOf(proto)
 
+      // There is no caviar.config.js in caviar,
+      // So just stop
+      if (proto === ConfigLoader.prototype) {
+        break
+      }
+
       if (!hasOwnProperty(proto, 'configFile')) {
         throw error('CONFIG_FILE_GETTER_REQUIRED')
       }
@@ -81,27 +103,13 @@ class ConfigLoader extends ConfigGetter {
         throw error('INVALID_CONFIG_FILE', configFile)
       }
 
-      // There is no caviar.config.js in caviar,
-      // So just stop
-      if (proto === ConfigLoader.prototype) {
-        break
-      }
-
       const nodePath = hasOwnProperty(proto, 'nodePath')
         ? checkNodePath(proto.nodePath)
         : UNDEFINED
 
-      // if (!isString(caviarPath)) {
-      //   throw error('INVALID_PATH', caviarPath)
-      // }
-
-      // if (!fs.existsSync(caviarPath)) {
-      //   throw error('PATH_NOT_EXISTS', caviarPath)
-      // }
-
       paths.push({
-        nodePath: nodePath && realpathSync(nodePath),
-        configFile: realpathSync(configFile)
+        nodePath: nodePath && realNodePath(nodePath),
+        configFile: realConfigFile(configFile)
       })
     }
 
@@ -111,13 +119,15 @@ class ConfigLoader extends ConfigGetter {
   }
 
   getNodePaths () {
-    return this.getPaths().reduceRight((prev, {nodePath}) => {
+    const paths = this.getPaths().reduceRight((prev, {nodePath}) => {
       if (nodePath) {
-        prev.push(nodePath)
+        prev.add(nodePath)
       }
 
       return prev
-    }, [])
+    }, new Set())
+
+    return [...paths]
   }
 
   load () {

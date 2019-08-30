@@ -1,9 +1,9 @@
-module.exports = class extends require('../../../../src/config/loader') {
-  get path () {
+module.exports = class extends require('./config-loader0') {
+  get nodePath () {
     return __dirname
   }
 
-  get nodePath () {
+  get configFile () {
     return __dirname
   }
 }

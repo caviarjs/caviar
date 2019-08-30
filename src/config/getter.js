@@ -61,7 +61,7 @@ class ConfigGetter {
   }
 
   compose (keyAndComposer, defaultValue) {
-    return this[PRIVATE_COMPOSE](keyAndComposer, REDUCE, defaultValue)
+    return this[PRIVATE_COMPOSE](keyAndComposer, REDUCE_RIGHT, defaultValue)
   }
 
   // Iterate from top to bottom, return the first found
@@ -69,7 +69,7 @@ class ConfigGetter {
     return this[PRIVATE_COMPOSE]({
       key,
       compose: bail
-    }, REDUCE_RIGHT, defaultValue)
+    }, REDUCE, defaultValue)
   }
 
   // Iterate from bottom to top, return the first found
@@ -77,7 +77,7 @@ class ConfigGetter {
     return this[PRIVATE_COMPOSE]({
       key,
       compose: bail
-    }, REDUCE, defaultValue)
+    }, REDUCE_RIGHT, defaultValue)
   }
 }
 
