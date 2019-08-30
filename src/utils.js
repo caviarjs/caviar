@@ -1,74 +1,35 @@
 const path = require('path')
-const fs = require('fs')
 const util = require('util')
-const log = require('util').debuglog('caviar')
-const {parse} = require('dotenv')
 const {isString, isArray} = require('core-util-is')
+const resolveFrom = require('resolve-from')
 
 const {error} = require('./error')
+const {MODULE_NOT_FOUND} = require('./constants')
 
-const exists = file => {
+const readConfig = configFile => {
   try {
-    fs.accessSync(file, fs.constants.R_OK)
-    return true
-  } catch (_) {
-    return false
-  }
-}
-
-const readFile = file => {
-  try {
-    const content = fs.readFileSync(file)
-    return content.toString()
+    return require(configFile)
   } catch (err) {
-    // do nothing
+    if (err.code === MODULE_NOT_FOUND) {
+      throw error('CONFIG_LOADER_CONFIG_FILE_NOT_FOUND', configFile)
+    }
+
+    throw error('CONFIG_LOADER_CONFIG_ERRORED', configFile, err.stack)
   }
 }
-
-const readAndParseEnv = (...args) => {
-  const file = path.join(...args)
-  const existed = exists(file)
-  if (!existed) {
-    return
-  }
-
-  const content = readFile(file)
-  return parse(content)
-}
-
-const readConfig = configFilepath => {
-  try {
-    return require(configFilepath)
-  } catch (err) {
-    throw error('CONFIG_LOADER_CONFIG_ERRORED', configFilepath, err.stack)
-  }
-}
-
-const GENERIC_ENV_FILENAME = '.env'
 
 // Raw configurations of a config layer
-const getRawConfig = (cwd, configFileName) => {
-  let configFilepath
+const getRawConfig = configFile => {
+  const config = readConfig(configFile)
 
-  try {
-    configFilepath = require.resolve(path.join(cwd, configFileName))
-  } catch (err) {
-    log('config file "%s" not found', configFilepath)
-    return
-  }
-
-  const config = readConfig(configFilepath)
   const caviar = config.caviar || (config.caviar = {})
 
   // config.caviar.envs
   caviar.envs = caviar.envs || {}
 
-  // .env file inside `ConfigLoader::configFileName`
-  caviar.dotenvs = readAndParseEnv(cwd, configFileName, GENERIC_ENV_FILENAME)
-
   return {
     config,
-    configFilepath
+    configFile
   }
 }
 
@@ -82,16 +43,19 @@ const requireModule = name => {
   return module.default || module
 }
 
-const requireConfigLoader = configLoaderClassPath => {
-  if (!isString(configLoaderClassPath)) {
-    throw error('INVALID_CONFIG_LOADER_CLASS_PATH',
-      configLoaderClassPath)
+const requirePreset = (cwd, preset) => {
+  let resolved
+
+  try {
+    resolved = resolveFrom(cwd, preset)
+  } catch (err) {
+    throw error('PRESET_NOT_FOUND', preset, err.stack)
   }
 
   try {
-    return requireModule(configLoaderClassPath)
+    return requireModule(resolved)
   } catch (err) {
-    throw error('LOAD_CONFIG_LOADER_FAILS', err.stack)
+    throw error('LOAD_PRESET_FAILS', preset, err.stack)
   }
 }
 
@@ -113,20 +77,6 @@ const joinEnvPaths = (base, ...paths) => {
 const isSubClass = (Class, ParentClass) =>
   Class.prototype instanceof ParentClass
 
-// const mixin = (Class, mixins) => {
-//   const {prototype} = Class
-
-//   for (const property of Object.keys(mixins)) {
-//     const descriptor = Reflect.getOwnPropertyDescriptor(mixins, property)
-//     Object.defineProperty(prototype, {
-//       ...descriptor,
-//       configurable: false,
-//       writable: false,
-//       enumerable: false
-//     })
-//   }
-// }
-
 const isStringArray = array =>
   isArray(array) && array.every(isString)
 
@@ -144,7 +94,7 @@ const getPkg = cwd => {
   try {
     return require(packageFilepath)
   } catch (err) {
-    if (err.code === 'MODULE_NOT_FOUND') {
+    if (err.code === MODULE_NOT_FOUND) {
       throw error('PKG_NOT_FOUND', cwd)
     }
 
@@ -156,12 +106,11 @@ module.exports = {
   getRawConfig,
   inspect,
   requireModule,
-  requireConfigLoader,
+  requirePreset,
   joinEnvPaths,
   isSubClass,
   isStringArray,
   define,
   defineWritable,
   getPkg
-  // mixin
 }
