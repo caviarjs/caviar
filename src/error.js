@@ -47,6 +47,8 @@ PREFIX()
 
 .TE('INVALID_CWD', 'options.cwd must be a string')
 
+.TE('INVALID_PRESET', 'options.preset must be a string')
+
 .TE('INVALID_PHASE', 'phase must be a string')
 
 .E('PRESET_NOT_FOUND', 'preset "%s" not found, reason:\n%s')

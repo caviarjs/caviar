@@ -42,17 +42,19 @@ module.exports = class CaviarBase {
       dev
     } = options
 
+    if (!isString(cwd)) {
+      throw error('INVALID_CWD', cwd)
+    }
+
+    // TODO: type checking
     const {
       preset,
-      configFile
-    } = options
-
-    const {
+      configFile,
       [INSIDE_SANDBOX]: isInsideSandbox
     } = options
 
-    if (!isString(cwd)) {
-      throw error('INVALID_CWD', cwd)
+    if (!isString(preset)) {
+      throw error('INVALID_PRESET', preset)
     }
 
     cwd = resolve(cwd)
@@ -80,7 +82,7 @@ module.exports = class CaviarBase {
 
   // @private
   _createConfigLoader (preset, configFile) {
-    const PresetClass = requirePreset(preset)
+    const PresetClass = requirePreset(this._options.cwd, preset)
     const ConfigLoader = createConfigLoaderClass(PresetClass, configFile)
 
     return new ConfigLoader()

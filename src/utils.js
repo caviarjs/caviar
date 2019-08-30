@@ -43,11 +43,11 @@ const requireModule = name => {
   return module.default || module
 }
 
-const requirePreset = (cwd, preset) => {
+const requirePreset = (from, preset) => {
   let resolved
 
   try {
-    resolved = resolveFrom(cwd, preset)
+    resolved = resolveFrom(from, preset)
   } catch (err) {
     throw error('PRESET_NOT_FOUND', preset, err.stack)
   }
