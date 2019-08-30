@@ -2,12 +2,10 @@ module.exports = {
   // Configurations for caviar
   caviar: {
     // The config anchor for caviar
-    mixer: NextRoe
+    mixer: NextRoe,
     plugins: [
 
-    ],
-    // If with sandbox
-    withSandbox: false
+    ]
   },
 
   // Config anchor for blocks
