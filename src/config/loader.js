@@ -1,7 +1,7 @@
 const {realpathSync} = require('fs')
 const log = require('util').debuglog('caviar')
 
-const {isString, isObject} = require('core-util-is')
+const {isString} = require('core-util-is')
 const hasOwnProperty = require('has-own-prop')
 
 const {
@@ -14,24 +14,6 @@ const error = require('./error')
 const {getRawConfig, inspect} = require('../utils')
 const {UNDEFINED} = require('../constants')
 
-const createFinder = realpath => ({configFile: c}) => realpath === c
-
-// TODO: refactor, `method` makes logic complicated
-const addConfigPath = (paths, {
-  nodePath,
-  configFile
-}, append) => {
-  if (paths.findIndex(createFinder(configFile)) === - 1) {
-    const method = append
-      ? 'push'
-      : 'unshift'
-    paths[method]({
-      nodePath,
-      configFile
-    })
-  }
-}
-
 const checkNodePath = p => {
   if (!isString(p)) {
     throw error('INVALID_NODE_PATH', p)
@@ -41,22 +23,10 @@ const checkNodePath = p => {
 }
 
 class ConfigLoader extends ConfigGetter {
-  constructor (options) {
+  constructor () {
     super()
 
-    if (!isObject(options)) {
-      throw error('INVALID_OPTIONS', options)
-    }
-
-    const {
-      configFile
-    } = options
-
-    this._configFile = configFile
-
-    this._pkg = null
     this._paths = null
-
     this._chain = []
 
     this[PROTECTED_SET_TARGET](this._chain)
@@ -129,15 +99,11 @@ class ConfigLoader extends ConfigGetter {
       //   throw error('PATH_NOT_EXISTS', caviarPath)
       // }
 
-      addConfigPath(paths, {
+      paths.push({
         nodePath: nodePath && realpathSync(nodePath),
         configFile: realpathSync(configFile)
-      }, false)
+      })
     }
-
-    addConfigPath(paths, {
-      configFile: this._configFile
-    }, true)
 
     log('config-loader: paths: %s', inspect(paths))
 
@@ -156,10 +122,9 @@ class ConfigLoader extends ConfigGetter {
 
   load () {
     this.getPaths().forEach(({
-      caviarPath,
-      configFileName
+      configFile
     }) => {
-      const rawConfig = getRawConfig(caviarPath, configFileName)
+      const rawConfig = getRawConfig(configFile)
       if (rawConfig) {
         this._chain.push(rawConfig)
       }

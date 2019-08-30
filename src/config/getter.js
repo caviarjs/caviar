@@ -43,7 +43,7 @@ class ConfigGetter {
     // }
 
     return target[reduceType]((prev, current) => {
-      const {configFilepath} = current
+      const {configFile} = current
       const anchor = get(current, [...this[PRIVATE_PATHS], key])
 
       // We treat undefined as has no property
@@ -55,7 +55,7 @@ class ConfigGetter {
       return compose({
         prev,
         anchor,
-        configFilepath
+        configFile
       })
     }, UNDEFINED) || defaultValue
   }
