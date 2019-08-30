@@ -32,10 +32,14 @@ test('env, bailTop, bailBottom, and compose', t => {
     B: 2
   })
 
-  // t.deepEqual(caviar.compose({
-  //   key: 'no-exists',
-  //   compose: composeEnvs
-  // }, 1), 1)
+  t.deepEqual(caviar.bailBottom('envs'), {
+    B0: 2
+  })
 
-  // t.deepEqual(cl.getNodePaths(), [])
+  t.deepEqual(caviar.compose({
+    key: 'no-exists',
+    compose: composeEnvs
+  }, 1), 1)
+
+  t.deepEqual(cl.getNodePaths(), [])
 })

@@ -3,6 +3,8 @@ const {fixture} = require('./fixtures/config-loader/create')
 
 const ERROR_CASES = [
   ['error-no-config-file', 'CONFIG_FILE_GETTER_REQUIRED'],
+  ['error-config-file-not-found', 'PATH_NOT_FOUND'],
+  ['error-config-file-not-absolute', 'PATH_NOT_ABSOLUTE'],
   ['error-number-node-modules', 'INVALID_NODE_PATH'],
   ['error-config-file', 'INVALID_CONFIG_FILE'],
   ['error-config-errored', 'CONFIG_ERRORED', () => {}]

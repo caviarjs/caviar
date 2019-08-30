@@ -134,10 +134,7 @@ class ConfigLoader extends ConfigGetter {
     this.getPaths().forEach(({
       configFile
     }) => {
-      const rawConfig = getRawConfig(configFile)
-      if (rawConfig) {
-        this._chain.push(rawConfig)
-      }
+      this._chain.push(getRawConfig(configFile))
     })
 
     log('config-loader: chain: %s', inspect(this._chain))
