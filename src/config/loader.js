@@ -1,5 +1,4 @@
-const fs = require('fs')
-const path = require('path')
+const {realpathSync} = require('fs')
 const log = require('util').debuglog('caviar')
 
 const {isString, isObject} = require('core-util-is')
@@ -15,20 +14,20 @@ const error = require('./error')
 const {getRawConfig, inspect} = require('../utils')
 const {UNDEFINED} = require('../constants')
 
-const createFinder = realpath => ({caviarPath: p}) => realpath === p
+const createFinder = realpath => ({configFile: c}) => realpath === c
+
+// TODO: refactor, `method` makes logic complicated
 const addConfigPath = (paths, {
-  caviarPath,
   nodePath,
-  configFileName
+  configFile
 }, append) => {
-  if (paths.findIndex(createFinder(caviarPath)) === - 1) {
+  if (paths.findIndex(createFinder(configFile)) === - 1) {
     const method = append
       ? 'push'
       : 'unshift'
     paths[method]({
-      caviarPath,
       nodePath,
-      configFileName
+      configFile
     })
   }
 }
@@ -41,8 +40,6 @@ const checkNodePath = p => {
   return p
 }
 
-const CONFIG_FILE_NAME = 'caviar.config'
-
 class ConfigLoader extends ConfigGetter {
   constructor (options) {
     super()
@@ -52,16 +49,14 @@ class ConfigLoader extends ConfigGetter {
     }
 
     const {
-      cwd
+      configFile
     } = options
 
-    if (!isString(cwd)) {
-      throw error('INVALID_CWD', cwd)
-    }
+    this._configFile = configFile
 
-    this._cwd = cwd
     this._pkg = null
     this._paths = null
+
     this._chain = []
 
     this[PROTECTED_SET_TARGET](this._chain)
@@ -79,35 +74,6 @@ class ConfigLoader extends ConfigGetter {
     return sub
   }
 
-  get pkg () {
-    if (this._pkg) {
-      return this._pkg
-    }
-
-    const packageFilepath = path.join(this._cwd, 'package.json')
-
-    try {
-      return this._pkg = require(packageFilepath)
-    } catch (err) {
-      if (err.code === 'MODULE_NOT_FOUND') {
-        throw error('PKG_NOT_FOUND', this._cwd)
-      }
-
-      throw error('LOAD_PKG_FAILED', this._cwd, err.stack)
-    }
-  }
-
-  // Fields for implementors to override
-  ///////////////////////////////////////////////////////////
-  get path () {
-    return __dirname
-  }
-
-  get configFileName () {
-    return CONFIG_FILE_NAME
-  }
-  ///////////////////////////////////////////////////////////
-
   // Caviar.Server::path, ...[SubServer::path]
   // TOP
   //  ^      - Layer for business
@@ -124,9 +90,8 @@ class ConfigLoader extends ConfigGetter {
     const paths = []
 
     let proto = this
-    let latestConfigFileName
 
-    // 1. should has a own property `path`
+    // 1. should has a own property `configFileName`
     // 2. this.configFileName should be a string
     // 3. has a own property `nodePath` or not
 
@@ -134,22 +99,17 @@ class ConfigLoader extends ConfigGetter {
     while (proto) {
       proto = Object.getPrototypeOf(proto)
 
-      if (!hasOwnProperty(proto, 'path')) {
-        throw error('PATH_GETTER_REQUIRED')
+      if (!hasOwnProperty(proto, 'configFile')) {
+        throw error('CONFIG_FILE_GETTER_REQUIRED')
       }
 
       const {
-        path: caviarPath,
-        // We allow not to override this getter
-        configFileName
+        configFile
       } = proto
 
-      if (!isString(configFileName)) {
-        throw error('INVALID_CONFIG_FILE_NAME', configFileName)
+      if (!isString(configFile)) {
+        throw error('INVALID_CONFIG_FILE', configFile)
       }
-
-      // We save name of the latest config file
-      latestConfigFileName = configFileName
 
       // There is no caviar.config.js in caviar,
       // So just stop
@@ -161,24 +121,22 @@ class ConfigLoader extends ConfigGetter {
         ? checkNodePath(proto.nodePath)
         : UNDEFINED
 
-      if (!isString(caviarPath)) {
-        throw error('INVALID_PATH', caviarPath)
-      }
+      // if (!isString(caviarPath)) {
+      //   throw error('INVALID_PATH', caviarPath)
+      // }
 
-      if (!fs.existsSync(caviarPath)) {
-        throw error('PATH_NOT_EXISTS', caviarPath)
-      }
+      // if (!fs.existsSync(caviarPath)) {
+      //   throw error('PATH_NOT_EXISTS', caviarPath)
+      // }
 
       addConfigPath(paths, {
-        caviarPath: fs.realpathSync(caviarPath),
-        nodePath: nodePath && fs.realpathSync(nodePath),
-        configFileName
+        nodePath: nodePath && realpathSync(nodePath),
+        configFile: realpathSync(configFile)
       }, false)
     }
 
     addConfigPath(paths, {
-      caviarPath: this._cwd,
-      configFileName: latestConfigFileName
+      configFile: this._configFile
     }, true)
 
     log('config-loader: paths: %s', inspect(paths))
@@ -211,20 +169,6 @@ class ConfigLoader extends ConfigGetter {
 
     return this
   }
-
-  // // TODO:
-  // // for now, we could not actually reload depencencies of confi files
-  // reload () {
-  //   this._chain.forEach(({configFileName}) => {
-  //     // delete the require caches, so that the files will be required again
-  //     delete require.cache[configFileName]
-  //   })
-
-  //   this._chain.length = 0
-  //   this.load()
-
-  //   return this
-  // }
 }
 
 module.exports = ConfigLoader

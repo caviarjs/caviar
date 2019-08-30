@@ -138,6 +138,20 @@ const define = (host, key, value, writable = false) =>
 
 const defineWritable = (host, key, value) => define(host, key, value, true)
 
+const getPkg = cwd => {
+  const packageFilepath = path.join(cwd, 'package.json')
+
+  try {
+    return require(packageFilepath)
+  } catch (err) {
+    if (err.code === 'MODULE_NOT_FOUND') {
+      throw error('PKG_NOT_FOUND', cwd)
+    }
+
+    throw error('LOAD_PKG_FAILED', cwd, err.stack)
+  }
+}
+
 module.exports = {
   getRawConfig,
   inspect,
@@ -147,6 +161,7 @@ module.exports = {
   isSubClass,
   isStringArray,
   define,
-  defineWritable
+  defineWritable,
+  getPkg
   // mixin
 }

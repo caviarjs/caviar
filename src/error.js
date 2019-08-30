@@ -64,6 +64,10 @@ PREFIX('BLOCK', 'block')
 PREFIX('MIXER', 'mixer')
 .TE('INVALID_PHASE', '')
 
+.E('PKG_NOT_FOUND', 'package.json not found in directory "%s"')
+
+.E('LOAD_PKG_FAILED', 'fails to load package.json in directory "%s": "%s"')
+
 PREFIX('CONFIG_LOADER', 'config-loader')
 // .E('NOT_LOADED', 'should not load an anchor before config chain is loaded')
 
@@ -72,22 +76,16 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 
 .TE('INVALID_OPTIONS', INVALID_OPTIONS)
 
-.TE('INVALID_CWD', INVALID_CWD)
+.E('CONFIG_FILE_GETTER_REQUIRED',
+  'getter "configFile" is required on ConfigLoader.prototype')
 
-.E('PKG_NOT_FOUND', 'package.json not found in directory "%s"')
+// .E('PATH_NOT_EXISTS', 'ConfigLoader::path "%s" not exists')
 
-.E('LOAD_PKG_FAILED', 'fails to load package.json in directory "%s": "%s"')
+// .TE('INVALID_PATH',
+//   'ConfigLoader::path must be a string')
 
-.E('PATH_GETTER_REQUIRED',
-  'getter "path" is required on ConfigLoader.prototype')
-
-.E('PATH_NOT_EXISTS', 'ConfigLoader::path "%s" not exists')
-
-.TE('INVALID_PATH',
-  'ConfigLoader::path must be a string')
-
-.TE('INVALID_CONFIG_FILE_NAME',
-  'ConfigLoader::configFileName must be a string')
+.TE('INVALID_CONFIG_FILE',
+  'ConfigLoader::configFile must be a string')
 
 .TE('INVALID_PLUGINS', 'config.caviar.plugins in "%s" must be an array')
 
