@@ -1,7 +1,6 @@
 
 const path = require('path')
 const log = require('util').debuglog('caviar')
-const {fork} = require('child_process')
 const {
   AsyncParallelHook
 } = require('tapable')
@@ -15,6 +14,7 @@ const {
   IS_SANDBOX,
   UNDEFINED
 } = require('../constants')
+const {fork} = require('./process')
 
 const error = createError('SANDBOX')
 

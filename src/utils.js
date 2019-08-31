@@ -96,6 +96,8 @@ const define = (host, key, value, writable = false) =>
 
 const defineWritable = (host, key, value) => define(host, key, value, true)
 
+const defineGetter = (host, key, get) => define(host, key, {get})
+
 const getPkg = cwd => {
   const packageFilepath = path.join(cwd, 'package.json')
 
@@ -110,6 +112,24 @@ const getPkg = cwd => {
   }
 }
 
+const once = (...fns) => {
+  let called = false
+
+  const ret = []
+  const wrap = fn => (...args) => {
+    if (!called) {
+      called = true
+      fn(...args)
+    }
+  }
+
+  for (const fn of fns) {
+    ret.push(wrap(fn))
+  }
+
+  return ret
+}
+
 module.exports = {
   getRawConfig,
   inspect,
@@ -120,5 +140,7 @@ module.exports = {
   isStringArray,
   define,
   defineWritable,
-  getPkg
+  defineGetter,
+  getPkg,
+  once
 }

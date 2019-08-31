@@ -12,7 +12,6 @@ const {
   requirePreset,
   isSubClass
 } = require('../utils')
-const {makeReady} = require('../sandbox/process')
 const {HooksManager, Hookable} = require('../base/hookable')
 const {createConfigLoaderClass} = require('../config/create')
 const ConfigLoader = require('../config/loader')
@@ -181,7 +180,7 @@ module.exports = class CaviarBase {
     // Caviar could run without a sandbox,
     // only monitor the parent process when the current instance is a sandbox
     if (this[IS_SANDBOX]) {
-      return makeReady(ret)
+      return ret
     }
   }
 }
