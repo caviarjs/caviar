@@ -13,14 +13,21 @@ const {
 const fixture = (...args) =>
   path.join(__dirname, 'fixtures', 'sandbox', ...args)
 
-const createSandboxClass = name => class extends S {
+class SS extends S {
+  constructor (options) {
+    options.configFile = fixture('config.js')
+    super(options)
+  }
+}
+
+const createSandboxClass = name => class extends SS {
   get spawner () {
     return fixture(`${name}.js`)
   }
 }
 
 test('vanilla Sandbox', t => {
-  const s = new S({
+  const s = new SS({
     cwd: __dirname,
     dev: true
   })
@@ -32,7 +39,6 @@ test('vanilla Sandbox', t => {
 test('basic', async t => {
   const Sandbox = createSandboxClass('spawner')
   const child = await new Sandbox({
-    // configLoaderModulePath: ,
     cwd: __dirname,
     dev: true
   }).run()

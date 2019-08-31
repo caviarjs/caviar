@@ -14,28 +14,21 @@ test('invalid cwd', t => {
   })
 })
 
+test('invalid configFile', t => {
+  t.throws(() => new Sandbox({
+    cwd: 'fake',
+    preset: 'fake'
+  }), {
+    code: 'INVALID_CONFIG_FILE'
+  })
+})
+
 test('invalid preset', t => {
   t.throws(() => new Sandbox({
-    cwd: 'fake'
+    cwd: 'fake',
+    preset: 1,
+    configFile: 'fake'
   }), {
     code: 'INVALID_PRESET'
   })
 })
-
-// test('invalid server path', t => {
-//   t.throws(() => new Sandbox({
-//     serverClassPath: null,
-//     cwd: __dirname
-//   }), {
-//     code: CODE('INVALID_SERVER_CLASS_PATH')
-//   })
-// })
-
-// test('invalid loader path', t => {
-//   t.throws(() => new Sandbox({
-//     configLoaderClassPath: null,
-//     cwd: __dirname
-//   }), {
-//     code: CODE('INVALID_CONFIG_LOADER_CLASS_PATH')
-//   })
-// })
