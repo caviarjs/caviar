@@ -160,18 +160,28 @@ class Sandbox extends CaviarBase {
     ]
   }
 
+  // Usage
+  // ```js
+  // const subprocess = await caviar({
+  //   sandbox: true
+  // }).run()
+  // ```
+
+  // await for caviar of the subprocess executed
+  // ```js
+  // await subprocess.ready()
+  // ```
+
+  // If the subprocess is a server or a job which must hang on, then
+  // ```js
+  // await monitor(subprocess)
+  // ```
   async _run (phase) {
     const {spawner} = this
     const args = this._spawnArgs(phase)
 
     return this._fork(spawner, args)
   }
-
-  // TODO: reload sandbox if watcher emits
-  // _reload () {
-  //   this._initHooksManager()
-  //   this._config.load()
-  // }
 }
 
 module.exports = {

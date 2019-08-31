@@ -3,7 +3,8 @@ const child = require('child_process')
 const {createError} = require('../error')
 const {
   createSymbol,
-  CAVIAR_MESSAGE_COMPLETE
+  CAVIAR_MESSAGE_COMPLETE,
+  NOOP
 } = require('../constants')
 const {
   define,
@@ -28,24 +29,31 @@ const on = (subprocess, event, handler) => {
     return
   }
 
-  subprocess.on(event, handler)
+  subprocess.once(event, handler)
 }
 
 const pre = (subprocess, event) => {
-  subprocess.on(event, (...args) => {
+  subprocess.once(event, (...args) => {
     subprocess[CHILD_EVENTS[event]] = args
   })
 }
 
-const monitoring = (subprocess, resolve, reject, allowExit) => {
-  // It is hard to produce, skip testing
-  /* istanbul ignore next */
-  on(subprocess, 'error', err => {
+const monitoring = (
+  subprocess, resolve, reject, allowExit,
+  onClean = NOOP
+) => {
+  const onError = err => {
+    // It is hard to produce, skip testing
+    /* istanbul ignore next */
+    clean()
+
     /* istanbul ignore next */
     reject(error('ERRORED', err.stack))
-  })
+  }
 
-  on(subprocess, 'close', (code, signal) => {
+  const onClose = (code, signal) => {
+    clean()
+
     if (signal) {
       // Ref
       // http://man7.org/linux/man-pages/man7/signal.7.html
@@ -62,12 +70,25 @@ const monitoring = (subprocess, resolve, reject, allowExit) => {
     }
 
     reject(error('UNEXPECTED_CLOSE'))
-  })
+  }
+
+  // Free memory and avoid duplication
+  function clean () {
+    onClean()
+
+    subprocess.removeListener('error', onError)
+    subprocess.removeListener('close', onClose)
+  }
+
+  on(subprocess, 'error', onError)
+  on(subprocess, 'close', onClose)
+
+  return clean
 }
 
 const monitor = (subprocess, allowExit) =>
   new Promise((resolve, reject) => {
-    monitoring(subprocess, ...once(resolve, reject), allowExit)
+    monitoring(subprocess, resolve, reject, allowExit)
   })
 
 const ready = (subprocess, allowExit) => {
@@ -78,14 +99,24 @@ const ready = (subprocess, allowExit) => {
   return new Promise((s, j) => {
     const [resolve, reject] = once(s, j)
 
-    monitoring(subprocess, resolve, reject, allowExit)
+    const clean = monitoring(
+      subprocess, resolve, reject, allowExit,
+      cleanMessage
+    )
 
-    subprocess.on('message', message => {
+    const onMessage = message => {
       if (message && message.type === CAVIAR_MESSAGE_COMPLETE) {
+        clean()
         define(subprocess, CHILD_READY, true)
         resolve()
       }
-    })
+    }
+
+    function cleanMessage () {
+      subprocess.removeListener('message', onMessage)
+    }
+
+    subprocess.once('message', onMessage)
   })
 }
 
