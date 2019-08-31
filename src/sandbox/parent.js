@@ -79,16 +79,12 @@ class Sandbox extends CaviarBase {
     })
 
     const {
-      configLoaderModulePath,
       stdio = 'inherit',
-      sandbox
     } = options
 
     this[IS_SANDBOX] = true
 
-    this._configLoaderModulePath = configLoaderModulePath
     this._stdio = stdio
-    this._sandbox = sandbox
 
     this._config.load()
   }
@@ -153,9 +149,7 @@ class Sandbox extends CaviarBase {
     return [
       JSON.stringify({
         ...this._options,
-        sandbox: this._sandbox,
-        phase,
-        configLoaderModulePath: this._configLoaderModulePath
+        phase
       })
     ]
   }
