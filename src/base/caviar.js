@@ -2,6 +2,7 @@ const {isArray, isString, isObject} = require('core-util-is')
 const {resolve} = require('path')
 
 const {
+  UNDEFINED,
   RETURNS_TRUE,
   PHASE_DEFAULT,
   IS_CHILD_PROCESS,
@@ -14,7 +15,6 @@ const {
 } = require('../utils')
 const {HooksManager, Hookable} = require('../base/hookable')
 const {createConfigLoaderClass} = require('../config/create')
-const ConfigLoader = require('../config/loader')
 const {error} = require('../error')
 
 const HOOKS = Symbol('hooks')
@@ -53,6 +53,18 @@ module.exports = class CaviarBase {
       [IS_CHILD_PROCESS]: isChildProcess
     } = options
 
+    if (!configFile && !preset) {
+      throw error('OPTION_MISSING')
+    }
+
+    if (configFile && !isString(configFile)) {
+      throw error('INVALID_CONFIG_FILE', configFile)
+    }
+
+    if (preset && !isString(preset)) {
+      throw error('INVALID_PRESET', preset)
+    }
+
     cwd = resolve(cwd)
     dev = !!dev
 
@@ -78,14 +90,7 @@ module.exports = class CaviarBase {
 
   // @private
   _createConfigLoader (preset, configFile) {
-    if (!isString(configFile)) {
-      throw error('INVALID_CONFIG_FILE', configFile)
-    }
-
     const PresetClass = requirePreset(this._options.cwd, preset)
-      // If there is no preset
-      || ConfigLoader
-
     const Extended = createConfigLoaderClass(PresetClass, configFile)
 
     return new Extended()

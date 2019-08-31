@@ -9,8 +9,6 @@ sandbox could be caviar-independent?
 */
 
 const sb = sandbox({
-  configLoaderModulePath,
-  forkerModulePath,
   cwd,
   dev
 })

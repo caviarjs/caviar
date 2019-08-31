@@ -48,10 +48,6 @@ const requirePreset = (from, preset) => {
     return
   }
 
-  if (!isString(preset)) {
-    throw error('INVALID_PRESET', preset)
-  }
-
   let resolved
 
   try {

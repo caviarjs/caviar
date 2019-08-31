@@ -14,10 +14,19 @@ test('invalid cwd', t => {
   })
 })
 
+test('option missing', t => {
+  t.throws(() => new Sandbox({
+    cwd: 'fake'
+  }), {
+    code: 'OPTION_MISSING'
+  })
+})
+
 test('invalid configFile', t => {
   t.throws(() => new Sandbox({
     cwd: 'fake',
-    preset: 'fake'
+    preset: 'fake',
+    configFile: 1
   }), {
     code: 'INVALID_CONFIG_FILE'
   })
