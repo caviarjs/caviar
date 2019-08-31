@@ -5,7 +5,7 @@ const {isObject} = require('core-util-is')
 // `node /path/to/spawner/start.js ${optionsJSON}`
 const log = require('util').debuglog('caviar:spawner')
 
-const {INSIDE_SANDBOX} = require('../constants')
+const {IS_CHILD_PROCESS} = require('../constants')
 
 const {
   phase,
@@ -22,7 +22,7 @@ log('spawner sandbox: %s', JSON.stringify(sandbox, null, 2))
 
 const Caviar = require('../caviar')
 
-options[INSIDE_SANDBOX] = true
+options[IS_CHILD_PROCESS] = true
 
 new Caviar(options)
 .run(phase)

@@ -4,14 +4,15 @@ const {resolve} = require('path')
 const {
   RETURNS_TRUE,
   PHASE_DEFAULT,
-  INSIDE_SANDBOX,
+  IS_CHILD_PROCESS,
+  IS_SANDBOX,
   CAVIAR_MESSAGE_COMPLETE
 } = require('../constants')
 const {
   requirePreset,
   isSubClass
 } = require('../utils')
-const {makeReady} = require('../sandbox/parent')
+const {makeReady} = require('../sandbox/process')
 const {HooksManager, Hookable} = require('../base/hookable')
 const {createConfigLoaderClass} = require('../config/create')
 const {error} = require('../error')
@@ -50,7 +51,7 @@ module.exports = class CaviarBase {
     const {
       preset,
       configFile,
-      [INSIDE_SANDBOX]: isInsideSandbox
+      [IS_CHILD_PROCESS]: isChildProcess
     } = options
 
     if (!isString(preset)) {
@@ -65,7 +66,7 @@ module.exports = class CaviarBase {
       dev
     }
 
-    this[INSIDE_SANDBOX] = !!isInsideSandbox
+    this[IS_CHILD_PROCESS] = !!isChildProcess
 
     this[HOOKS] = hooks
 
@@ -125,7 +126,10 @@ module.exports = class CaviarBase {
   // @private
   // Initialize envs which are essential to caviar
   async _initEnv (phase) {
-    if (this[INSIDE_SANDBOX]) {
+    // If the caviar instance is inside sandbox,
+    // env variables below are already been defined in
+    // options.env of the child process
+    if (this[IS_CHILD_PROCESS]) {
       return
     }
 
@@ -162,16 +166,19 @@ module.exports = class CaviarBase {
 
     const ret = await this._run(phase)
 
-    if (!this[INSIDE_SANDBOX]) {
-      return ret
+    // If caviar is in a child process
+    if (this[IS_CHILD_PROCESS]) {
+      process.send({
+        type: CAVIAR_MESSAGE_COMPLETE
+      })
+
+      return
     }
 
-    // Then `ret` is a child process
-
-    process.send({
-      type: CAVIAR_MESSAGE_COMPLETE
-    })
-
-    return makeReady(ret)
+    // Caviar could run without a sandbox,
+    // only monitor the parent process when the current instance is a sandbox
+    if (this[IS_SANDBOX]) {
+      return makeReady(ret)
+    }
   }
 }

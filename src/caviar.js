@@ -8,7 +8,7 @@ const CaviarBase = require('./base/caviar')
 const {
   FRIEND_RUN,
   IS_NOT_SANDBOX_PLUGIN,
-  INSIDE_SANDBOX
+  IS_CHILD_PROCESS
 } = require('./constants')
 
 module.exports = class Caviar extends CaviarBase {
@@ -19,7 +19,7 @@ module.exports = class Caviar extends CaviarBase {
     })
 
     // Apply NODE_PATH before configLoader.load
-    if (!this[INSIDE_SANDBOX]) {
+    if (!this[IS_CHILD_PROCESS]) {
       // If caviar is runned without sandbox
       this._applyNodePaths()
     }

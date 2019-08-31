@@ -8,8 +8,8 @@ const FRIEND_SET_CAVIAR_OPTIONS = createSymbol('set-caviar-opts')
 const FRIEND_CREATE = createSymbol('create')
 const FRIEND_RUN = createSymbol('run')
 
-const INSIDE_SANDBOX = createSymbol('inside-sandbox')
-// const PROTECTED_CHILD = createSymbol('child-process')
+const IS_CHILD_PROCESS = createSymbol('inside-sandbox')
+const IS_SANDBOX = createSymbol('child-process')
 
 const FRIEND_SET_RESERVED_HOOKS_FACTORY =
   createSymbol('reserved-hooks-factory')
@@ -31,7 +31,7 @@ module.exports = {
   FRIEND_SET_CAVIAR_OPTIONS,
   FRIEND_CREATE,
   FRIEND_RUN,
-  INSIDE_SANDBOX,
+  IS_CHILD_PROCESS,
   // PROTECTED_CHILD,
 
   CAVIAR_MESSAGE_COMPLETE,

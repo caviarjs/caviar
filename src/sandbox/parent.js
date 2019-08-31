@@ -12,6 +12,7 @@ const {joinEnvPaths} = require('../utils')
 const CaviarBase = require('../base/caviar')
 const {
   IS_SANDBOX_PLUGIN,
+  IS_SANDBOX,
   UNDEFINED
 } = require('../constants')
 
@@ -82,6 +83,8 @@ class Sandbox extends CaviarBase {
       stdio = 'inherit',
       sandbox
     } = options
+
+    this[IS_SANDBOX] = true
 
     this._configLoaderModulePath = configLoaderModulePath
     this._stdio = stdio
