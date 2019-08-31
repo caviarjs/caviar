@@ -1,5 +1,5 @@
 const ConfigLoader = require('./config/loader')
-const {monitor} = require('./sandbox/child-process')
+const {monitor} = require('./sandbox/process')
 const {requireModule} = require('./utils')
 const {Block} = require('./block')
 const Mixer = require('./mixer')

@@ -47,7 +47,9 @@ PREFIX()
 
 .TE('INVALID_CWD', 'options.cwd must be a string')
 
-.TE('INVALID_PRESET', 'options.preset must be a string')
+.TE('INVALID_CONFIG_FILE', 'options.configFile must be a path string')
+
+.TE('INVALID_PRESET', 'options.preset must be a string or a falsy value')
 
 .TE('INVALID_PHASE', 'phase must be a string')
 

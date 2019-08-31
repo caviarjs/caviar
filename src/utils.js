@@ -44,6 +44,14 @@ const requireModule = name => {
 }
 
 const requirePreset = (from, preset) => {
+  if (!preset) {
+    return
+  }
+
+  if (!isString(preset)) {
+    throw error('INVALID_PRESET', preset)
+  }
+
   let resolved
 
   try {

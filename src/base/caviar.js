@@ -15,6 +15,7 @@ const {
 const {makeReady} = require('../sandbox/process')
 const {HooksManager, Hookable} = require('../base/hookable')
 const {createConfigLoaderClass} = require('../config/create')
+const ConfigLoader = require('../config/loader')
 const {error} = require('../error')
 
 const HOOKS = Symbol('hooks')
@@ -47,16 +48,11 @@ module.exports = class CaviarBase {
       throw error('INVALID_CWD', cwd)
     }
 
-    // TODO: type checking
     const {
       preset,
       configFile,
       [IS_CHILD_PROCESS]: isChildProcess
     } = options
-
-    if (!isString(preset)) {
-      throw error('INVALID_PRESET', preset)
-    }
 
     cwd = resolve(cwd)
     dev = !!dev
@@ -83,10 +79,17 @@ module.exports = class CaviarBase {
 
   // @private
   _createConfigLoader (preset, configFile) {
-    const PresetClass = requirePreset(this._options.cwd, preset)
-    const ConfigLoader = createConfigLoaderClass(PresetClass, configFile)
+    if (!isString(configFile)) {
+      throw error('INVALID_CONFIG_FILE', configFile)
+    }
 
-    return new ConfigLoader()
+    const PresetClass = requirePreset(this._options.cwd, preset)
+      // If there is no preset
+      || ConfigLoader
+
+    const Extended = createConfigLoaderClass(PresetClass, configFile)
+
+    return new Extended()
   }
 
   // @protected
