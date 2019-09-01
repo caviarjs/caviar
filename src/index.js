@@ -11,6 +11,8 @@ const caviar = (options = {}) => options.sandbox
   ? new Sandbox(options)
   : new Caviar(options)
 
+const {version} = require('../package.json')
+
 module.exports = {
   caviar,
   Block,
@@ -20,5 +22,6 @@ module.exports = {
   utils: {
     monitor,
     requireModule
-  }
+  },
+  version
 }
