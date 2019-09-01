@@ -12,7 +12,7 @@ module.exports = class KoaRouterMixer extends Mixer {
       foo: {
         from: FooBlock
       },
-      router: {
+      bar: {
         from: BarBlock
       }
     }

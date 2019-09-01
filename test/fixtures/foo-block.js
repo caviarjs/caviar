@@ -14,7 +14,7 @@ module.exports = class KoaBlock extends Block {
     }
 
     this.hooks = {
-      a: new SyncHook(['port'])
+      a: new SyncHook(['foo'])
     }
   }
 
