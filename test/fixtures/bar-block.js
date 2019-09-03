@@ -13,9 +13,9 @@ module.exports = class RouterBlock extends Block {
     }
   }
 
-  create () {
+  create (config) {
     return {
-      bar: true
+      bar: config.bar === 'bar'
     }
   }
 

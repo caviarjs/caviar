@@ -18,9 +18,9 @@ module.exports = class KoaBlock extends Block {
     }
   }
 
-  create () {
+  create (config) {
     return {
-      foo: true
+      foo: config.foo === 'foo'
     }
   }
 

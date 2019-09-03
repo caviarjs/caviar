@@ -7,11 +7,6 @@ module.exports = {
     mixer: require('../simple-mixer')
   },
 
-  port: 50003,
-
-  router (router) {
-    router.get('/hello', ctx => {
-      ctx.body = 'hello world'
-    })
-  }
+  foo: 'foo',
+  bar: 'bar'
 }

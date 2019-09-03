@@ -2,13 +2,12 @@ const test = require('ava')
 const is = require('is-type-of')
 
 const {
-  Server,
-  Sandbox,
-  ConfigLoader
+  ConfigLoader, Block, Mixer, Plugin
 } = require('..')
 
 test('types', t => {
-  t.true(is.class(Server))
-  t.true(is.class(Sandbox))
   t.true(is.class(ConfigLoader))
+  t.true(is.class(Block))
+  t.true(is.class(Mixer))
+  t.true(is.class(Plugin))
 })
