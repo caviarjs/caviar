@@ -2,12 +2,13 @@ const {isArray, isString, isObject} = require('core-util-is')
 const {resolve} = require('path')
 
 const {
-  UNDEFINED,
   RETURNS_TRUE,
   PHASE_DEFAULT,
   IS_CHILD_PROCESS,
   IS_SANDBOX,
-  CAVIAR_MESSAGE_COMPLETE
+  CAVIAR_MESSAGE_COMPLETE,
+
+  createSymbol
 } = require('../constants')
 const {
   requirePreset,
@@ -17,7 +18,17 @@ const {HooksManager, Hookable} = require('../base/hookable')
 const {createConfigLoaderClass} = require('../config/create')
 const {error} = require('../error')
 
-const HOOKS = Symbol('hooks')
+// Symbol in constants.js -> friend method
+// Symbol in current js -> private method
+// _method -> protected method
+// method -> public method
+
+// We create symbols for private method keys,
+// in the future we could use `#hooks` if we target caviar to node >= 12
+const HOOKS = createSymbol('hooks')
+const INIT_HOOKS_MANAGER = createSymbol('init-hooks-manager')
+const CREATE_CONFIG_LOADER = createSymbol('create-config-loader')
+const INIT_ENV = createSymbol('init-env')
 
 const composePlugins = ({
   // key,
@@ -77,19 +88,19 @@ module.exports = class CaviarBase {
 
     this[HOOKS] = hooks
 
-    this._config = this._createConfigLoader(preset, configFile)
+    this._config = this[CREATE_CONFIG_LOADER](preset, configFile)
     this._caviarConfig = this._config.namespace('caviar')
 
-    this._initHooksManager()
+    this[INIT_HOOKS_MANAGER]()
   }
 
   // @private
-  _initHooksManager () {
+  [INIT_HOOKS_MANAGER] () {
     this._hooksManager = new HooksManager(this[HOOKS])
   }
 
   // @private
-  _createConfigLoader (preset, configFile) {
+  [CREATE_CONFIG_LOADER] (preset, configFile) {
     const PresetClass = requirePreset(this._options.cwd, preset)
     const Extended = createConfigLoaderClass(PresetClass, configFile)
 
@@ -132,7 +143,7 @@ module.exports = class CaviarBase {
 
   // @private
   // Initialize envs which are essential to caviar
-  async _initEnv (phase) {
+  async [INIT_ENV] (phase) {
     // If the caviar instance is inside sandbox,
     // env variables below are already been defined in
     // options.env of the child process
@@ -167,9 +178,7 @@ module.exports = class CaviarBase {
       throw error('INVALID_PHASE', phase)
     }
 
-    this._initEnv(phase)
-
-    this._config.load()
+    this[INIT_ENV](phase)
 
     const ret = await this._run(phase)
 

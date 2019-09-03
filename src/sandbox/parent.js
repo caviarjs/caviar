@@ -172,6 +172,9 @@ class Sandbox extends CaviarBase {
   // ```
   async _run (phase) {
     const {spawner} = this
+
+    this._config.load()
+
     const args = this._spawnArgs(phase)
 
     return this._fork(spawner, args)

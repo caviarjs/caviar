@@ -37,10 +37,7 @@
   "ava": {
     "babel": false,
     "files": [
-      "test/config.test.js",
-      "test/config-error.test.js",
-      "test/sandbox-error.test.js",
-      "test/sandbox+process.test.js"
+      "test/*.test.js"
     ]
   },
   "author": "kaelzhang",
