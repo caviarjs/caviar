@@ -1,6 +1,6 @@
 const delay = require('delay')
 
-const {Block} = require('../../src')
+const {Block} = require('../..')
 
 module.exports = class RouterBlock extends Block {
   constructor () {

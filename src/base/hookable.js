@@ -58,6 +58,12 @@ class Hookable {
       throw error('INVALID_HOOKS', hooks)
     }
 
+    // - Duplicately set hooks
+    // - Set hooks after get
+    if (this[HOOKS]) {
+      throw error('ERR_SET_HOOKS')
+    }
+
     // TODO: check hooks
     // adds default hooks
     this[HOOKS] = this[EXTEND_HOOKS](hooks)
@@ -66,7 +72,7 @@ class Hookable {
   get hooks () {
     const hooks = this[HOOKS]
     if (!hooks) {
-      throw error('HOOKS_NOT_DEFINED')
+      return this[HOOKS] = this[RESERVED_HOOKS_FACTORY]()
     }
 
     return hooks

@@ -1,7 +1,7 @@
 const delay = require('delay')
 const {SyncHook} = require('tapable')
 
-const {Block} = require('../../src')
+const {Block} = require('../..')
 
 module.exports = class KoaBlock extends Block {
   constructor () {

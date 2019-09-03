@@ -7,7 +7,7 @@ const ERROR_CASES = [
   ['error-config-file-not-absolute', 'PATH_NOT_ABSOLUTE'],
   ['error-number-node-modules', 'INVALID_NODE_PATH'],
   ['error-config-file', 'INVALID_CONFIG_FILE'],
-  ['error-config-errored', 'CONFIG_ERRORED', () => {}]
+  ['error-config-errored', 'ERR_LOAD_CONFIG_FILE', () => {}]
 ]
 
 const CODE = suffix => `CONFIG_LOADER_${suffix}`
