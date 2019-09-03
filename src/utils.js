@@ -97,10 +97,10 @@ const getPkg = cwd => {
     return require(packageFilepath)
   } catch (err) {
     if (err.code === MODULE_NOT_FOUND) {
-      throw error('PKG_NOT_FOUND', cwd)
+      throw error('MIXER_PKG_NOT_FOUND', cwd)
     }
 
-    throw error('LOAD_PKG_FAILED', cwd, err.stack)
+    throw error('MIXER_LOAD_PKG_FAILED', cwd, err.stack)
   }
 }
 

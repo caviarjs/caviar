@@ -9,6 +9,7 @@ const {
   FRIEND_SET_CAVIAR_OPTIONS,
   FRIEND_CREATE,
   FRIEND_RUN,
+  FRIEND_SET_OPTIONS,
 
   createSymbol
 } = require('./constants')
@@ -67,7 +68,7 @@ const getConfig = (loader, key, {
 }
 
 // Returns `false|string`
-const getPhase = (blockPhase, phaseMap = {}) => {
+const getPhase = (blockPhase, phaseMap = {}, name) => {
   const phase = hasOwnProperty(phaseMap, blockPhase)
     // Explicitly defined
     // - map a phase to `false` to disable the block
@@ -78,14 +79,14 @@ const getPhase = (blockPhase, phaseMap = {}) => {
     : blockPhase
 
   if (phase !== false && !isString(phase)) {
-    throw error('INVALID_PHASE', phase)
+    throw error('INVALID_PHASE', phase, name)
   }
 
   return phase
 }
 
 module.exports = class Mixer {
-  constructor ({
+  [FRIEND_SET_OPTIONS] ({
     cwd,
     dev,
     configLoader,
@@ -136,13 +137,13 @@ module.exports = class Mixer {
     namespace,
     configMap,
     phaseMap
-  }, blockPhase) {
+  }, blockPhase, name) {
     const block = new Block()
 
     // Apply proxied hook taps
     this[HOOKS_MANAGER].applyHooks(Block, block.hooks)
 
-    const phase = getPhase(blockPhase, phaseMap)
+    const phase = getPhase(blockPhase, phaseMap, name)
 
     block[FRIEND_SET_CAVIAR_OPTIONS]({
       ...this[CAVIAR_OPTIONS],
@@ -172,7 +173,7 @@ module.exports = class Mixer {
     const blocksMap = Object.create(null)
 
     for (const [name, setting] of Object.entries(this[BLOCKS])) {
-      blocksMap[name] = this[INIT_BLOCK](setting, phase)
+      blocksMap[name] = this[INIT_BLOCK](setting, phase, name)
     }
 
     await this.mix(blocksMap, {

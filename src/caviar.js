@@ -8,6 +8,8 @@ const {
 const CaviarBase = require('./base/caviar')
 const {
   FRIEND_RUN,
+  FRIEND_SET_OPTIONS,
+
   IS_NOT_SANDBOX_PLUGIN,
   IS_CHILD_PROCESS,
 
@@ -49,7 +51,9 @@ module.exports = class Caviar extends CaviarBase {
 
     const Mixer = this._caviarConfig.bailBottom('mixer')
 
-    const mixer = new Mixer({
+    const mixer = new Mixer()
+
+    mixer[FRIEND_SET_OPTIONS]({
       ...this._options,
       configLoader: this._config,
       hooksManager: this._hooksManager

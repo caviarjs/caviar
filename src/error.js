@@ -67,7 +67,8 @@ PREFIX('BLOCK', 'block')
 .E('NOT_IMPLEMENTED', 'method "%s" must be implemented')
 
 PREFIX('MIXER', 'mixer')
-.TE('INVALID_PHASE', '')
+.TE('INVALID_PHASE',
+  'mapped phase in phaseMap should be a string or false for block "%s"')
 
 .E('PKG_NOT_FOUND', 'package.json not found in directory "%s"')
 
