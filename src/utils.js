@@ -10,11 +10,7 @@ const readConfig = configFile => {
   try {
     return require(configFile)
   } catch (err) {
-    if (err.code === MODULE_NOT_FOUND) {
-      throw error('CONFIG_LOADER_CONFIG_FILE_NOT_FOUND', configFile)
-    }
-
-    throw error('CONFIG_LOADER_CONFIG_ERRORED', configFile, err.stack)
+    throw error('CONFIG_LOADER_ERR_LOAD_CONFIG_FILE', configFile, err.stack)
   }
 }
 

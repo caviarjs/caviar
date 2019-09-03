@@ -89,11 +89,9 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 .TE('INVALID_CONFIG_FILE',
   'ConfigLoader::configFile must be a string')
 
-.E('CONFIG_FILE_NOT_FOUND', 'config file "%s" is not found')
-
 .TE('INVALID_PLUGINS', 'config.caviar.plugins in "%s" must be an array')
 
-.E('CONFIG_ERRORED', 'fails to load config file "%s", reason:\n%s')
+.E('ERR_LOAD_CONFIG_FILE', 'fails to load config file "%s", reason:\n%s')
 
 PREFIX('CHILD_PROCESS', 'child-process')
 .E('ERRORED', 'child process encountered an error, reason:\n%s')

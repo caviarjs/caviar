@@ -65,6 +65,8 @@ module.exports = class Caviar extends CaviarBase {
     } catch (err) {
       const hooks = this._hooksManager.getHooks()
       hooks.failed.call(err)
+
+      throw err
     }
   }
 }
