@@ -132,6 +132,7 @@ class Sandbox extends CaviarBase {
         compose: composeEnvs
       }),
 
+      // TODO: removes from core
       // .env file which could be ignored by .gitignore
       this._caviarConfig.compose({
         key: 'dotenvs',

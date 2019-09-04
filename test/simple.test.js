@@ -14,3 +14,16 @@ test('caviar', async t => {
 
   t.pass()
 })
+
+test('caviar with sandbox', async t => {
+  const child = await caviar({
+    configFile,
+    cwd: dirname(configFile),
+    sandbox: true
+  })
+  .run()
+
+  await child.ready()
+
+  t.pass()
+})

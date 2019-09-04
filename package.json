@@ -24,12 +24,14 @@
     "caviar",
     "skeleton",
     "frameworks",
+    "web framework",
     "micro-frontends",
     "frontends",
-    "koa",
-    "roe",
-    "next",
-    "webpack"
+    "config chain",
+    "config layer",
+    "blocks",
+    "BFF",
+    "backend-for-frontend"
   ],
   "engines": {
     "node": ">= 8"
