@@ -23,7 +23,7 @@ module.exports = class Caviar extends CaviarBase {
   constructor (options) {
     super(options, {
       start: new SyncHook(),
-      afterPlugins: new SyncHook(['caviar']),
+      beforeConfig: new SyncHook(),
       done: new AsyncSeriesHook(),
       failed: new SyncHook(['error'])
     })
@@ -44,7 +44,10 @@ module.exports = class Caviar extends CaviarBase {
     this._applyPlugins(IS_NOT_SANDBOX_PLUGIN)
 
     const hooks = this._hooksManager.getHooks()
+
     hooks.start.call()
+
+    hooks.beforeConfig.call()
 
     // We should load configurations after hooks.start
     this._config.load()
