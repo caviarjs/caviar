@@ -1,9 +1,10 @@
+const assert = require('assert')
 const delay = require('delay')
 const {SyncHook} = require('tapable')
 
-const {Block} = require('../..')
+const {Block} = require('../../../..')
 
-module.exports = class KoaBlock extends Block {
+module.exports = class FooBlock extends Block {
   constructor () {
     super()
 
@@ -16,6 +17,10 @@ module.exports = class KoaBlock extends Block {
     this.hooks = {
       a: new SyncHook(['foo'])
     }
+
+    if (process.env.INVALID_PHASES) {
+      this.phases = 1
+    }
   }
 
   create (config) {
@@ -25,6 +30,8 @@ module.exports = class KoaBlock extends Block {
   }
 
   async run ({foo}) {
+    assert(this.created.foo === true, 'block: this.created')
+
     await delay(100)
 
     this.hooks.a.call(foo)

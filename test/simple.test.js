@@ -1,27 +1,17 @@
 const test = require('ava')
-const {dirname} = require('path')
 
-const {caviar} = require('..')
-
-const configFile = require.resolve('./fixtures/simple/config')
+const {create} = require('./fixtures/simple/create')
 
 test('caviar', async t => {
-  await caviar({
-    configFile,
-    cwd: dirname(configFile)
-  })
-  .run()
+  await create()
 
   t.pass()
 })
 
 test('caviar with sandbox', async t => {
-  const child = await caviar({
-    configFile,
-    cwd: dirname(configFile),
+  const child = await create({
     sandbox: true
   })
-  .run()
 
   await child.ready()
 

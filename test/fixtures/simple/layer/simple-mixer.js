@@ -1,12 +1,12 @@
 const assert = require('assert')
 
-const {Mixer} = require('../..')
+const {Mixer} = require('../../../..')
 const FooBlock = require('./foo-block')
 const BarBlock = require('./bar-block')
 
 const SIMPLE_MIXER = 'SimpleMixer'
 
-module.exports = class KoaRouterMixer extends Mixer {
+module.exports = class FooBarMixer extends Mixer {
   constructor () {
     super()
 
@@ -32,7 +32,7 @@ module.exports = class KoaRouterMixer extends Mixer {
     ])
 
     const test = () => {
-      if (tasks.length !== 0) {
+      if (tasks.size !== 0) {
         throw new Error(`tasks ${[...tasks].join(', ')} not run`)
       }
     }

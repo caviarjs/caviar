@@ -81,7 +81,9 @@ module.exports = class CaviarBase {
 
     this._options = {
       cwd,
-      dev
+      dev,
+      preset,
+      configFile
     }
 
     this[IS_CHILD_PROCESS] = !!isChildProcess
@@ -143,7 +145,7 @@ module.exports = class CaviarBase {
 
   // @private
   // Initialize envs which are essential to caviar
-  async [INIT_ENV] (phase) {
+  [INIT_ENV] (phase) {
     // If the caviar instance is inside sandbox,
     // env variables below are already been defined in
     // options.env of the child process

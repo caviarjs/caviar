@@ -88,7 +88,7 @@ const define = (host, key, value, writable = false) =>
 
 const defineWritable = (host, key, value) => define(host, key, value, true)
 
-const defineGetter = (host, key, get) => define(host, key, {get})
+const defineGetter = (host, key, get) => Object.defineProperty(host, key, {get})
 
 const getPkg = cwd => {
   const packageFilepath = path.join(cwd, 'package.json')

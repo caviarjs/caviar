@@ -91,8 +91,6 @@ class Sandbox extends CaviarBase {
 
     this._env = env
     this._stdio = stdio
-
-    this._config.load()
   }
 
   get spawner () {
