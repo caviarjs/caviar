@@ -79,11 +79,17 @@ class Sandbox extends CaviarBase {
     })
 
     const {
-      stdio = 'inherit',
+      env = {},
+      stdio = 'inherit'
     } = options
 
     this[IS_SANDBOX] = true
 
+    if (!isObject(env)) {
+      throw error('INVALID_ENV', env)
+    }
+
+    this._env = env
     this._stdio = stdio
 
     this._config.load()
@@ -124,18 +130,12 @@ class Sandbox extends CaviarBase {
 
     Object.assign(
       options.env,
+      this._env,
 
       // caviar.envs
       // which always included in the repo
       this._caviarConfig.compose({
-        key: 'envs',
-        compose: composeEnvs
-      }),
-
-      // TODO: removes from core
-      // .env file which could be ignored by .gitignore
-      this._caviarConfig.compose({
-        key: 'dotenvs',
+        key: 'env',
         compose: composeEnvs
       })
     )
