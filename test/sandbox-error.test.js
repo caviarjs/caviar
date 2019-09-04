@@ -2,42 +2,33 @@ const test = require('ava')
 
 const {Sandbox} = require('../src/sandbox/parent')
 
-test('invalid options', t => {
-  t.throws(() => new Sandbox(), {
-    code: 'INVALID_OPTIONS'
-  })
-})
-
-test('invalid cwd', t => {
-  t.throws(() => new Sandbox({}), {
-    code: 'INVALID_CWD'
-  })
-})
-
-test('option missing', t => {
-  t.throws(() => new Sandbox({
+const CASES = [
+  ['INVALID_OPTIONS'],
+  ['INVALID_CWD', {}],
+  ['OPTION_MISSING', {
     cwd: 'fake'
-  }), {
-    code: 'OPTION_MISSING'
-  })
-})
-
-test('invalid configFile', t => {
-  t.throws(() => new Sandbox({
+  }],
+  ['INVALID_CONFIG_FILE', {
     cwd: 'fake',
     preset: 'fake',
     configFile: 1
-  }), {
-    code: 'INVALID_CONFIG_FILE'
-  })
-})
-
-test('invalid preset', t => {
-  t.throws(() => new Sandbox({
+  }],
+  ['INVALID_PRESET', {
     cwd: 'fake',
     preset: 1,
     configFile: 'fake'
-  }), {
-    code: 'INVALID_PRESET'
+  }],
+  ['SANDBOX_INVALID_ENV', {
+    cwd: 'fake',
+    configFile: 'fake',
+    env: false
+  }]
+]
+
+CASES.forEach(([code, options]) => {
+  test(code, t => {
+    t.throws(() => new Sandbox(options), {
+      code
+    })
   })
 })

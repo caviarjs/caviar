@@ -21,6 +21,12 @@ const CAVIAR_MESSAGE_COMPLETE = 'caviar:child:complete'
 
 const MODULE_NOT_FOUND = 'MODULE_NOT_FOUND'
 
+const AVAILABLE_CONFIG_GETTER_TYPES = [
+  'compose',
+  'bailTop',
+  'bailBottom'
+]
+
 const NOOP = () => {}
 
 module.exports = {
@@ -49,6 +55,8 @@ module.exports = {
   MODULE_NOT_FOUND,
 
   NOOP,
+
+  AVAILABLE_CONFIG_GETTER_TYPES,
 
   createSymbol
 }

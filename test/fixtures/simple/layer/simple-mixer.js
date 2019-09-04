@@ -6,7 +6,7 @@ const BarBlock = require('./bar-block')
 
 const SIMPLE_MIXER = 'SimpleMixer'
 
-module.exports = class FooBarMixer extends Mixer {
+class FooBarMixer extends Mixer {
   constructor () {
     super()
 
@@ -19,8 +19,10 @@ module.exports = class FooBarMixer extends Mixer {
       }
     }
   }
+}
 
-  mix ({
+if (!process.env.MIXER_NOT_IMPLEMENTED) {
+  FooBarMixer.prototype.mix = function mix ({
     foo,
     bar
   }) {
@@ -62,3 +64,5 @@ module.exports = class FooBarMixer extends Mixer {
     })
   }
 }
+
+module.exports = FooBarMixer

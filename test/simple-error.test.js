@@ -3,7 +3,13 @@ const test = require('ava')
 const {create} = require('./fixtures/simple/create')
 
 const CASES = [
-  ['INVALID_PHASES', 'phases must be array of strings']
+  // process env key, error message
+  ['INVALID_PHASES', 'phases must be array of strings'],
+  ['CREATE_NOT_IMPLEMENTED', 'method "create" must be implemented'],
+  ['RUN_NOT_IMPLEMENTED', 'method "run" must be implemented'],
+  ['MIXER_INVALID_CONFIG_GETTER_TYPE', 'an invalid config getter'],
+  ['MIXER_CONFIG_NOT_OPTIONAL', 'it is not optional'],
+  ['MIXER_NOT_IMPLEMENTED', 'method "mix" must be implemented'],
 ]
 
 const run = async key => {
@@ -44,7 +50,7 @@ CASES.forEach(([key, message]) => {
 
     t.is(error.code, 'CHILD_PROCESS_NONE_ZERO_EXIT_CODE')
 
-    if (stderr.includes(message)) {
+    if (message && stderr.includes(message)) {
       return
     }
 

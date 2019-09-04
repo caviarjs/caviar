@@ -10,6 +10,7 @@ const {
   FRIEND_CREATE,
   FRIEND_RUN,
   FRIEND_SET_OPTIONS,
+  AVAILABLE_CONFIG_GETTER_TYPES,
 
   createSymbol
 } = require('./constants')
@@ -37,19 +38,13 @@ const createConfigMap = configSetting => {
   return map
 }
 
-const AVAILABLE_CONFIG_GETTER_TYPES = [
-  'compose',
-  'bailTop',
-  'bailBottom'
-]
-
 const getConfig = (loader, key, {
   type,
   optional,
   compose
 }) => {
   if (!AVAILABLE_CONFIG_GETTER_TYPES.includes(type)) {
-    throw error('INVALID_CONFIG_GETTER_TYPE')
+    throw error('INVALID_CONFIG_GETTER_TYPE', type)
   }
 
   const config = type === 'compose'
@@ -197,6 +192,6 @@ module.exports = class Mixer {
   }
 
   mix () {
-    throw error('NOT_IMPLEMENTED', '_orchestrate')
+    throw error('NOT_IMPLEMENTED', 'mix')
   }
 }

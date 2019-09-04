@@ -2,6 +2,10 @@ const {
   Errors
 } = require('err-object')
 
+const {
+  AVAILABLE_CONFIG_GETTER_TYPES
+} = require('./constants')
+
 const {E, error} = new Errors({
   filterStackSources: [
     __filename
@@ -61,6 +65,9 @@ PREFIX()
 
 .E('LOAD_PRESET_FAILS', 'fails to load preset "%s", reason:\n%s')
 
+PREFIX('SANDBOX', 'sandbox')
+.TE('INVALID_ENV', 'options.env must be an object if specified')
+
 PREFIX('BLOCK', 'block')
 .TE('INVALID_PHASES', 'phases must be array of strings')
 
@@ -73,6 +80,16 @@ PREFIX('MIXER', 'mixer')
 .E('PKG_NOT_FOUND', 'package.json not found in directory "%s"')
 
 .E('LOAD_PKG_FAILED', 'fails to load package.json in directory "%s": "%s"')
+
+.E('INVALID_CONFIG_GETTER_TYPE',
+  `"%s" is an invalid config getter type which should be one of:
+${AVAILABLE_CONFIG_GETTER_TYPES.map(type => `  - ${type}`).join('\n')}`,
+  RangeError)
+
+.E('CONFIG_NOT_OPTIONAL',
+  'config "%s" should be specified in at least one config layer for it is not optional')
+
+.E('NOT_IMPLEMENTED', 'method "%s" must be implemented')
 
 PREFIX('CONFIG_LOADER', 'config-loader')
 .TE('INVALID_NODE_PATH',
