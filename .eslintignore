@@ -7,3 +7,4 @@ test/fixtures
 error-pkg
 
 no-track
+*.no-track.js

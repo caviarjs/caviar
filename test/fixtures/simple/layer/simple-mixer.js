@@ -62,6 +62,16 @@ if (!process.env.MIXER_NOT_IMPLEMENTED) {
         test()
       }, 200)
     })
+
+    if (process.env.TEST_SANDBOX_PLUGIN) {
+      if (process.env.CAVIAR_SANDBOX !== 'inner') {
+        throw new Error(`process.env.CAVIAR_SANDBOX not match, got "${process.env.CAVIAR_SANDBOX}"`)
+      }
+
+      if (process.env.SANDBOX_PLUGIN_ENV !== 'YES-GREAT') {
+        throw new Error(`sandbox plugin env not match, got "${process.env.SANDBOX_PLUGIN_ENV}"`)
+      }
+    }
   }
 }
 

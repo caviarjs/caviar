@@ -10,9 +10,9 @@ const {createError} = require('../error')
 const {joinEnvPaths} = require('../utils')
 const CaviarBase = require('../base/caviar')
 const {
+  UNDEFINED,
   IS_SANDBOX_PLUGIN,
-  IS_SANDBOX,
-  UNDEFINED
+  IS_SANDBOX
 } = require('../constants')
 const {fork} = require('./process')
 

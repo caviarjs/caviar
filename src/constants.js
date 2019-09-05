@@ -21,6 +21,9 @@ const CAVIAR_MESSAGE_COMPLETE = 'caviar:child:complete'
 
 const MODULE_NOT_FOUND = 'MODULE_NOT_FOUND'
 
+const SANDBOX_OUTER = 'outer'
+const SANDBOX_INNER = 'inner'
+
 const AVAILABLE_CONFIG_GETTER_TYPES = [
   'compose',
   'bailTop',
@@ -32,9 +35,14 @@ const NOOP = () => {}
 module.exports = {
   // UNDEFINED: undefined,
 
-  RETURNS_TRUE: () => true,
   IS_SANDBOX_PLUGIN: ({sandbox}) => sandbox === true,
-  IS_NOT_SANDBOX_PLUGIN: ({sandbox}) => sandbox !== true,
+  CREATE_PLUGIN_FILTER: isChildProcess => ({sandbox}) =>
+    // If is in caviar child process,
+    // then both sandbox plugin and non-sandbox plugin are ok
+    isChildProcess
+    // Or we do not allow sandbox plugin
+    || sandbox !== true,
+
   PHASE_DEFAULT: 'default',
 
   FRIEND_GET_CONFIG_SETTING,
@@ -55,6 +63,9 @@ module.exports = {
   MODULE_NOT_FOUND,
 
   NOOP,
+
+  SANDBOX_OUTER,
+  SANDBOX_INNER,
 
   AVAILABLE_CONFIG_GETTER_TYPES,
 

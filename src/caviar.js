@@ -10,7 +10,7 @@ const {
   FRIEND_RUN,
   FRIEND_SET_OPTIONS,
 
-  IS_NOT_SANDBOX_PLUGIN,
+  CREATE_PLUGIN_FILTER,
   IS_CHILD_PROCESS,
 
   createSymbol
@@ -41,16 +41,15 @@ module.exports = class Caviar extends CaviarBase {
   }
 
   async [RUN] (phase) {
-    this._applyPlugins(IS_NOT_SANDBOX_PLUGIN)
+    // If wanna to change process.env before loading configFile,
+    // you need to enable caviar sandbox and apply a sandbox plugin to do this
+    this._config.load()
+
+    this._applyPlugins(CREATE_PLUGIN_FILTER(this[IS_CHILD_PROCESS]))
 
     const hooks = this._hooksManager.getHooks()
-
-    hooks.start.call()
-
     hooks.beforeConfig.call()
-
-    // We should load configurations after hooks.start
-    this._config.load()
+    hooks.start.call()
 
     const Mixer = this._caviarConfig.bailBottom('mixer')
 

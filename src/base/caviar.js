@@ -2,11 +2,12 @@ const {isArray, isString, isObject} = require('core-util-is')
 const {resolve} = require('path')
 
 const {
-  RETURNS_TRUE,
   PHASE_DEFAULT,
   IS_CHILD_PROCESS,
   IS_SANDBOX,
   CAVIAR_MESSAGE_COMPLETE,
+  SANDBOX_OUTER,
+  SANDBOX_INNER,
 
   createSymbol
 } = require('../constants')
@@ -113,7 +114,7 @@ module.exports = class CaviarBase {
   // Apply caviar plugins
   // - condition `Function(plugin): boolean` tester to determine
   //     whether the plugin should be applied
-  _applyPlugins (condition = RETURNS_TRUE) {
+  _applyPlugins (condition) {
     const plugins = this._caviarConfig.compose({
       key: 'plugins',
       compose: composePlugins
@@ -146,10 +147,17 @@ module.exports = class CaviarBase {
   // @private
   // Initialize envs which are essential to caviar
   [INIT_ENV] (phase) {
+    if (this[IS_SANDBOX]) {
+      // The outer side of the sandbox
+      process.env.CAVIAR_SANDBOX = SANDBOX_OUTER
+    }
+
     // If the caviar instance is inside sandbox,
     // env variables below are already been defined in
     // options.env of the child process
     if (this[IS_CHILD_PROCESS]) {
+      // Mark as inside the sandbox
+      process.env.CAVIAR_SANDBOX = SANDBOX_INNER
       return
     }
 
