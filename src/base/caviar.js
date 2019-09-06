@@ -1,7 +1,11 @@
-const {isArray, isString, isObject} = require('core-util-is')
+const {
+  isArray, isString, isObject, isFunction
+} = require('core-util-is')
 const {resolve} = require('path')
 
 const {
+  RETURN_TRUE,
+
   PHASE_DEFAULT,
   IS_CHILD_PROCESS,
   IS_SANDBOX,
@@ -13,7 +17,9 @@ const {
 } = require('../constants')
 const {
   requirePreset,
-  isSubClass
+  isSubClass,
+  checkPlugin,
+  createPluginCondition
 } = require('../utils')
 const {HooksManager, Hookable} = require('../base/hookable')
 const {createConfigLoaderClass} = require('../config/create')
@@ -42,6 +48,47 @@ const composePlugins = ({
   }
 
   return prev.concat(anchor)
+}
+
+const normalizeFactory = rawFactory => {
+  if (isFunction(rawFactory)) {
+    return rawFactory
+  }
+
+  checkPlugin(rawFactory)
+
+  // Always normalize a plugin to a plugin factory
+  return () => rawFactory
+}
+
+const normalizeCondition = (rawCondition = RETURN_TRUE) => {
+  if (isFunction(rawCondition)) {
+    return rawCondition
+  }
+
+  if (!isObject(rawCondition)) {
+    throw error('CONFIG_LOADER_INVALID_PLUGIN_CONDITION', rawCondition)
+  }
+
+  return createPluginCondition(rawCondition)
+}
+
+// Plugin
+// [Plugin | pluginFactory, conditionObject | conditionFactory]
+const normalizePlugin = plugin => {
+  if (!isArray(plugin)) {
+    plugin = [plugin]
+  }
+
+  const [
+    rawFactory,
+    rawCondition
+  ] = plugin
+
+  return [
+    normalizeFactory(rawFactory),
+    normalizeCondition(rawCondition)
+  ]
 }
 
 module.exports = class CaviarBase {
@@ -112,9 +159,15 @@ module.exports = class CaviarBase {
 
   // @protected
   // Apply caviar plugins
-  // - condition `Function(plugin): boolean` tester to determine
+  // - pluginCondition `Function(plugin): boolean` tester to determine
   //     whether the plugin should be applied
-  _applyPlugins (condition) {
+  // ```
+  // interface Plugin {
+  //   sandbox?: boolean
+  //   apply: Function (getHooks: Function)
+  // }
+  // ```
+  _applyPlugins (pluginCondition) {
     const plugins = this._caviarConfig.compose({
       key: 'plugins',
       compose: composePlugins
@@ -124,8 +177,20 @@ module.exports = class CaviarBase {
     const {getHooks} = hooksManager
 
     plugins
-    .filter(condition)
-    .forEach(plugin => {
+    .forEach(rawPlugin => {
+      const [pluginFactory, condition] = normalizePlugin(rawPlugin)
+
+      if (!condition()) {
+        return
+      }
+
+      const plugin = pluginFactory()
+      checkPlugin(plugin)
+
+      if (!pluginCondition(plugin)) {
+        return
+      }
+
       const {
         constructor,
         hooks

@@ -109,6 +109,12 @@ PREFIX('CONFIG_LOADER', 'config-loader')
 
 .TE('INVALID_PLUGINS', 'config.caviar.plugins in "%s" must be an array')
 
+.E('INVALID_PLUGIN',
+  'a plugin must be an object with a method named "apply"', TypeError)
+
+.TE('INVALID_PLUGIN_CONDITION',
+  'plugin condition should either be an object or a function')
+
 .E('ERR_LOAD_CONFIG_FILE', 'fails to load config file "%s", reason:\n%s')
 
 PREFIX('CHILD_PROCESS', 'child-process')

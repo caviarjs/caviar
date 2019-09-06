@@ -10,6 +10,7 @@ const CASES = [
   ['MIXER_INVALID_CONFIG_GETTER_TYPE', 'an invalid config getter'],
   ['MIXER_CONFIG_NOT_OPTIONAL', 'it is not optional'],
   ['MIXER_NOT_IMPLEMENTED', 'method "mix" must be implemented'],
+  ['CONFIG_LOADER_INVALID_PLUGIN', 'a plugin must be an object']
 ]
 
 const run = async key => {

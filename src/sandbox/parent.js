@@ -7,11 +7,12 @@ const {
 const {isObject} = require('core-util-is')
 
 const {createError} = require('../error')
-const {joinEnvPaths} = require('../utils')
+const {
+  joinEnvPaths, isSandboxPlugin
+} = require('../utils')
 const CaviarBase = require('../base/caviar')
 const {
   UNDEFINED,
-  IS_SANDBOX_PLUGIN,
   IS_SANDBOX
 } = require('../constants')
 const {fork} = require('./process')
@@ -114,7 +115,7 @@ class Sandbox extends CaviarBase {
       ...this._config.getNodePaths()
     )
 
-    this._applyPlugins(IS_SANDBOX_PLUGIN)
+    this._applyPlugins(isSandboxPlugin)
 
     const sandbox = {
       inheritEnv: createInheritEnv(setEnv, true),

@@ -35,13 +35,7 @@ const NOOP = () => {}
 module.exports = {
   // UNDEFINED: undefined,
 
-  IS_SANDBOX_PLUGIN: ({sandbox}) => sandbox === true,
-  CREATE_PLUGIN_FILTER: isChildProcess => ({sandbox}) =>
-    // If is in caviar child process,
-    // then both sandbox plugin and non-sandbox plugin are ok
-    isChildProcess
-    // Or we do not allow sandbox plugin
-    || sandbox !== true,
+  RETURN_TRUE: () => true,
 
   PHASE_DEFAULT: 'default',
 

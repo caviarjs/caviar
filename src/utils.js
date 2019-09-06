@@ -1,6 +1,8 @@
 const path = require('path')
 const util = require('util')
-const {isString, isArray} = require('core-util-is')
+const {
+  isString, isArray, isObject, isFunction
+} = require('core-util-is')
 const resolveFrom = require('resolve-from')
 
 const {error} = require('./error')
@@ -122,6 +124,36 @@ const once = (...fns) => {
   return ret
 }
 
+const checkPlugin = plugin => {
+  if (isObject(plugin) && isFunction(plugin.apply)) {
+    return plugin
+  }
+
+  throw error('CONFIG_LOADER_INVALID_PLUGIN')
+}
+
+const isSandboxPlugin = ({sandbox}) => sandbox === true
+
+const createPluginFilter = isChildProcess => ({sandbox}) =>
+  // If is in caviar child process,
+  // then both sandbox plugin and non-sandbox plugin are ok
+  isChildProcess
+  // Or we do not allow sandbox plugin
+  || sandbox !== true
+
+const createPluginCondition = ({
+  sandbox,
+  phase
+}) => () => (
+  // if sandbox is not true, then we'll create the plugin
+  sandbox !== true
+  // Or, only create the plugin when work with sandbox
+  || process.env.CAVIAR_SANDBOX
+) && (
+  !phase
+  || process.env.CAVIAR_PHASE === phase
+)
+
 module.exports = {
   getRawConfig,
   inspect,
@@ -134,5 +166,9 @@ module.exports = {
   defineWritable,
   defineGetter,
   getPkg,
-  once
+  once,
+  checkPlugin,
+  isSandboxPlugin,
+  createPluginFilter,
+  createPluginCondition
 }

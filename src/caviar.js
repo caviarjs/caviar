@@ -3,14 +3,14 @@ const {
   AsyncSeriesHook
 } = require('tapable')
 const {
-  joinEnvPaths
+  joinEnvPaths,
+  createPluginFilter
 } = require('./utils')
 const CaviarBase = require('./base/caviar')
 const {
   FRIEND_RUN,
   FRIEND_SET_OPTIONS,
 
-  CREATE_PLUGIN_FILTER,
   IS_CHILD_PROCESS,
 
   createSymbol
@@ -45,7 +45,7 @@ module.exports = class Caviar extends CaviarBase {
     // you need to enable caviar sandbox and apply a sandbox plugin to do this
     this._config.load()
 
-    this._applyPlugins(CREATE_PLUGIN_FILTER(this[IS_CHILD_PROCESS]))
+    this._applyPlugins(createPluginFilter(this[IS_CHILD_PROCESS]))
 
     const hooks = this._hooksManager.getHooks()
     hooks.beforeConfig.call()
