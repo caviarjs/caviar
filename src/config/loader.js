@@ -23,7 +23,7 @@ const checkNodePath = p => {
   return p
 }
 
-const createRealPath = name => path => {
+const createRealPath = (name, required) => path => {
   if (!isAbsolute(path)) {
     throw error('PATH_NOT_ABSOLUTE', name, path)
   }
@@ -31,12 +31,16 @@ const createRealPath = name => path => {
   try {
     return realpathSync(path)
   } catch (err) {
-    throw error('PATH_NOT_FOUND', name, path, err.stack)
+    if (required) {
+      throw error('PATH_NOT_FOUND', name, path, err.stack)
+    }
+
+    return UNDEFINED
   }
 }
 
 const realNodePath = createRealPath('nodePath')
-const realConfigFile = createRealPath('configFile')
+const realConfigFile = createRealPath('configFile', true)
 
 class ConfigLoader extends ConfigGetter {
   constructor () {
