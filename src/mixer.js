@@ -74,7 +74,7 @@ const getPhase = (blockPhase, phaseMap = {}, name) => {
     : blockPhase
 
   if (phase !== false && !isString(phase)) {
-    throw error('INVALID_PHASE', phase, name)
+    throw error('INVALID_PHASE', name, phase)
   }
 
   return phase

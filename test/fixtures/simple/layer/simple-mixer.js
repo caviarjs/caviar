@@ -10,9 +10,16 @@ class FooBarMixer extends Mixer {
   constructor () {
     super()
 
+    const phaseMap = {}
+
+    if (process.env.MIXER_INVALID_PHASE) {
+      phaseMap.default = 1
+    }
+
     this.blocks = {
       foo: {
-        from: FooBlock
+        from: FooBlock,
+        phaseMap
       },
       bar: {
         from: BarBlock

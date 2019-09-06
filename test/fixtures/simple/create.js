@@ -8,8 +8,13 @@ const create = (rawOptions = {}) => {
     ...options
   } = rawOptions
 
-  options.cwd = __dirname
-  options.configFile = configFile
+  if (!options.cwd) {
+    options.cwd = __dirname
+  }
+
+  if (!options.configFile) {
+    options.configFile = configFile
+  }
 
   const {
     sandbox

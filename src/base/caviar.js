@@ -92,7 +92,7 @@ const normalizePlugin = plugin => {
 }
 
 module.exports = class CaviarBase {
-  constructor (options, hooks = {}) {
+  constructor (options, hooks) {
     if (!isObject(options)) {
       throw error('INVALID_OPTIONS', options)
     }

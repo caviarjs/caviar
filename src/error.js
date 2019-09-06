@@ -126,6 +126,19 @@ PREFIX('CHILD_PROCESS', 'child-process')
 
 .E('UNEXPECTED_CLOSE', 'child process closed unexpectedly')
 
+PREFIX('HOOKABLE', 'hookable')
+.E('RESERVED_HOOK_NAME', '"%s" is a reserved hook name', RangeError)
+
+.TE('INVALID_HOOKS', 'hooks must be an object')
+
+.E('ERR_SET_HOOKS', 'setting hooks more than once or after get is not allowed')
+
+.TE('NO_CLASS', 'the target getHooks from must be a constructor')
+
+.E('NOT_HOOKABLE',
+  'the target getHooks from must extend Hookable, caviar.Plugin for example',
+  TypeError)
+
 const createError = pre =>
   (code, ...args) => error(`${pre}_${code}`, ...args)
 

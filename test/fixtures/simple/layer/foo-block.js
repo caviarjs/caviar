@@ -24,8 +24,22 @@ class FooBlock extends Block {
 
     this.config = config
 
-    this.hooks = {
+    const hooks = {
       a: new SyncHook(['foo'])
+    }
+
+    if (process.env.HOOKABLE_RESERVED_HOOK_NAME) {
+      hooks.created = new SyncHook()
+    }
+
+    if (process.env.HOOKABLE_INVALID_HOOKS) {
+      this.hooks = 1
+    } else {
+      this.hooks = hooks
+    }
+
+    if (process.env.HOOKABLE_ERR_SET_HOOKS) {
+      this.hooks = hooks
     }
 
     if (process.env.INVALID_PHASES) {

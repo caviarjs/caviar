@@ -1,4 +1,5 @@
 const test = require('ava')
+const {join} = require('path')
 
 const {Sandbox} = require('../src/sandbox/parent')
 
@@ -17,6 +18,14 @@ const CASES = [
     cwd: 'fake',
     preset: 1,
     configFile: 'fake'
+  }],
+  ['PRESET_NOT_FOUND', {
+    cwd: 'fake',
+    preset: 'fake'
+  }],
+  ['LOAD_PRESET_FAILS', {
+    cwd: 'fake',
+    preset: join(__dirname, 'fixtures', 'simple', 'preset')
   }],
   ['SANDBOX_INVALID_ENV', {
     cwd: 'fake',

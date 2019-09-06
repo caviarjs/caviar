@@ -34,19 +34,32 @@ if (process.env.TEST_SANDBOX_PLUGIN_VARIES) {
     process.env.TEST_SANDBOX_PLUGIN_CONDITION_FACTORY
       ? () => process.env.CAVIAR_SANDBOX
       : {
-        sandbox: true
+        sandbox: true,
+        phase: 'default'
       }
   ])
 } else if (process.env.CONFIG_LOADER_INVALID_PLUGIN) {
   plugins.push(null)
+} else if (process.env.CONFIG_LOADER_INVALID_PLUGIN_CONDITION) {
+  plugins.push([() => {}, 1])
 } else {
   plugins.push(plugin)
+}
+
+if (process.env.HOOKABLE_NO_CLASS) {
+  plugins.push(require('./gethooks-wrong-type'))
+}
+
+if (process.env.HOOKABLE_NOT_HOOKABLE) {
+  plugins.push(require('./gethooks-no-hookable'))
 }
 
 module.exports = {
   caviar: {
     mixer: require('./layer/simple-mixer'),
-    plugins
+    plugins: process.env.CONFIG_LOADER_INVALID_PLUGINS
+      ? 1
+      : plugins
   },
 
   foo: 'foo',
