@@ -2,7 +2,7 @@ const {caviar} = require('../../..')
 
 const configFile = require.resolve('./config')
 
-const create = (rawOptions = {}) => {
+const create = (rawOptions = {}, phase = 'default') => {
   const {
     env,
     ...options
@@ -26,7 +26,7 @@ const create = (rawOptions = {}) => {
     Object.assign(process.env, env)
   }
 
-  return caviar(options).run()
+  return caviar(options).run(phase)
 }
 
 module.exports = {

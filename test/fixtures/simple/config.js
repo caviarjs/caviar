@@ -59,7 +59,10 @@ module.exports = {
     mixer: require('./layer/simple-mixer'),
     plugins: process.env.CONFIG_LOADER_INVALID_PLUGINS
       ? 1
-      : plugins
+      : plugins,
+    env: {
+      CAVIAR_ENV_FOO: 'foo'
+    }
   },
 
   foo: 'foo',

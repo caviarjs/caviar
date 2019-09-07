@@ -2,10 +2,7 @@ const {
   SyncHook,
   AsyncSeriesHook
 } = require('tapable')
-const {
-  joinEnvPaths,
-  createPluginFilter
-} = require('./utils')
+const {createPluginFilter} = require('./utils')
 const CaviarBase = require('./base/caviar')
 const {
   FRIEND_RUN,
@@ -16,7 +13,6 @@ const {
   createSymbol
 } = require('./constants')
 
-const APPLY_NODE_PATHS = createSymbol('apply-node-paths')
 const RUN = createSymbol('run')
 
 module.exports = class Caviar extends CaviarBase {
@@ -28,16 +24,7 @@ module.exports = class Caviar extends CaviarBase {
       failed: new SyncHook(['error'])
     })
 
-    // Apply NODE_PATH before configLoader.load
-    if (!this[IS_CHILD_PROCESS]) {
-      // If caviar is runned without sandbox
-      this[APPLY_NODE_PATHS]()
-    }
-  }
-
-  [APPLY_NODE_PATHS] () {
-    const {NODE_PATH} = process.env
-    process.env.NODE_PATH = joinEnvPaths(NODE_PATH, this._config.getNodePaths())
+    this._applyNodePaths(process.env)
   }
 
   async [RUN] (phase) {
@@ -45,14 +32,16 @@ module.exports = class Caviar extends CaviarBase {
     // you need to enable caviar sandbox and apply a sandbox plugin to do this
     this._config.load()
 
+    this._applyCaviarEnv(process.env)
+
     this._applyPlugins(createPluginFilter(this[IS_CHILD_PROCESS]))
 
     const hooks = this._hooksManager.getHooks()
+
     hooks.beforeConfig.call()
     hooks.start.call()
 
     const Mixer = this._caviarConfig.bailBottom('mixer')
-
     const mixer = new Mixer()
 
     mixer[FRIEND_SET_OPTIONS]({

@@ -171,7 +171,11 @@ module.exports = class Mixer {
       blocksMap[name] = this[INIT_BLOCK](setting, phase, name)
     }
 
-    await this.mix(blocksMap, {
+    // The `mixPromise` might depend on hooks invocations created by
+    // - block[FRIEND_CREATE]()
+    // - block[FRIEND_RUN]()
+    // so, DO NOT `await mixPromise` here
+    const mixPromise = this.mix(blocksMap, {
       ...this[CAVIAR_OPTIONS],
       phase
     })
@@ -183,7 +187,8 @@ module.exports = class Mixer {
 
     // We iterate `blocks` again
     // to make sure each `hooks.created` has been executed
-    const tasks = []
+    const tasks = [mixPromise]
+
     for (const block of blocks) {
       tasks.push(block[FRIEND_RUN]())
     }

@@ -44,6 +44,8 @@ class FooBlock extends Block {
 
     if (process.env.INVALID_PHASES) {
       this.phases = 1
+    } else if (process.env.TEST_BLOCK_PHASES) {
+      this.phases = ['build']
     } else {
       this.phases = ['default']
     }

@@ -29,7 +29,7 @@ class FooBarMixer extends Mixer {
 }
 
 if (!process.env.MIXER_NOT_IMPLEMENTED) {
-  FooBarMixer.prototype.mix = function mix ({
+  FooBarMixer.prototype.mix = async function mix ({
     foo,
     bar
   }) {
@@ -40,11 +40,26 @@ if (!process.env.MIXER_NOT_IMPLEMENTED) {
       'bar-run'
     ])
 
-    const test = () => {
+    let resolve
+
+    const test = new Promise(r => {
+      resolve = r
+    }).then(() => {
+      if (process.env.TEST_BLOCK_PHASES) {
+        if (!(
+          tasks.size === 2
+          && tasks.has('foo-create')
+          && tasks.has('foo-run')
+        )) {
+          throw error('test for TEST_BLOCK_PHASES fails')
+        }
+        return
+      }
+
       if (tasks.size !== 0) {
         throw new Error(`tasks ${[...tasks].join(', ')} not run`)
       }
-    }
+    })
 
     foo.hooks.created.tap(SIMPLE_MIXER, created => {
       tasks.delete('foo-create')
@@ -66,7 +81,7 @@ if (!process.env.MIXER_NOT_IMPLEMENTED) {
       assert(ret.bar === 'bar', 'run.bar')
 
       setTimeout(() => {
-        test()
+        resolve()
       }, 200)
     })
 
@@ -79,6 +94,12 @@ if (!process.env.MIXER_NOT_IMPLEMENTED) {
         throw new Error(`sandbox plugin env not match, got "${process.env.SANDBOX_PLUGIN_ENV}"`)
       }
     }
+
+    if (process.env.CAVIAR_ENV_FOO !== 'foo') {
+      throw new Error(`process.env.CAVIAR_ENV_FOO not match, got "${process.env.CAVIAR_ENV_FOO}"`)
+    }
+
+    await test
   }
 }
 

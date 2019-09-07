@@ -8,11 +8,10 @@ const {isObject} = require('core-util-is')
 
 const {createError} = require('../error')
 const {
-  joinEnvPaths, isSandboxPlugin
+  isSandboxPlugin
 } = require('../utils')
 const CaviarBase = require('../base/caviar')
 const {
-  UNDEFINED,
   IS_SANDBOX
 } = require('../constants')
 const {fork} = require('./process')
@@ -58,18 +57,6 @@ const ensureEnv = inheritEnv => {
   ESSENTIAL_ENV_KEYS.forEach(inheritEnv)
 }
 
-const composeEnvs = ({
-  prev,
-  anchor
-}) => isObject(prev)
-  ? {
-    ...prev,
-    ...anchor
-  }
-  : isObject(anchor)
-    ? anchor
-    : UNDEFINED
-
 // Sandbox is a special block that
 // Sanitize and inject new environment variables into
 // the child process
@@ -109,11 +96,7 @@ class Sandbox extends CaviarBase {
 
     ensureEnv(justInheritEnv)
 
-    // TODO: a better solution than NODE_PATH
-    options.env.NODE_PATH = joinEnvPaths(
-      process.env.NODE_PATH,
-      ...this._config.getNodePaths()
-    )
+    this._applyNodePaths(options.env)
 
     this._applyPlugins(isSandboxPlugin)
 
@@ -127,17 +110,9 @@ class Sandbox extends CaviarBase {
     // Apply sandbox env plugins
     await hooks.sandboxEnvironment.promise(sandbox, this._options)
 
-    Object.assign(
-      options.env,
-      this._env,
+    Object.assign(options.env, this._env)
 
-      // caviar.envs
-      // which always included in the repo
-      this._caviarConfig.compose({
-        key: 'env',
-        compose: composeEnvs
-      })
-    )
+    this._applyCaviarEnv(options.env)
 
     log('spawn: %s %j', command, args)
 
@@ -182,6 +157,5 @@ class Sandbox extends CaviarBase {
 }
 
 module.exports = {
-  Sandbox,
-  composeEnvs
+  Sandbox
 }

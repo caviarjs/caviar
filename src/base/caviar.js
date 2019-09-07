@@ -19,7 +19,9 @@ const {
   requirePreset,
   isSubClass,
   checkPlugin,
-  createPluginCondition
+  createPluginCondition,
+  joinEnvPaths,
+  composeEnvs
 } = require('../utils')
 const {HooksManager, Hookable} = require('../base/hookable')
 const {createConfigLoaderClass} = require('../config/create')
@@ -155,6 +157,38 @@ module.exports = class CaviarBase {
     const Extended = createConfigLoaderClass(PresetClass, configFile)
 
     return new Extended()
+  }
+
+  // This method could be called before `this._config.load()`
+  _applyNodePaths (target) {
+    if (this[IS_CHILD_PROCESS]) {
+      // If caviar is runned with sandbox,
+      // NODE_PATH has been already handled by outer sandbox
+      return
+    }
+
+    target.NODE_PATH = joinEnvPaths(
+      process.env.NODE_PATH,
+      ...this._config.getNodePaths()
+    )
+  }
+
+  // This method should be called after `this._config.load()`
+  _applyCaviarEnv (target) {
+    if (this[IS_CHILD_PROCESS]) {
+      return
+    }
+
+    Object.assign(
+      target,
+
+      // caviar.env
+      // which always included in the repo
+      this._caviarConfig.compose({
+        key: 'env',
+        compose: composeEnvs
+      })
+    )
   }
 
   // @protected

@@ -1,6 +1,6 @@
 const test = require('ava')
 // const log = require('util').debuglog('caviar')
-const {composeEnvs} = require('../src/sandbox/parent')
+const {composeEnvs} = require('../src/utils')
 
 const {
   fixture, create, createAndLoad

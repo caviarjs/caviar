@@ -8,6 +8,8 @@ const resolveFrom = require('resolve-from')
 const {error} = require('./error')
 const {MODULE_NOT_FOUND} = require('./constants')
 
+const UNDEFINED = undefined
+
 const readConfig = configFile => {
   try {
     return require(configFile)
@@ -154,7 +156,20 @@ const createPluginCondition = ({
   || process.env.CAVIAR_PHASE === phase
 )
 
+const composeEnvs = ({
+  prev,
+  anchor
+}) => isObject(prev)
+  ? {
+    ...prev,
+    ...anchor
+  }
+  : isObject(anchor)
+    ? anchor
+    : UNDEFINED
+
 module.exports = {
+  UNDEFINED,
   getRawConfig,
   inspect,
   requireModule,
@@ -170,5 +185,6 @@ module.exports = {
   checkPlugin,
   isSandboxPlugin,
   createPluginFilter,
-  createPluginCondition
+  createPluginCondition,
+  composeEnvs
 }
