@@ -4,6 +4,7 @@ const {
   isString, isArray, isObject, isFunction
 } = require('core-util-is')
 const resolveFrom = require('resolve-from')
+const {requireModule} = require('require-esmodule')
 
 const {error} = require('./error')
 const {MODULE_NOT_FOUND} = require('./constants')
@@ -37,11 +38,6 @@ const inspect = object => util.inspect(object, {
   colors: true,
   depth: 3
 })
-
-const requireModule = name => {
-  const module = require(name)
-  return module.default || module
-}
 
 const requirePreset = (from, preset) => {
   if (!preset) {
@@ -172,7 +168,6 @@ module.exports = {
   UNDEFINED,
   getRawConfig,
   inspect,
-  requireModule,
   requirePreset,
   joinEnvPaths,
   isSubClass,

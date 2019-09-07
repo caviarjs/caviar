@@ -1,6 +1,5 @@
 const ConfigLoader = require('./config/loader')
 const {monitor} = require('./sandbox/process')
-const {requireModule} = require('./utils')
 const {Block} = require('./block')
 const Mixer = require('./mixer')
 const Plugin = require('./plugin')
@@ -19,9 +18,6 @@ module.exports = {
   Mixer,
   Plugin,
   ConfigLoader,
-  utils: {
-    monitor,
-    requireModule
-  },
+  monitor,
   version
 }

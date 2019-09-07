@@ -5,10 +5,8 @@ const {
   Sandbox: S
 } = require('../src/sandbox/parent')
 const {
-  utils: {
-    monitor
-  }
-} = require('../src')
+  monitor
+} = require('..')
 
 const fixture = (...args) =>
   path.join(__dirname, 'fixtures', 'sandbox', ...args)
