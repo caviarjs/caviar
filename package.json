@@ -4,7 +4,7 @@
   "description": "A pluggable and extendable web framework which integrates React, Next and Koa to create your own web application out of the box with even zero configuration",
   "main": "src/index.js",
   "scripts": {
-    "test:only": "NODE_DEBUG=caviar nyc ava --timeout=30s --verbose",
+    "test:only": "nyc ava --timeout=30s --verbose",
     "test": "npm run test:only",
     "test:dev": "npm run test:only && npm run report:dev && rm -rf node_modules/.cache",
     "lint": "eslint .",

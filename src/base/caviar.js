@@ -1,14 +1,13 @@
 const {
   isArray, isString, isObject, isFunction
 } = require('core-util-is')
-const {resolve} = require('path')
 
 const {
   RETURN_TRUE,
 
   PHASE_DEFAULT,
-  IS_CHILD_PROCESS,
   IS_SANDBOX,
+  IS_CHILD_PROCESS,
   CAVIAR_MESSAGE_COMPLETE,
   SANDBOX_OUTER,
   SANDBOX_INNER,
@@ -16,7 +15,6 @@ const {
   createSymbol
 } = require('../constants')
 const {
-  requirePreset,
   isSubClass,
   checkPlugin,
   createPluginCondition,
@@ -24,7 +22,6 @@ const {
   composeEnvs
 } = require('../utils')
 const {HooksManager, Hookable} = require('../base/hookable')
-const {createConfigLoaderClass} = require('../config/create')
 const {error} = require('../error')
 
 // Symbol in constants.js -> friend method
@@ -35,8 +32,6 @@ const {error} = require('../error')
 // We create symbols for private method keys,
 // in the future we could use `#hooks` if we target caviar to node >= 12
 const HOOKS = createSymbol('hooks')
-const INIT_HOOKS_MANAGER = createSymbol('init-hooks-manager')
-const CREATE_CONFIG_LOADER = createSymbol('create-config-loader')
 const INIT_ENV = createSymbol('init-env')
 
 const composePlugins = ({
@@ -95,68 +90,22 @@ const normalizePlugin = plugin => {
 
 module.exports = class CaviarBase {
   constructor (options, hooks) {
-    if (!isObject(options)) {
-      throw error('INVALID_OPTIONS', options)
-    }
-
-    let {
-      cwd,
-      dev
-    } = options
-
-    if (!isString(cwd)) {
-      throw error('INVALID_CWD', cwd)
-    }
-
     const {
-      preset,
-      configFile,
-      [IS_CHILD_PROCESS]: isChildProcess
+      cwd,
+      dev,
+      configLoader
     } = options
-
-    if (!configFile && !preset) {
-      throw error('OPTION_MISSING')
-    }
-
-    if (configFile && !isString(configFile)) {
-      throw error('INVALID_CONFIG_FILE', configFile)
-    }
-
-    if (preset && !isString(preset)) {
-      throw error('INVALID_PRESET', preset)
-    }
-
-    cwd = resolve(cwd)
-    dev = !!dev
 
     this._options = {
       cwd,
-      dev,
-      preset,
-      configFile
+      dev
     }
 
-    this[IS_CHILD_PROCESS] = !!isChildProcess
+    this._config = configLoader
+    this._caviarConfig = configLoader.namespace('caviar')
 
     this[HOOKS] = hooks
-
-    this._config = this[CREATE_CONFIG_LOADER](preset, configFile)
-    this._caviarConfig = this._config.namespace('caviar')
-
-    this[INIT_HOOKS_MANAGER]()
-  }
-
-  // @private
-  [INIT_HOOKS_MANAGER] () {
-    this._hooksManager = new HooksManager(this[HOOKS])
-  }
-
-  // @private
-  [CREATE_CONFIG_LOADER] (preset, configFile) {
-    const PresetClass = requirePreset(this._options.cwd, preset)
-    const Extended = createConfigLoaderClass(PresetClass, configFile)
-
-    return new Extended()
+    this._hooksManager = new HooksManager(hooks)
   }
 
   // This method could be called before `this._config.load()`

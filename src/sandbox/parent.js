@@ -60,7 +60,7 @@ const ensureEnv = inheritEnv => {
 // Sandbox is a special block that
 // Sanitize and inject new environment variables into
 // the child process
-class Sandbox extends CaviarBase {
+module.exports = class Sandbox extends CaviarBase {
   constructor (options) {
     super(options, {
       sandboxEnvironment: new AsyncParallelHook(['sandbox', 'caviarOptions'])
@@ -68,7 +68,9 @@ class Sandbox extends CaviarBase {
 
     const {
       env = {},
-      stdio = 'inherit'
+      stdio = 'inherit',
+      preset,
+      configFile
     } = options
 
     this[IS_SANDBOX] = true
@@ -79,6 +81,8 @@ class Sandbox extends CaviarBase {
 
     this._env = env
     this._stdio = stdio
+    this._preset = preset
+    this._configFile = configFile
   }
 
   get spawner () {
@@ -124,6 +128,8 @@ class Sandbox extends CaviarBase {
     return [
       JSON.stringify({
         ...this._options,
+        preset: this._preset,
+        configFile: this._configFile,
         phase
       })
     ]
@@ -154,8 +160,4 @@ class Sandbox extends CaviarBase {
 
     return this._fork(spawner, args)
   }
-}
-
-module.exports = {
-  Sandbox
 }

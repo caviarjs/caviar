@@ -47,7 +47,7 @@ const DEFAULT_HOOKS = () => ({
   config: new SyncHook(['config', 'caviarOptions'])
 })
 
-class Block extends Hookable {
+module.exports = class Block extends Hookable {
   constructor () {
     super()
 
@@ -142,8 +142,4 @@ class Block extends Hookable {
   run () {
     throw error('NOT_IMPLEMENTED', 'run')
   }
-}
-
-module.exports = {
-  Block
 }

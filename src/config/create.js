@@ -1,4 +1,5 @@
 const ConfigLoader = require('./loader')
+const {requirePreset} = require('../utils')
 
 const createConfigLoaderClass = (Super = ConfigLoader, configFile) => configFile
   ? class ExtendedConfigLoader extends Super {
@@ -8,6 +9,16 @@ const createConfigLoaderClass = (Super = ConfigLoader, configFile) => configFile
   }
   : Super
 
-module.exports = {
-  createConfigLoaderClass
+// @private
+const createConfigLoader = ({
+  cwd,
+  preset,
+  configFile
+}) => {
+  const PresetClass = requirePreset(cwd, preset)
+  const Extended = createConfigLoaderClass(PresetClass, configFile)
+
+  return new Extended()
 }
+
+module.exports = createConfigLoader

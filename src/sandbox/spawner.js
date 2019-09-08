@@ -12,12 +12,14 @@ const {
 
 log('spawner env: %s', JSON.stringify(process.env, null, 2))
 
-const Caviar = require('../caviar')
+const factory = require('../factory')
 
 options[IS_CHILD_PROCESS] = true
 
-new Caviar(options)
-.run(phase)
+const caviar = factory(options)
+caviar[IS_CHILD_PROCESS] = true
+
+caviar.run(phase)
 .catch(err => {
   // eslint-disable-next-line no-console
   console.error(`fails to run, phase:${phase}, reason:\n${err.stack}`)

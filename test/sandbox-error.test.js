@@ -1,7 +1,7 @@
 const test = require('ava')
 const {join} = require('path')
 
-const {Sandbox} = require('../src/sandbox/parent')
+const caviar = require('../src/factory')
 
 const CASES = [
   ['INVALID_OPTIONS'],
@@ -26,17 +26,12 @@ const CASES = [
   ['LOAD_PRESET_FAILS', {
     cwd: 'fake',
     preset: join(__dirname, 'fixtures', 'simple', 'preset')
-  }],
-  ['SANDBOX_INVALID_ENV', {
-    cwd: 'fake',
-    configFile: 'fake',
-    env: false
   }]
 ]
 
 CASES.forEach(([code, options]) => {
   test(code, t => {
-    t.throws(() => new Sandbox(options), {
+    t.throws(() => caviar(options), {
       code
     })
   })

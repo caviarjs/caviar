@@ -34,8 +34,6 @@ const createRealPath = (name, required) => path => {
     if (required) {
       throw error('PATH_NOT_FOUND', name, path, err.stack)
     }
-
-    return UNDEFINED
   }
 }
 

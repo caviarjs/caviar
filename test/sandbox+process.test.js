@@ -1,9 +1,8 @@
 const path = require('path')
 const test = require('ava')
 
-const {
-  Sandbox: S
-} = require('../src/sandbox/parent')
+const S = require('../src/sandbox/parent')
+const createConfigLoader = require('../src/config/create')
 const {
   monitor
 } = require('..')
@@ -11,23 +10,31 @@ const {
 const fixture = (...args) =>
   path.join(__dirname, 'fixtures', 'sandbox', ...args)
 
-class SS extends S {
-  constructor (options) {
-    options.configFile = fixture('config.js')
-    super(options)
-  }
-}
+const configLoader = createConfigLoader({
+  cwd: __dirname,
+  configFile: fixture('config.js')
+})
 
-const createSandboxClass = name => class extends SS {
+const createSandboxClass = name => class extends S {
   get spawner () {
     return fixture(`${name}.js`)
   }
 }
 
+test('SANDBOX_INVALID_ENV', t => {
+  t.throws(() => new S({
+    env: false,
+    configLoader
+  }), {
+    code: 'SANDBOX_INVALID_ENV'
+  })
+})
+
 test('vanilla Sandbox', t => {
-  const s = new SS({
+  const s = new S({
     cwd: __dirname,
-    dev: true
+    dev: true,
+    configLoader
   })
 
   t.is(s.spawner,
@@ -38,7 +45,8 @@ test('basic', async t => {
   const Sandbox = createSandboxClass('spawner')
   const child = await new Sandbox({
     cwd: __dirname,
-    dev: true
+    dev: true,
+    configLoader
   }).run()
 
   await monitor(child, true)
@@ -50,54 +58,11 @@ test('process exit 1', async t => {
   const Sandbox = createSandboxClass('spawner-exit-1')
   const child = await new Sandbox({
     cwd: __dirname,
-    dev: true
+    dev: true,
+    configLoader
   }).run()
 
   await t.throwsAsync(() => monitor(child), {
     code: 'CHILD_PROCESS_NONE_ZERO_EXIT_CODE'
   })
 })
-
-// test('process exit', async t => {
-//   const Sandbox = createSandboxClass('spawner-exit-0')
-//   const child = await new Sandbox({
-//     cwd: __dirname,
-//     dev: true
-//   }).start()
-
-//   await t.throwsAsync(() => monitor(child), {
-//     code: 'CHILD_PROCESS_UNEXPECTED_CLOSE'
-//   })
-// })
-
-
-// test('exit', async t => {
-//   const Sandbox = createSandboxClass('spawner')
-//   const child = await new Sandbox({
-//     cwd: __dirname,
-//     dev: true
-//   }).start()
-
-//   setTimeout(() => {
-//     child.kill('SIGINT')
-//   })
-
-//   await t.throwsAsync(() => monitor(child), {
-//     code: 'CHILD_PROCESS_KILLED'
-//   })
-// })
-
-// test('invalid plugin usage, with config chain', async t => {
-//   const Sandbox = createSandboxClass('spawner')
-
-//   await t.throwsAsync(() => new Sandbox({
-//     cwd: __dirname,
-//     dev: false,
-//     configLoaderClassPath: require.resolve(
-//       './fixtures/config-loader/error-sandbox-plugin/config-loader')
-//   }).start({
-//     stdio: 'pipe'
-//   }), {
-//     code: 'SANDBOX_PRESERVED_ENV_KEY'
-//   })
-// })

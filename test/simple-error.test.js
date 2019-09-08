@@ -4,6 +4,12 @@ const {join} = require('path')
 
 const {create} = require('./fixtures/simple/create')
 
+test('invalid phase', async t => {
+  await t.throwsAsync(() => create({}, false), {
+    code: 'INVALID_PHASE'
+  })
+})
+
 const CASES = [
   // process env key, error message
   ['INVALID_PHASES', 'phases must be array of strings'],
@@ -34,7 +40,7 @@ const run = async options => {
     sandbox: true,
     stdio: 'pipe',
     ...options
-  })
+  }, options.phase)
 
   const list = []
   child.stderr.on('data', chunk => {
