@@ -5,7 +5,7 @@ const {error} = require('./error')
 const createConfigLoader = require('./config/create')
 
 const Caviar = require('./caviar')
-const Sandbox = require('./sandbox/parent')
+const Sandbox = require('./sandbox')
 
 module.exports = rawOptions => {
   if (!isObject(rawOptions)) {

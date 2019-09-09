@@ -1,7 +1,7 @@
 const path = require('path')
 const test = require('ava')
 
-const S = require('../src/sandbox/parent')
+const S = require('../src/sandbox')
 const createConfigLoader = require('../src/config/create')
 const {
   monitor
