@@ -131,8 +131,6 @@ module.exports = class Block extends Hookable {
     await this.hooks.beforeRun.promise(options)
     const ret = await this.run(this[CONFIG_VALUE], options)
     await this.hooks.run.promise(ret, options)
-
-    return ret
   }
 
   create () {
