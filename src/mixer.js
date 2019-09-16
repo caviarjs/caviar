@@ -2,10 +2,9 @@ const hasOwnProperty = require('has-own-prop')
 const {isString} = require('core-util-is')
 
 const {
-  FRIEND_CREATE,
-  FRIEND_RUN,
   FRIEND_SET_OPTIONS,
   NAMESPACE_CAVIAR,
+  FRIEND_RUN,
 
   createSymbol
 } = require('./constants')
@@ -14,7 +13,11 @@ const {
   getPkg
 } = require('./utils')
 const {createError} = require('./error')
-const initBlock = require('./block/init')
+const {
+  init,
+  create,
+  run
+} = require('./block/runner')
 
 const BLOCKS = createSymbol('blocks')
 const CONFIG_LOADER = createSymbol('config-loader')
@@ -106,7 +109,7 @@ module.exports = class Mixer {
       ? this[CONFIG_LOADER].namespace(namespace)
       : this[CONFIG_LOADER]
 
-    return initBlock(
+    return init(
       Block,
       {
         ...this[CAVIAR_OPTIONS],
@@ -136,7 +139,7 @@ module.exports = class Mixer {
 
     const blocks = Object.values(blocksMap)
     for (const block of blocks) {
-      block[FRIEND_CREATE]()
+      create(block)
     }
 
     // We iterate `blocks` again
@@ -144,7 +147,7 @@ module.exports = class Mixer {
     const tasks = [mixPromise]
 
     for (const block of blocks) {
-      tasks.push(block[FRIEND_RUN]())
+      tasks.push(run(block))
     }
 
     await Promise.all(tasks)

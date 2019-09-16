@@ -4,6 +4,8 @@ const {
   FRIEND_GET_CONFIG_SETTING,
   FRIEND_SET_CONFIG_VALUE,
   FRIEND_SET_CAVIAR_OPTIONS,
+  FRIEND_CREATE,
+  FRIEND_RUN,
 
   AVAILABLE_CONFIG_GETTER_TYPES
 } = require('../constants')
@@ -44,7 +46,7 @@ const getConfig = (loader, key, {
 }
 
 // Used by mixer and @caviar/test to run a block
-module.exports = (
+const init = (
   Block,
   caviarOptions,
   hooksManager,
@@ -72,4 +74,14 @@ module.exports = (
   block[FRIEND_SET_CONFIG_VALUE](config)
 
   return block
+}
+
+const create = block => block[FRIEND_CREATE]()
+
+const run = block => block[FRIEND_RUN]()
+
+module.exports = {
+  init,
+  create,
+  run
 }
