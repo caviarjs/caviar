@@ -19,8 +19,6 @@ const FRIEND_SET_RESERVED_HOOKS_FACTORY =
 
 const CAVIAR_MESSAGE_COMPLETE = 'caviar:child:complete'
 
-const MODULE_NOT_FOUND = 'MODULE_NOT_FOUND'
-
 const SANDBOX_OUTER = 'outer'
 const SANDBOX_INNER = 'inner'
 
@@ -55,8 +53,6 @@ module.exports = {
   CAVIAR_MESSAGE_COMPLETE,
 
   FRIEND_SET_RESERVED_HOOKS_FACTORY,
-
-  MODULE_NOT_FOUND,
 
   NOOP,
 

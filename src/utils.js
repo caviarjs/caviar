@@ -7,7 +7,6 @@ const resolveFrom = require('resolve-from')
 const {requireModule} = require('require-esmodule')
 
 const {error} = require('./error')
-const {MODULE_NOT_FOUND} = require('./constants')
 
 const UNDEFINED = undefined
 
@@ -90,20 +89,6 @@ const defineWritable = (host, key, value) => define(host, key, value, true)
 
 const defineGetter = (host, key, get) => Object.defineProperty(host, key, {get})
 
-const getPkg = cwd => {
-  const packageFilepath = path.join(cwd, 'package.json')
-
-  try {
-    return require(packageFilepath)
-  } catch (err) {
-    if (err.code === MODULE_NOT_FOUND) {
-      throw error('MIXER_PKG_NOT_FOUND', cwd)
-    }
-
-    throw error('MIXER_LOAD_PKG_FAILED', cwd, err.stack)
-  }
-}
-
 const once = (...fns) => {
   let called = false
 
@@ -175,7 +160,6 @@ module.exports = {
   define,
   defineWritable,
   defineGetter,
-  getPkg,
   once,
   checkPlugin,
   isSandboxPlugin,

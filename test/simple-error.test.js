@@ -27,12 +27,12 @@ const CASES = [
   ['HOOKABLE_ERR_SET_HOOKS', 'more than once'],
   ['HOOKABLE_NO_CLASS', 'must be a constructor'],
   ['HOOKABLE_NOT_HOOKABLE', 'must extend Hookable'],
-  [{
-    cwd: join(__dirname, 'fixtures', 'simple', 'no-pkg')
-  }, 'package.json not found'],
-  [{
-    cwd: join(__dirname, 'fixtures', 'simple', 'err-pkg')
-  }, 'fails to load package.json']
+  // [{
+  //   cwd: join(__dirname, 'fixtures', 'simple', 'no-pkg')
+  // }, 'package.json not found'],
+  // [{
+  //   cwd: join(__dirname, 'fixtures', 'simple', 'err-pkg')
+  // }, 'fails to load package.json']
 ]
 
 const run = async options => {

@@ -9,8 +9,7 @@ const {
   createSymbol
 } = require('./constants')
 const {
-  define,
-  getPkg
+  define
 } = require('./utils')
 const {createError} = require('./error')
 const {
@@ -56,13 +55,10 @@ module.exports = class Mixer {
     define(this, CONFIG_LOADER, configLoader)
     define(this, HOOKS_MANAGER, hooksManager)
 
-    const pkg = getPkg(cwd)
-
     // Freeze the object, so that it could not be modified by blocks or mixers
     define(this, CAVIAR_OPTIONS, Object.freeze({
       cwd,
-      dev,
-      pkg
+      dev
     }))
   }
 
