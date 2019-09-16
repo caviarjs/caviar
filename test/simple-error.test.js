@@ -1,6 +1,5 @@
 const test = require('ava')
 const {isString} = require('core-util-is')
-const {join} = require('path')
 
 const {create} = require('./fixtures/simple/create')
 
