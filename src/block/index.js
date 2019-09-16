@@ -62,7 +62,7 @@ module.exports = class Block extends Hookable {
   }
 
   [FRIEND_GET_CONFIG_SETTING] () {
-    return this[CONFIG_SETTING]
+    return this[CONFIG_SETTING] || Object.create(null)
   }
 
   // The config chain is managed by caviar core
