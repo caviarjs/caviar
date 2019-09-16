@@ -133,15 +133,24 @@ class ConfigLoader extends ConfigGetter {
   }
 
   load () {
-    this.getPaths().forEach(({
+    this.chain = this.getPaths().map(({
       configFile
-    }) => {
-      this._chain.push(getRawConfig(configFile))
-    })
+    }) => getRawConfig(configFile))
 
     log('config-loader: chain: %s', inspect(this._chain))
 
     return this
+  }
+
+  // Set the new chain
+  set chain (chain) {
+    // Reset the chain
+    this._chain.length = 0
+
+    // And concat the new one,
+    // never re-assign `this._chain`
+    // or namespaces will loose reference
+    this._chain.push(...chain)
   }
 }
 

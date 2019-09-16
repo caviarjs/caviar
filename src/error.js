@@ -61,6 +61,8 @@ PREFIX()
 
 .TE('INVALID_PHASE', 'phase must be a string')
 
+.TE('INVALID_MIXER', 'config.caviar.mixer must be a constructor')
+
 .E('PRESET_NOT_FOUND', 'preset "%s" not found, reason:\n%s')
 
 .E('LOAD_PRESET_FAILS', 'fails to load preset "%s", reason:\n%s')
@@ -73,14 +75,6 @@ PREFIX('BLOCK', 'block')
 
 .E('NOT_IMPLEMENTED', 'method "%s" must be implemented')
 
-PREFIX('MIXER', 'mixer')
-.TE('INVALID_PHASE',
-  'mapped phase in phaseMap should be a string or false for block "%s"')
-
-.E('PKG_NOT_FOUND', 'package.json not found in directory "%s"')
-
-.E('LOAD_PKG_FAILED', 'fails to load package.json in directory "%s": "%s"')
-
 .E('INVALID_CONFIG_GETTER_TYPE',
   `"%s" is an invalid config getter type which should be one of:
 ${AVAILABLE_CONFIG_GETTER_TYPES.map(type => `  - ${type}`).join('\n')}`,
@@ -88,6 +82,16 @@ ${AVAILABLE_CONFIG_GETTER_TYPES.map(type => `  - ${type}`).join('\n')}`,
 
 .E('CONFIG_NOT_OPTIONAL',
   'config "%s" should be specified in at least one config layer for it is not optional')
+
+PREFIX('MIXER', 'mixer')
+.TE('INVALID_PHASE',
+  'mapped phase in phaseMap should be a string or false for block "%s"')
+
+.E('RESERVED_NAMESPACE', '"%s" is a reserved namespace', RangeError)
+
+.E('PKG_NOT_FOUND', 'package.json not found in directory "%s"')
+
+.E('LOAD_PKG_FAILED', 'fails to load package.json in directory "%s": "%s"')
 
 .E('NOT_IMPLEMENTED', 'method "%s" must be implemented')
 

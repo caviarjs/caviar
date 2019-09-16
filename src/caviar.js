@@ -2,6 +2,7 @@ const {
   SyncHook,
   AsyncSeriesHook
 } = require('tapable')
+const {isFunction} = require('core-util-is')
 const {createPluginFilter} = require('./utils')
 const CaviarBase = require('./base/caviar')
 const {
@@ -12,6 +13,7 @@ const {
 
   createSymbol
 } = require('./constants')
+const {error} = require('./error')
 
 const RUN = createSymbol('run')
 
@@ -38,10 +40,14 @@ module.exports = class Caviar extends CaviarBase {
 
     const hooks = this._hooksManager.getHooks()
 
-    hooks.beforeConfig.call()
     hooks.start.call()
 
     const Mixer = this._caviarConfig.bailBottom('mixer')
+
+    if (!isFunction(Mixer)) {
+      throw error('INVALID_MIXER', Mixer)
+    }
+
     const mixer = new Mixer()
 
     mixer[FRIEND_SET_OPTIONS]({

@@ -2,15 +2,10 @@ const hasOwnProperty = require('has-own-prop')
 const {isString} = require('core-util-is')
 
 const {
-  UNDEFINED,
-
-  FRIEND_GET_CONFIG_SETTING,
-  FRIEND_SET_CONFIG_VALUE,
-  FRIEND_SET_CAVIAR_OPTIONS,
   FRIEND_CREATE,
   FRIEND_RUN,
   FRIEND_SET_OPTIONS,
-  AVAILABLE_CONFIG_GETTER_TYPES,
+  NAMESPACE_CAVIAR,
 
   createSymbol
 } = require('./constants')
@@ -19,6 +14,7 @@ const {
   getPkg
 } = require('./utils')
 const {createError} = require('./error')
+const initBlock = require('./block/init')
 
 const BLOCKS = createSymbol('blocks')
 const CONFIG_LOADER = createSymbol('config-loader')
@@ -28,39 +24,6 @@ const CAVIAR_OPTIONS = createSymbol('caviar-options')
 const INIT_BLOCK = createSymbol('init-block')
 
 const error = createError('MIXER')
-
-const createConfigMap = configSetting => {
-  const map = Object.create(null)
-  for (const key of Object.keys(configSetting)) {
-    map[key] = key
-  }
-
-  return map
-}
-
-const getConfig = (loader, key, {
-  type,
-  optional,
-  compose
-}) => {
-  if (!AVAILABLE_CONFIG_GETTER_TYPES.includes(type)) {
-    throw error('INVALID_CONFIG_GETTER_TYPE', type)
-  }
-
-  const config = type === 'compose'
-    ? loader.compose({
-      key,
-      compose
-    })
-
-    : loader[type](key)
-
-  if (config === UNDEFINED && !optional) {
-    throw error('CONFIG_NOT_OPTIONAL', key)
-  }
-
-  return config
-}
 
 // Returns `false|string`
 const getPhase = (blockPhase, phaseMap = {}, name) => {
@@ -133,35 +96,26 @@ module.exports = class Mixer {
     configMap,
     phaseMap
   }, blockPhase, name) {
-    const block = new Block()
-
-    // Apply proxied hook taps
-    this[HOOKS_MANAGER].applyHooks(Block, block.hooks)
-
     const phase = getPhase(blockPhase, phaseMap, name)
 
-    block[FRIEND_SET_CAVIAR_OPTIONS]({
-      ...this[CAVIAR_OPTIONS],
-      phase
-    })
+    if (namespace === NAMESPACE_CAVIAR) {
+      throw error('RESERVED_NAMESPACE', namespace)
+    }
 
-    const configSetting = block[FRIEND_GET_CONFIG_SETTING]()
     const configLoader = namespace
       ? this[CONFIG_LOADER].namespace(namespace)
       : this[CONFIG_LOADER]
 
-    if (!configMap) {
-      configMap = createConfigMap(configSetting)
-    }
-
-    const config = Object.create(null)
-    for (const [key, mappedKey] of Object.entries(configMap)) {
-      config[key] = getConfig(configLoader, mappedKey, configSetting[key])
-    }
-
-    block[FRIEND_SET_CONFIG_VALUE](config)
-
-    return block
+    return initBlock(
+      Block,
+      {
+        ...this[CAVIAR_OPTIONS],
+        phase
+      },
+      this[HOOKS_MANAGER],
+      configLoader,
+      configMap
+    )
   }
 
   async [FRIEND_RUN] (phase) {

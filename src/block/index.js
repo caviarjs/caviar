@@ -4,10 +4,10 @@ const {
 } = require('tapable')
 const {
   isStringArray, defineWritable, define
-} = require('./utils')
+} = require('../utils')
 const {
   Hookable
-} = require('./base/hookable')
+} = require('../base/hookable')
 const {
   FRIEND_SET_RESERVED_HOOKS_FACTORY,
 
@@ -20,9 +20,9 @@ const {
   PHASE_DEFAULT,
 
   createSymbol
-} = require('./constants')
+} = require('../constants')
 
-const {createError} = require('./error')
+const {createError} = require('../error')
 
 const error = createError('BLOCK')
 
@@ -99,7 +99,7 @@ module.exports = class Block extends Hookable {
   }
 
   [FRIEND_SET_CAVIAR_OPTIONS] (opts) {
-    define(this, CAVIAR_OPTS, opts)
+    define(this, CAVIAR_OPTS, Object.freeze(opts))
   }
 
   get options () {
