@@ -21,7 +21,6 @@ module.exports = class Caviar extends CaviarBase {
   constructor (options) {
     super(options, {
       start: new SyncHook(),
-      beforeConfig: new SyncHook(),
       done: new AsyncSeriesHook(),
       failed: new SyncHook(['error'])
     })
