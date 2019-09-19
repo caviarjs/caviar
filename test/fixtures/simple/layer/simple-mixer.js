@@ -119,6 +119,10 @@ if (!process.env.MIXER_NOT_IMPLEMENTED) {
     }
 
     await test
+
+    if (process.env.TEST_PROCESS_KILL) {
+      setTimeout(() => {}, 500)
+    }
   }
 }
 
