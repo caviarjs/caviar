@@ -37,7 +37,11 @@ const ESSENTIAL_ENV_KEYS = [
   ...PRIVATE_ENV_KEYS
 ]
 
-const createSetEnv = host => (key, value) => {
+const createSetEnv = (host, check) => (key, value) => {
+  if (check && PRIVATE_ENV_KEYS.includes(key)) {
+    throw error('PRESERVED_ENV_KEY', key)
+  }
+
   // `process.env.FOO = undefined` is equivalent to
   // `process.env.FOO = 'undefined'`
   if (value !== undefined) {
@@ -45,11 +49,7 @@ const createSetEnv = host => (key, value) => {
   }
 }
 
-const createInheritEnv = (set, check) => key => {
-  if (check && PRIVATE_ENV_KEYS.includes(key)) {
-    throw error('PRESERVED_ENV_KEY', key)
-  }
-
+const createInheritEnv = set => key => {
   set(key, process.env[key])
 }
 
@@ -95,14 +95,16 @@ module.exports = class Sandbox extends CaviarBase {
       env: {}
     }
 
-    const setEnv = createSetEnv(options.env)
-    const justInheritEnv = createInheritEnv(setEnv)
+    const justSetEnv = createSetEnv(options.env)
+    const justInheritEnv = createInheritEnv(justSetEnv)
 
     ensureEnv(justInheritEnv)
 
     this._applyNodePaths(options.env)
 
     this._applyPlugins(isSandboxPlugin)
+
+    const setEnv = createSetEnv(options.env, true)
 
     const sandbox = {
       inheritEnv: createInheritEnv(setEnv, true),

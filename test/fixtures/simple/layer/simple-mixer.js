@@ -87,7 +87,10 @@ if (!process.env.MIXER_NOT_IMPLEMENTED) {
       tasks.delete('foo-run')
       assert(ret.foo === 'foo', 'run.foo')
 
-      if (process.env.CAVIAR_SANDBOX && process.env.PLUGIN_PLUGIN_ENV !== 'plugin') {
+      if (
+        process.env.CAVIAR_SANDBOX
+        && process.env.PLUGIN_PLUGIN_ENV !== 'plugin'
+      ) {
         nowMatch('PLUGIN_PLUGIN_ENV')
       }
     })

@@ -2,12 +2,6 @@ const test = require('ava')
 
 const {create} = require('./fixtures/simple/create')
 
-// test('caviar', async t => {
-//   await create()
-
-//   t.pass()
-// })
-
 const CASES = [
   ['sandbox, block phases', {
     TEST_BLOCK_PHASES: 'true'

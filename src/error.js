@@ -70,6 +70,8 @@ PREFIX()
 PREFIX('SANDBOX', 'sandbox')
 .TE('INVALID_ENV', 'options.env must be an object if specified')
 
+.E('PRESERVED_ENV_KEY', '"%s" is a preserved env key of caviar')
+
 PREFIX('BLOCK', 'block')
 .TE('INVALID_PHASES', 'phases must be array of strings')
 
