@@ -6,6 +6,7 @@ const createConfigLoader = require('./config/create')
 
 const Caviar = require('./caviar')
 const Sandbox = require('./sandbox')
+const {IS_CHILD_PROCESS} = require('./constants')
 
 module.exports = rawOptions => {
   if (!isObject(rawOptions)) {
@@ -27,7 +28,8 @@ module.exports = rawOptions => {
     configFile,
 
     env,
-    stdio
+    stdio,
+    [IS_CHILD_PROCESS]: isChildProcess
   } = rawOptions
 
   if (!configFile && !preset) {
@@ -61,6 +63,8 @@ module.exports = rawOptions => {
     : new Caviar({
       cwd,
       dev,
-      configLoader
+      configLoader,
+
+      [IS_CHILD_PROCESS]: isChildProcess
     })
 }

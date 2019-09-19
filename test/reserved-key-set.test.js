@@ -1,7 +1,7 @@
 const test = require('ava')
 const {create} = require('./fixtures/simple/create')
 
-process.env.SET_PRESERVED_ENV_KEY = true
+process.env.SET_PRESERVED_ENV_KEY = 'true'
 
 test('set reserved env key', async t => {
   await t.throwsAsync(() => create({

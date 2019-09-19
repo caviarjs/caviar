@@ -93,13 +93,16 @@ module.exports = class CaviarBase {
     const {
       cwd,
       dev,
-      configLoader
+      configLoader,
+
+      [IS_CHILD_PROCESS]: isChildProcess
     } = options
 
     this._options = {
       cwd,
       dev
     }
+    this[IS_CHILD_PROCESS] = !!isChildProcess
 
     this._config = configLoader
     this._caviarConfig = configLoader.namespace('caviar')

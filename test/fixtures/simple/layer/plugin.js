@@ -13,7 +13,7 @@ module.exports = class extends Plugin {
   }
 
   get sandbox () {
-    return true
+    return !!process.env.CAVIAR_SANDBOX
   }
 
   apply (getHooks) {

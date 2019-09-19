@@ -17,7 +17,6 @@ const factory = require('../factory')
 options[IS_CHILD_PROCESS] = true
 
 const caviar = factory(options)
-caviar[IS_CHILD_PROCESS] = true
 
 caviar.run(phase)
 .catch(err => {
