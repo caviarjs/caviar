@@ -6,6 +6,11 @@ const BarBlock = require('./bar-block')
 
 const SIMPLE_MIXER = 'SimpleMixer'
 
+const nowMatch = (key) => {
+  throw new Error(
+    `process.env.${key} not match, got "${process.env[key]}"`)
+}
+
 class FooBarMixer extends Mixer {
   constructor () {
     super()
@@ -16,7 +21,8 @@ class FooBarMixer extends Mixer {
       phaseMap.default = 1
     }
 
-    this.blocks = {
+
+    const blocks = {
       foo: {
         from: FooBlock,
         phaseMap
@@ -25,6 +31,12 @@ class FooBarMixer extends Mixer {
         from: BarBlock
       }
     }
+
+    if (process.env.RESERVED_NAMESPACE) {
+      blocks.foo.namespace = 'caviar'
+    }
+
+    this.blocks = blocks
   }
 }
 
@@ -74,6 +86,10 @@ if (!process.env.MIXER_NOT_IMPLEMENTED) {
     foo.hooks.run.tapPromise(SIMPLE_MIXER, async ret => {
       tasks.delete('foo-run')
       assert(ret.foo === 'foo', 'run.foo')
+
+      if (process.env.CAVIAR_SANDBOX && process.env.PLUGIN_PLUGIN_ENV !== 'plugin') {
+        nowMatch('PLUGIN_PLUGIN_ENV')
+      }
     })
 
     bar.hooks.run.tapPromise(SIMPLE_MIXER, async ret => {
@@ -87,16 +103,16 @@ if (!process.env.MIXER_NOT_IMPLEMENTED) {
 
     if (process.env.TEST_SANDBOX_PLUGIN) {
       if (process.env.CAVIAR_SANDBOX !== 'inner') {
-        throw new Error(`process.env.CAVIAR_SANDBOX not match, got "${process.env.CAVIAR_SANDBOX}"`)
+        nowMatch('CAVIAR_SANDBOX')
       }
 
       if (process.env.SANDBOX_PLUGIN_ENV !== 'YES-GREAT') {
-        throw new Error(`sandbox plugin env not match, got "${process.env.SANDBOX_PLUGIN_ENV}"`)
+        nowMatch('SANDBOX_PLUGIN_ENV')
       }
     }
 
     if (process.env.CAVIAR_ENV_FOO !== 'foo') {
-      throw new Error(`process.env.CAVIAR_ENV_FOO not match, got "${process.env.CAVIAR_ENV_FOO}"`)
+      nowMatch('CAVIAR_ENV_FOO')
     }
 
     await test

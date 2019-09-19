@@ -24,7 +24,22 @@ const plugin = {
   }
 }
 
-const plugins = []
+const Plugin = require('./layer/plugin')
+const PluginPlugin = require('./layer/plugin-plugin')
+
+const plugins = [
+  [
+    {
+      // This plugin never called
+      apply () {
+        throw new Error('boooooooooom!')
+      }
+    },
+    () => false
+  ],
+  new Plugin(),
+  new PluginPlugin()
+]
 
 if (process.env.TEST_SANDBOX_PLUGIN_VARIES) {
   plugins.push([
@@ -54,17 +69,20 @@ if (process.env.HOOKABLE_NOT_HOOKABLE) {
   plugins.push(require('./gethooks-no-hookable'))
 }
 
-module.exports = {
-  caviar: {
-    mixer: require('./layer/simple-mixer'),
-    plugins: process.env.CONFIG_LOADER_INVALID_PLUGINS
-      ? 1
-      : plugins,
-    env: {
-      CAVIAR_ENV_FOO: 'foo'
-    }
-  },
+const caviar = {
+  mixer: process.env.INVALID_MIXER
+    ? 1
+    : require('./layer/simple-mixer'),
+  plugins: process.env.CONFIG_LOADER_INVALID_PLUGINS
+    ? 1
+    : plugins,
+  env: {
+    CAVIAR_ENV_FOO: 'foo'
+  }
+}
 
+module.exports = {
+  caviar,
   foo: 'foo',
   bar: 'bar'
 }

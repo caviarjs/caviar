@@ -26,6 +26,7 @@ const CASES = [
   ['HOOKABLE_ERR_SET_HOOKS', 'more than once'],
   ['HOOKABLE_NO_CLASS', 'must be a constructor'],
   ['HOOKABLE_NOT_HOOKABLE', 'must extend Hookable'],
+  ['RESERVED_NAMESPACE', 'is a reserved namespace']
   // [{
   //   cwd: join(__dirname, 'fixtures', 'simple', 'no-pkg')
   // }, 'package.json not found'],
