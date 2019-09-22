@@ -5,33 +5,13 @@
 
 A pluggable and extendable skeleton which help to integrate several existing web frameworks to create your own micro frontends out of the box with even zero configuration.
 
+`caviar` brings **web mesh** to the real world.
+
 > An architectural style where independently deliverable frontend applications are composed into a greater whole
 
-## Getting Started
+## Thinking in `caviar` about web mesh
 
-```sh
-mkdir hello && cd hello
-yo generator-caviar
-npm run dev
-```
-
-Yeah, we have our first application
-
-### File Structure
-
-```
-project/
-|-- app
-|-- pages
-|-- caviar.config
-|   |-- .env
-|   |-- client.env
-|   |-- index.js
-|-- package.json
-|-- ...
-```
-
-## Thinking in `caviar`
+> Why caviar?
 
 ****
 
@@ -79,7 +59,7 @@ caviar({
 **Sandbox options**
 
 - **env?** `object` extra environment key-value pairs.
-- **stdio** `Array | string` the `options.stdio` option of [`child_process.fork`](https://nodejs.org/dist/latest/docs/api/child_process.html#child_process_child_process_fork_modulepath_args_options)
+- **stdio?** `(Array | string)='inherit'` the `options.stdio` option of [`child_process.fork`](https://nodejs.org/dist/latest/docs/api/child_process.html#child_process_child_process_fork_modulepath_args_options)
 
 ### Return Value
 
