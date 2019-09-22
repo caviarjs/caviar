@@ -5,6 +5,7 @@ const {
 } = require('core-util-is')
 const resolveFrom = require('resolve-from')
 const {requireModule} = require('require-esmodule')
+const isAbsolute = require('is-absolute')
 
 const {error} = require('./error')
 
@@ -38,18 +39,22 @@ const inspect = object => util.inspect(object, {
   depth: 3
 })
 
+const resolvePreset = (from, preset) => {
+  try {
+    return resolveFrom(from, preset)
+  } catch (err) {
+    throw error('PRESET_NOT_FOUND', preset, err.stack)
+  }
+}
+
 const requirePreset = (from, preset) => {
   if (!preset) {
     return
   }
 
-  let resolved
-
-  try {
-    resolved = resolveFrom(from, preset)
-  } catch (err) {
-    throw error('PRESET_NOT_FOUND', preset, err.stack)
-  }
+  const resolved = isAbsolute(preset)
+    ? preset
+    : resolvePreset(from, preset)
 
   try {
     return requireModule(resolved)
